@@ -16,6 +16,7 @@ For each failing test:
 3. Use testIds from `test/steps/*.testIds.ts` for `data-testid` attrs
 
 **Rules:**
+
 - No abstractions, no future-proofing
 - Do not stop coding until all tests pass
 - No refactoring in this phase

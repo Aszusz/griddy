@@ -39,7 +39,7 @@ function ToolButton({
 }) {
   return (
     <button
-      className="animate-in fade-in group/btn relative flex h-10 w-10 items-center justify-center rounded-xl text-zinc-500 transition-all duration-200 hover:bg-white/[0.06] hover:text-cyan-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/50"
+      className="animate-in fade-in group/btn relative flex h-10 w-10 items-center justify-center rounded-xl text-zinc-500 transition-all duration-200 hover:bg-white/6 hover:text-cyan-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/50"
       style={{
         animationDelay: `${delay}ms`,
         animationFillMode: 'backwards',
@@ -47,7 +47,7 @@ function ToolButton({
       title={`${label} (${shortcut})`}
     >
       <Icon className="h-[18px] w-[18px] transition-transform duration-200 group-hover/btn:scale-110" />
-      <span className="pointer-events-none absolute left-full ml-3 flex items-center gap-2 rounded-lg border border-white/[0.08] bg-zinc-900 px-3 py-1.5 font-mono text-xs whitespace-nowrap text-zinc-300 opacity-0 shadow-xl transition-all duration-200 group-hover/btn:opacity-100">
+      <span className="pointer-events-none absolute left-full ml-3 flex items-center gap-2 rounded-lg border border-white/8 bg-zinc-900 px-3 py-1.5 font-mono text-xs whitespace-nowrap text-zinc-300 opacity-0 shadow-xl transition-all duration-200 group-hover/btn:opacity-100">
         {label}
         <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] text-zinc-500">
           {shortcut}
@@ -66,13 +66,13 @@ function Toolbox() {
       style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
     >
       <div className="group relative">
-        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-b from-cyan-500/20 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="absolute -inset-1 rounded-2xl bg-linear-to-b from-cyan-500/20 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
 
-        <div className="relative flex flex-col gap-1 rounded-2xl border border-white/[0.08] bg-zinc-900/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
+        <div className="relative flex flex-col gap-1 rounded-2xl border border-white/8 bg-zinc-900/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
           {toolGroups.map((group, groupIndex) => (
             <div key={groupIndex} className="flex flex-col gap-1">
               {groupIndex > 0 && (
-                <div className="mx-2 my-0.5 h-px bg-white/[0.04]" />
+                <div className="mx-2 my-0.5 h-px bg-white/4" />
               )}
               {group.map((tool) => {
                 const delay = 300 + toolIndex * 50
@@ -95,11 +95,11 @@ function Inspector() {
     >
       <div className="group relative">
         {/* Glow effect */}
-        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-b from-cyan-500/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="absolute -inset-1 rounded-2xl bg-linear-to-b from-cyan-500/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
 
-        <div className="relative rounded-2xl border border-white/[0.08] bg-zinc-900/95 shadow-2xl shadow-black/50 backdrop-blur-xl">
+        <div className="relative rounded-2xl border border-white/8 bg-zinc-900/95 shadow-2xl shadow-black/50 backdrop-blur-xl">
           {/* Header */}
-          <div className="border-b border-white/[0.06] px-4 py-3">
+          <div className="border-b border-white/6 px-4 py-3">
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-cyan-500 shadow-lg shadow-cyan-500/50" />
               <span className="font-mono text-xs font-medium tracking-wider text-zinc-400">
@@ -127,12 +127,12 @@ function Inspector() {
           {/* Fill Section */}
           <InspectorSection title="Fill" delay={500}>
             <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg border border-white/10 bg-gradient-to-br from-zinc-700 to-zinc-800 shadow-inner" />
+              <div className="h-7 w-7 rounded-lg border border-white/10 bg-linear-to-br from-zinc-700 to-zinc-800 shadow-inner" />
               <input
                 type="text"
                 readOnly
                 value="#3F3F46"
-                className="h-7 flex-1 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2 font-mono text-xs text-zinc-400 transition-colors outline-none focus:border-cyan-500/50"
+                className="h-7 flex-1 rounded-lg border border-white/6 bg-white/3 px-2 font-mono text-xs text-zinc-400 transition-colors outline-none focus:border-cyan-500/50"
               />
             </div>
           </InspectorSection>
@@ -147,7 +147,7 @@ function Inspector() {
                 type="text"
                 readOnly
                 value="None"
-                className="h-7 flex-1 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2 font-mono text-xs text-zinc-500 transition-colors outline-none focus:border-cyan-500/50"
+                className="h-7 flex-1 rounded-lg border border-white/6 bg-white/3 px-2 font-mono text-xs text-zinc-500 transition-colors outline-none focus:border-cyan-500/50"
               />
             </div>
           </InspectorSection>
@@ -170,7 +170,7 @@ function InspectorSection({
 }) {
   return (
     <div
-      className={`animate-in fade-in px-4 py-3 ${!last ? 'border-b border-white/[0.04]' : ''}`}
+      className={`animate-in fade-in px-4 py-3 ${!last ? 'border-b border-white/4' : ''}`}
       style={{ animationDelay: `${delay}ms`, animationFillMode: 'backwards' }}
     >
       <div className="mb-2 font-mono text-[10px] font-medium tracking-widest text-zinc-600">
@@ -189,7 +189,7 @@ function InspectorField({ label, value }: { label: string; value: string }) {
         type="text"
         readOnly
         value={value}
-        className="h-7 w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-2 font-mono text-xs text-zinc-300 transition-colors outline-none focus:border-cyan-500/50"
+        className="h-7 w-full rounded-lg border border-white/6 bg-white/3 px-2 font-mono text-xs text-zinc-300 transition-colors outline-none focus:border-cyan-500/50"
       />
     </div>
   )
@@ -221,13 +221,13 @@ function Canvas() {
       {/* Center crosshair hint */}
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div className="flex flex-col items-center gap-4 opacity-20">
-          <div className="h-8 w-px bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent" />
+          <div className="h-8 w-px bg-linear-to-b from-transparent via-cyan-500/50 to-transparent" />
           <div className="flex items-center gap-4">
-            <div className="h-px w-8 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+            <div className="h-px w-8 bg-linear-to-r from-transparent via-cyan-500/50 to-transparent" />
             <div className="h-2 w-2 rounded-full border border-cyan-500/30" />
-            <div className="h-px w-8 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+            <div className="h-px w-8 bg-linear-to-r from-transparent via-cyan-500/50 to-transparent" />
           </div>
-          <div className="h-8 w-px bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent" />
+          <div className="h-8 w-px bg-linear-to-b from-transparent via-cyan-500/50 to-transparent" />
         </div>
       </div>
 
