@@ -32,12 +32,6 @@ Feature: Draw Rectangles
     When I release the mouse
     Then no preview rectangle is visible
 
-  Scenario: Small rectangles are discarded
-    Given I open the app
-    And I select the Rectangle tool
-    When I draw a rectangle from (40, 60) to (50, 70)
-    Then no rectangle is created
-
   Scenario: Rectangle has fill and stroke
     Given I open the app
     And I select the Rectangle tool

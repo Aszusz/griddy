@@ -8,11 +8,33 @@ import {
   ZoomIn,
   Hand,
 } from 'lucide-react'
+import { useAppDispatch, useAppSelector } from './hooks'
+import { AppActions } from './store/actions'
+import {
+  selectActiveTool,
+  selectShapes,
+  selectDrawing,
+} from './store/selectors'
+import type { Tool, Rectangle } from './store/state'
 
-const toolGroups = [
-  [{ icon: MousePointer2, label: 'Select', shortcut: 'V' }],
+type ToolDef = {
+  icon: React.ComponentType<{ className?: string }>
+  label: string
+  shortcut: string
+  tool?: Tool
+  testId?: string
+}
+
+const toolGroups: ToolDef[][] = [
+  [{ icon: MousePointer2, label: 'Select', shortcut: 'V', tool: 'select' }],
   [
-    { icon: Square, label: 'Rectangle', shortcut: 'R' },
+    {
+      icon: Square,
+      label: 'Rectangle',
+      shortcut: 'R',
+      tool: 'rectangle',
+      testId: 'toolbox-rectangle',
+    },
     { icon: Circle, label: 'Ellipse', shortcut: 'O' },
   ],
   [
@@ -31,15 +53,24 @@ function ToolButton({
   label,
   shortcut,
   delay,
+  testId,
+  isActive,
+  onClick,
 }: {
   icon: React.ComponentType<{ className?: string }>
   label: string
   shortcut: string
   delay: number
+  testId?: string
+  isActive: boolean
+  onClick?: () => void
 }) {
   return (
     <button
-      className="animate-in fade-in group/btn relative flex h-10 w-10 items-center justify-center rounded-xl text-zinc-500 transition-all duration-200 hover:bg-white/6 hover:text-cyan-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/50"
+      data-testid={testId}
+      data-active={isActive}
+      onClick={onClick}
+      className={`animate-in fade-in group/btn relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 hover:bg-white/6 hover:text-cyan-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/50 ${isActive ? 'bg-white/10 text-cyan-400' : 'text-zinc-500'}`}
       style={{
         animationDelay: `${delay}ms`,
         animationFillMode: 'backwards',
@@ -58,6 +89,8 @@ function ToolButton({
 }
 
 function Toolbox() {
+  const dispatch = useAppDispatch()
+  const activeTool = useAppSelector(selectActiveTool)
   let toolIndex = 0
 
   return (
@@ -74,10 +107,23 @@ function Toolbox() {
               {groupIndex > 0 && (
                 <div className="mx-2 my-0.5 h-px bg-white/4" />
               )}
-              {group.map((tool) => {
+              {group.map((toolDef) => {
                 const delay = 300 + toolIndex * 50
                 toolIndex++
-                return <ToolButton key={tool.label} {...tool} delay={delay} />
+                return (
+                  <ToolButton
+                    key={toolDef.label}
+                    {...toolDef}
+                    delay={delay}
+                    isActive={toolDef.tool === activeTool}
+                    onClick={
+                      toolDef.tool
+                        ? () =>
+                            dispatch(AppActions['tool/selected'](toolDef.tool!))
+                        : undefined
+                    }
+                  />
+                )
               })}
             </div>
           ))}
@@ -195,7 +241,54 @@ function InspectorField({ label, value }: { label: string; value: string }) {
   )
 }
 
+const GRID_SIZE = 20
+
+function snapToGrid(value: number): number {
+  return Math.round(value / GRID_SIZE) * GRID_SIZE
+}
+
 function Canvas() {
+  const dispatch = useAppDispatch()
+  const activeTool = useAppSelector(selectActiveTool)
+  const shapes = useAppSelector(selectShapes)
+  const drawing = useAppSelector(selectDrawing)
+
+  const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (activeTool !== 'rectangle') return
+    const svg = e.currentTarget
+    const rect = svg.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    dispatch(AppActions['drawing/started'](x, y))
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!drawing) return
+    const svg = e.currentTarget
+    const rect = svg.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    dispatch(AppActions['drawing/moved'](x, y))
+  }
+
+  const handleMouseUp = () => {
+    if (!drawing) return
+    dispatch(AppActions['drawing/ended']())
+  }
+
+  const previewRect = drawing
+    ? {
+        x: snapToGrid(Math.min(drawing.startX, drawing.currentX)),
+        y: snapToGrid(Math.min(drawing.startY, drawing.currentY)),
+        width:
+          snapToGrid(Math.max(drawing.startX, drawing.currentX)) -
+          snapToGrid(Math.min(drawing.startX, drawing.currentX)),
+        height:
+          snapToGrid(Math.max(drawing.startY, drawing.currentY)) -
+          snapToGrid(Math.min(drawing.startY, drawing.currentY)),
+      }
+    : null
+
   return (
     <div
       className="animate-in fade-in absolute inset-0 duration-700"
@@ -209,6 +302,42 @@ function Canvas() {
         backgroundPosition: 'center, center',
       }}
     >
+      <svg
+        data-testid="canvas"
+        className="absolute inset-0 h-full w-full"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        {shapes.map((shape: Rectangle) => (
+          <rect
+            key={shape.id}
+            data-testid="shape-rectangle"
+            x={shape.x}
+            y={shape.y}
+            width={shape.width}
+            height={shape.height}
+            fill="#3b82f6"
+            stroke="#60a5fa"
+            strokeWidth={2}
+          />
+        ))}
+        {previewRect && previewRect.width > 0 && previewRect.height > 0 && (
+          <rect
+            data-testid="shape-preview"
+            x={previewRect.x}
+            y={previewRect.y}
+            width={previewRect.width}
+            height={previewRect.height}
+            fill="#3b82f680"
+            stroke="#60a5fa"
+            strokeWidth={2}
+            strokeDasharray="4"
+          />
+        )}
+      </svg>
+
       {/* Subtle vignette */}
       <div
         className="pointer-events-none absolute inset-0"

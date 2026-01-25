@@ -1,7 +1,31 @@
 import { match } from 'disc-union'
-import type { AppState } from './state'
+import type { AppState, Rectangle } from './state'
 import { initialState } from './state'
 import type { AppAction } from './actions'
+
+const GRID_SIZE = 20
+
+function snapToGrid(value: number): number {
+  return Math.round(value / GRID_SIZE) * GRID_SIZE
+}
+
+function createRectFromDrawing(
+  startX: number,
+  startY: number,
+  endX: number,
+  endY: number
+): Omit<Rectangle, 'id'> {
+  const x1 = snapToGrid(Math.min(startX, endX))
+  const y1 = snapToGrid(Math.min(startY, endY))
+  const x2 = snapToGrid(Math.max(startX, endX))
+  const y2 = snapToGrid(Math.max(startY, endY))
+  return {
+    x: x1,
+    y: y1,
+    width: x2 - x1,
+    height: y2 - y1,
+  }
+}
 
 export function reducer(
   state: AppState = initialState,
@@ -11,6 +35,43 @@ export function reducer(
     action,
     {
       'app/started': () => state,
+      'tool/selected': ({ tool }) => ({ ...state, activeTool: tool }),
+      'drawing/started': ({ x, y }) => ({
+        ...state,
+        drawing: { startX: x, startY: y, currentX: x, currentY: y },
+      }),
+      'drawing/moved': ({ x, y }) =>
+        state.drawing
+          ? {
+              ...state,
+              drawing: { ...state.drawing, currentX: x, currentY: y },
+            }
+          : state,
+      'drawing/ended': () => {
+        if (!state.drawing) return state
+        const rect = createRectFromDrawing(
+          state.drawing.startX,
+          state.drawing.startY,
+          state.drawing.currentX,
+          state.drawing.currentY
+        )
+        if (rect.width === 0 || rect.height === 0) {
+          return { ...state, drawing: null }
+        }
+        const newShape: Rectangle = {
+          ...rect,
+          id: crypto.randomUUID(),
+        }
+        return {
+          ...state,
+          shapes: [...state.shapes, newShape],
+          drawing: null,
+        }
+      },
+      'shape/added': ({ shape }) => ({
+        ...state,
+        shapes: [...state.shapes, shape],
+      }),
     },
     () => state
   )
