@@ -35,6 +35,24 @@ src/hooks/
 - **Reducers** handle all pure logic: state transitions, calculations, decisions. If logic doesn't require side effects, it belongs in the reducer.
 - Actions from middleware (prefixed `eff/`) should carry any externally-generated data the reducer needs to make decisions purely.
 
+## Component Architecture
+
+- **One component per file** when >100 lines or reusable
+- **Extract to `src/components/`**: Canvas, Toolbox, Inspector, etc.
+- **Colocate** small helper components in same file only if single-use and <50 lines
+
+## Constants & Utilities
+
+- **Colors, dimensions** → `src/constants.ts` (not inline hex codes)
+- **Pure helpers** (e.g., `snapToGrid`) → `src/utils.ts` or domain-specific file
+- **Shape defaults** (fill, stroke) → store state or constants, not hardcoded in render
+
+## React Patterns
+
+- **No mutations during render** - avoid `let` counters in `.map()`; use index param or `.flatMap()`
+- **Avoid redundant type annotations** - let TS infer from selectors
+- **Memoize expensive derived values** - `useMemo` for calculations like `previewRect`
+
 ## Code Style
 
 - **Procedural over OOP** - data and functions are separate hierarchies; prefer plain functions and data structures over classes
