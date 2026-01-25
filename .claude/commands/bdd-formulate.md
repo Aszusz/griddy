@@ -2,11 +2,17 @@
 
 Transform SPEC.yml into Gherkin scenarios.
 
+## Scope
+
+**Output:** `.feature` files ONLY
+
+**Do NOT create:** step definitions (`.steps.ts`), test IDs (`.testIds.ts`), or any implementation code. Those come later during implementation.
+
 ## Phase 1: Context Gathering
 
 1. Read `docs/tmp/SPEC.yml` - if missing, tell user to run `/bdd-discover` first
-2. Read `docs/TESTING.md` for file locations and patterns
-3. Search existing `.feature` files for reusable steps
+2. Read `docs/TESTING.md` for `.feature` file locations and Gherkin syntax patterns
+3. Search existing `.feature` files for reusable Gherkin step text
 4. Read feature files related to spec's integration points
 
 ## Phase 2: Integration Analysis
@@ -42,7 +48,7 @@ When Bob logs in with valid credentials
 1. **Declarative** - "Bob logs in" not "Bob types password, clicks submit"
 2. **Single behavior** - one When, one behavior; split if using "and also"
 3. **User-visible outcomes** - Then describes what user sees
-4. **Reuse steps** - grep existing features before inventing new steps
+4. **Reuse Gherkin step text** - grep existing `.feature` files before inventing new step wording
 
 For syntax (Background, Scenario Outline, etc.) follow project testing docs.
 
