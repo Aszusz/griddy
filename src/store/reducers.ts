@@ -2,8 +2,7 @@ import { match } from 'disc-union'
 import type { AppState, Rectangle } from './state'
 import { initialState } from './state'
 import type { AppAction } from './actions'
-
-const GRID_SIZE = 20
+import { GRID_SIZE } from '../constants'
 
 function snapToGrid(value: number): number {
   return Math.round(value / GRID_SIZE) * GRID_SIZE

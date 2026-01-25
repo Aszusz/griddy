@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
 import { testIds } from './draw-rectangles.testIds'
+import { GRID_SIZE } from '../../src/constants'
 
 const { Given, When, Then } = createBdd()
 
@@ -98,3 +99,18 @@ Then(
     await expect(page.getByTestId(testIds.rectangle)).toHaveCount(count)
   }
 )
+
+Then('the grid background starts at origin', async ({ page }) => {
+  const container = page.getByTestId(testIds.canvasContainer)
+  const bgPosition = await container.evaluate(
+    (el) => getComputedStyle(el).backgroundPosition
+  )
+  // Dot pattern uses radial-gradient with dots at tile centers
+  // Offset by half grid size so dots align with grid coordinates
+  // Format: "x1 y1, x2 y2" for two background layers
+  const positions = bgPosition.split(',').map((p) => p.trim())
+  const offset = -GRID_SIZE / 2
+  // First layer (glow) at origin, second layer (dots) offset
+  expect(positions[0]).toMatch(/^0(px)? 0(px)?$/)
+  expect(positions[1]).toBe(`${offset}px ${offset}px`)
+})

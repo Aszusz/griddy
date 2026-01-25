@@ -8,6 +8,7 @@ import {
   ZoomIn,
   Hand,
 } from 'lucide-react'
+import { GRID_SIZE } from './constants'
 import { useAppDispatch, useAppSelector } from './hooks'
 import { AppActions } from './store/actions'
 import {
@@ -241,8 +242,6 @@ function InspectorField({ label, value }: { label: string; value: string }) {
   )
 }
 
-const GRID_SIZE = 20
-
 function snapToGrid(value: number): number {
   return Math.round(value / GRID_SIZE) * GRID_SIZE
 }
@@ -291,6 +290,7 @@ function Canvas() {
 
   return (
     <div
+      data-testid="canvas-container"
       className="animate-in fade-in absolute inset-0 duration-700"
       style={{
         backgroundColor: '#0a0a0b',
@@ -298,8 +298,8 @@ function Canvas() {
           radial-gradient(circle at center, rgba(34, 211, 238, 0.015) 0%, transparent 70%),
           radial-gradient(circle, rgba(255, 255, 255, 0.13) 1px, transparent 1px)
         `,
-        backgroundSize: '100% 100%, 20px 20px',
-        backgroundPosition: 'center, center',
+        backgroundSize: `100% 100%, ${GRID_SIZE}px ${GRID_SIZE}px`,
+        backgroundPosition: `0 0, ${-GRID_SIZE / 2}px ${-GRID_SIZE / 2}px`,
       }}
     >
       <svg

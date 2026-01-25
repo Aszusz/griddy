@@ -45,3 +45,7 @@ Feature: Draw Rectangles
     When I draw a rectangle from (40, 60) to (140, 160)
     And I draw a rectangle from (200, 200) to (300, 300)
     Then 2 rectangles exist on the canvas
+
+  Scenario: Grid dots align with rectangle snap points
+    Given I open the app
+    Then the grid background starts at origin
