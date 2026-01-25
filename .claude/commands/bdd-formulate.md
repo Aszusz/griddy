@@ -50,7 +50,7 @@ When Bob logs in with valid credentials
 3. **User-visible outcomes** - Then describes what user sees
 4. **Reuse Gherkin step text** - grep existing `.feature` files before inventing new step wording
 
-For syntax (Background, Scenario Outline, etc.) follow project testing docs.
+For syntax (Scenario Outline, etc.) follow project testing docs.
 
 ### Avoid
 

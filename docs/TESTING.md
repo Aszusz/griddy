@@ -22,26 +22,25 @@ Tests run against the Vite dev server at `http://localhost:5173` (auto-started u
 
 ## Feature File Syntax
 
-Standard Gherkin with Background, Scenario, and Scenario Outline support:
+Standard Gherkin with Scenario and Scenario Outline support:
 
 ```gherkin
 Feature: Shopping Cart
 
-  Background:
-    Given user is logged in
-
   Scenario: Add item to cart
+    Given user is logged in
     When user adds "Widget" to cart
     Then cart contains 1 item
 
   Scenario Outline: Quantity limits
+    Given user is logged in
     When user sets quantity to <qty>
     Then user sees "<result>"
 
     Examples:
-      | qty | result         |
-      | 0   | Minimum is 1   |
-      | 99  | Maximum is 50  |
+      | qty | result        |
+      | 0   | Minimum is 1  |
+      | 99  | Maximum is 50 |
 ```
 
 ## Step Definitions & Test IDs
@@ -88,4 +87,3 @@ import { testIds } from '../test/steps/counter.testIds'
 The test harness (`test/steps/harness.ts`, `src/testHarness.ts`) allows tests to set initial state, mock effects, and read state directly via `window.__TEST_HARNESS__`.
 
 **Prefer pure UI tests.** Only use the harness when UI-only testing is impractical (e.g., controlling randomness, avoiding slow timers, asserting internal state not reflected in UI).
-
