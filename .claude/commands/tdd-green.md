@@ -2,9 +2,10 @@
 
 Make failing tests pass. Simplest implementation that works.
 
-## Phase 1: Understand Failures
+## Phase 1: Context
 
-Run tests. Read error output carefully - what's missing or broken?
+1. Read `docs/tmp/SPEC.yml` for requirements (may include non-functional constraints tests don't capture)
+2. Run tests. Read error output - what's missing or broken?
 
 ## Phase 2: Implement
 
