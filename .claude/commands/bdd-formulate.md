@@ -4,8 +4,8 @@ Transform SPEC.yml into Gherkin scenarios.
 
 ## Phase 1: Context Gathering
 
-1. Read the project's SPEC.yml - if missing, tell user to run `/bdd-discover` first
-2. Read project testing docs for file locations and patterns
+1. Read `docs/tmp/SPEC.yml` - if missing, tell user to run `/bdd-discover` first
+2. Read `docs/TESTING.md` for file locations and patterns
 3. Search existing `.feature` files for reusable steps
 4. Read feature files related to spec's integration points
 
