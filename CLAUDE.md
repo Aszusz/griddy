@@ -27,6 +27,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 See [TESTING.md](docs/TESTING.md) for testing patterns and architecture.
 
+## Verification
+
+**Always run `npm run all` after making changes** - runs format, lint, typecheck, and tests.
+
 ## Architecture
 
 See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for architecture patterns, store structure, and code style guidelines.
