@@ -13,13 +13,16 @@
       "Grep(*)",
 
       "WebFetch",
+      "WebSearch",
 
       "Bash(git:*)",
       "Bash(npm:*)",
       "Bash(test:*)",
       "Bash(find:*)",
       "Bash(grep:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)"
     ]
   }
 }
