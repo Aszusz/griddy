@@ -17,6 +17,7 @@ Before asking questions, read existing `.feature` files to understand what behav
 3. Determine if this modifies an existing feature or is new
 
 Present findings briefly:
+
 - Related features found
 - New vs modification to existing
 - How it fits with existing behaviors
@@ -25,11 +26,11 @@ Present findings briefly:
 
 This is a Three Amigos session with assigned roles:
 
-| Role | Player | Focus |
-|------|--------|-------|
-| **Product Owner** | User | What to build and why |
-| **Developer** | AI | Technical feasibility, integration, implementation |
-| **Tester** | AI | Edge cases, error scenarios, what could go wrong |
+| Role              | Player | Focus                                              |
+| ----------------- | ------ | -------------------------------------------------- |
+| **Product Owner** | User   | What to build and why                              |
+| **Developer**     | AI     | Technical feasibility, integration, implementation |
+| **Tester**        | AI     | Edge cases, error scenarios, what could go wrong   |
 
 Use the `AskUserQuestion` tool to conduct the discovery conversation. Ask questions iteratively, not all at once.
 
