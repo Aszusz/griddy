@@ -31,9 +31,8 @@ src/hooks/
 
 ### Components
 
+- VIOLATION: multiple components in one file (one component per file)
 - VIOLATION: component >100 lines outside `src/components/`
-- VIOLATION: colocated helper >50 lines
-- VIOLATION: reusable component not in own file
 
 ### Constants
 
