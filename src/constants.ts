@@ -23,3 +23,54 @@ export const SELECTION_HANDLE_FILL = '#fff'
 export const SELECTION_HANDLE_STROKE_WIDTH = 1
 export const MARQUEE_FILL = 'rgba(34, 211, 238, 0.1)'
 export const MARQUEE_DASH_PATTERN = [4, 4] as const
+
+import type { HandlePosition } from './store/state'
+
+type ShapeBounds = { x: number; y: number; width: number; height: number }
+
+export const HANDLE_POSITIONS: {
+  position: HandlePosition
+  cursor: string
+  getOffset: (shape: ShapeBounds) => { x: number; y: number }
+}[] = [
+  {
+    position: 'nw',
+    cursor: 'nwse-resize',
+    getOffset: (s) => ({ x: s.x, y: s.y }),
+  },
+  {
+    position: 'n',
+    cursor: 'ns-resize',
+    getOffset: (s) => ({ x: s.x + s.width / 2, y: s.y }),
+  },
+  {
+    position: 'ne',
+    cursor: 'nesw-resize',
+    getOffset: (s) => ({ x: s.x + s.width, y: s.y }),
+  },
+  {
+    position: 'e',
+    cursor: 'ew-resize',
+    getOffset: (s) => ({ x: s.x + s.width, y: s.y + s.height / 2 }),
+  },
+  {
+    position: 'se',
+    cursor: 'nwse-resize',
+    getOffset: (s) => ({ x: s.x + s.width, y: s.y + s.height }),
+  },
+  {
+    position: 's',
+    cursor: 'ns-resize',
+    getOffset: (s) => ({ x: s.x + s.width / 2, y: s.y + s.height }),
+  },
+  {
+    position: 'sw',
+    cursor: 'nesw-resize',
+    getOffset: (s) => ({ x: s.x, y: s.y + s.height }),
+  },
+  {
+    position: 'w',
+    cursor: 'ew-resize',
+    getOffset: (s) => ({ x: s.x, y: s.y + s.height / 2 }),
+  },
+]

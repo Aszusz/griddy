@@ -15,7 +15,13 @@ src/store/
 └── middleware/       # middleware with dependency injection for testability
 
 src/hooks/
-└── index.ts          # typed hooks (useAppDispatch, useAppSelector)
+├── index.ts          # typed hooks (useAppDispatch, useAppSelector)
+├── useCanvasSize.ts  # viewport resize observer
+├── useCanvasEvents.ts # canvas mouse handlers
+└── useGlobalDrag.ts  # global drag listeners
+
+src/canvas/
+└── draw.ts           # pure canvas drawing functions
 ```
 
 ## Violations
