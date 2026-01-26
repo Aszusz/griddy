@@ -5,13 +5,13 @@ import {
   SHAPE_FILL,
   SHAPE_STROKE,
   PREVIEW_FILL,
+  PREVIEW_STROKE,
   GRID_DOT_COLOR,
   GRID_DOT_RADIUS,
   CROSSHAIR_COLOR,
   CROSSHAIR_SIZE,
   CROSSHAIR_CENTER_RADIUS,
   SHAPE_STROKE_WIDTH,
-  PREVIEW_DASH,
 } from '../constants'
 import { snapToGrid } from '../utils'
 import { useAppDispatch, useAppSelector } from '../hooks'
@@ -99,12 +99,11 @@ export function Canvas() {
       ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
     })
 
-    // Draw preview (dashed)
+    // Draw preview
     if (previewRect && previewRect.width > 0 && previewRect.height > 0) {
       ctx.fillStyle = PREVIEW_FILL
-      ctx.strokeStyle = SHAPE_STROKE
+      ctx.strokeStyle = PREVIEW_STROKE
       ctx.lineWidth = SHAPE_STROKE_WIDTH
-      ctx.setLineDash(PREVIEW_DASH)
       ctx.fillRect(
         previewRect.x,
         previewRect.y,
@@ -117,7 +116,6 @@ export function Canvas() {
         previewRect.width,
         previewRect.height
       )
-      ctx.setLineDash([])
     }
 
     // Draw crosshair at origin (0,0)
