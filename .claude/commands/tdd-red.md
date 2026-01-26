@@ -16,11 +16,13 @@ If none missing, skip to Phase 4.
 
 For each missing step:
 
-1. Add testIds to appropriate file if needed
+1. Choose assertion strategy:
+   - **DOM testing** (default): Add testIds, query elements
+   - **State testing**: Use `getState()` for non-DOM-testable features (e.g., Canvas 2D). Don't create ghost DOM elements just to satisfy tests.
 2. Implement step definitions using patterns from TESTING.md
 
 ## Phase 4: Verify Red State
 
 Run tests. Success = all tests fail with locator errors (not missing steps).
 
-Output: steps implemented, testIds created, test result.
+Output: steps implemented, test result.
