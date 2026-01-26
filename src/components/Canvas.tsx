@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { CANVAS_BG } from '../constants'
 import {
   useAppSelector,
@@ -56,6 +56,11 @@ export function Canvas() {
     singleSelectedShape && !isLineShape(singleSelectedShape)
       ? singleSelectedShape
       : undefined
+  // Lines show point handles instead of selection border
+  const selectionBoundsShapes = useMemo(
+    () => (singleSelectedLine ? [] : selectedShapes),
+    [singleSelectedLine, selectedShapes]
+  )
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d')
@@ -67,7 +72,7 @@ export function Canvas() {
 
     drawGrid(ctx, originX, originY, canvasSize.width, canvasSize.height)
     drawShapes(ctx, shapes)
-    drawSelectionBounds(ctx, selectedShapes)
+    drawSelectionBounds(ctx, selectionBoundsShapes)
     drawPreview(ctx, previewRect)
     drawPreviewLine(ctx, previewLine)
     drawMarquee(ctx, marquee)
@@ -81,7 +86,7 @@ export function Canvas() {
     canvasSize,
     originX,
     originY,
-    selectedShapes,
+    selectionBoundsShapes,
     marquee,
   ])
 
