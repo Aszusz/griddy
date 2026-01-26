@@ -4,10 +4,10 @@ import { InspectorField } from './InspectorField'
 export function Inspector() {
   return (
     <div
-      className="animate-in slide-in-from-right-4 fade-in pointer-events-none fixed top-1/2 right-4 z-50 w-56 -translate-y-1/2 duration-500"
+      className="animate-in slide-in-from-right-4 fade-in fixed top-1/2 right-4 z-50 w-56 -translate-y-1/2 duration-500"
       style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}
     >
-      <div className="group pointer-events-none relative">
+      <div className="group relative">
         {/* Glow effect */}
         <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-linear-to-b from-cyan-500/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
 
