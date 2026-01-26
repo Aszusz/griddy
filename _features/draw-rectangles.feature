@@ -46,6 +46,15 @@ Feature: Draw Rectangles
     And I draw a rectangle from (200, 200) to (300, 300)
     Then 2 rectangles exist on the canvas
 
+  Scenario: Drawing continues after leaving and re-entering canvas
+    Given I open the app
+    And I select the Rectangle tool
+    When I start drawing from (200, 200)
+    And I drag off canvas
+    And I drag to (300, 300)
+    Then a preview rectangle is visible
+    And no rectangle has been placed
+
   Scenario: Grid dots align with rectangle snap points
     Given I open the app
     Then the grid background starts at origin

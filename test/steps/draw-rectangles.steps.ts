@@ -100,6 +100,16 @@ Then(
   }
 )
 
+When('I drag off canvas', async ({ page }) => {
+  // Move mouse to inspector area (right side, beyond canvas safe zone)
+  await page.mouse.move(750, 300)
+})
+
+Then('no rectangle has been placed', async ({ page }) => {
+  const state = await getState(page)
+  expect(state?.app.shapes.length).toBe(0)
+})
+
 Then('the grid background starts at origin', async ({ page }) => {
   // Grid is now drawn on canvas, verify canvas exists
   const canvas = page.getByTestId(testIds.canvas)

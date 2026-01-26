@@ -157,6 +157,14 @@ export function Canvas() {
     dispatch(AppActions['drawing/ended']())
   }
 
+  // Global mouseup listener to handle release outside canvas
+  useEffect(() => {
+    if (!drawing) return
+    const onGlobalMouseUp = () => dispatch(AppActions['drawing/ended']())
+    window.addEventListener('mouseup', onGlobalMouseUp)
+    return () => window.removeEventListener('mouseup', onGlobalMouseUp)
+  }, [drawing, dispatch])
+
   return (
     <div
       ref={containerRef}
@@ -173,7 +181,6 @@ export function Canvas() {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
       />
 
       {/* Coordinate display */}
