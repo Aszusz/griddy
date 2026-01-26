@@ -162,19 +162,25 @@ export function Canvas() {
       ctx.lineWidth = SHAPE_STROKE_WIDTH
       ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
       ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
-
-      // Draw selection border and handles
-      if (selectedIds.includes(shape.id)) {
-        ctx.strokeStyle = SELECTION_BORDER_COLOR
-        ctx.lineWidth = SELECTION_BORDER_WIDTH
-        ctx.strokeRect(
-          shape.x - SELECTION_BORDER_OFFSET,
-          shape.y - SELECTION_BORDER_OFFSET,
-          shape.width + SELECTION_BORDER_WIDTH,
-          shape.height + SELECTION_BORDER_WIDTH
-        )
-      }
     })
+
+    // Draw single selection bounding box around all selected shapes
+    const selectedShapes = shapes.filter((s) => selectedIds.includes(s.id))
+    if (selectedShapes.length > 0) {
+      const minX = Math.min(...selectedShapes.map((s) => s.x))
+      const minY = Math.min(...selectedShapes.map((s) => s.y))
+      const maxX = Math.max(...selectedShapes.map((s) => s.x + s.width))
+      const maxY = Math.max(...selectedShapes.map((s) => s.y + s.height))
+
+      ctx.strokeStyle = SELECTION_BORDER_COLOR
+      ctx.lineWidth = SELECTION_BORDER_WIDTH
+      ctx.strokeRect(
+        minX - SELECTION_BORDER_OFFSET,
+        minY - SELECTION_BORDER_OFFSET,
+        maxX - minX + SELECTION_BORDER_WIDTH,
+        maxY - minY + SELECTION_BORDER_WIDTH
+      )
+    }
 
     // Draw preview
     if (previewRect && previewRect.width > 0 && previewRect.height > 0) {
