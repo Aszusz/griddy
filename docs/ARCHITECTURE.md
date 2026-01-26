@@ -1,10 +1,8 @@
 # Architecture
 
-This is a React + TypeScript application using Vite as the build tool and Tailwind CSS for styling.
+React + TypeScript + Vite + Tailwind CSS.
 
-## Store Architecture
-
-The app uses Redux with a **layer-based architecture** (not feature slices). Organize by layer (state, actions, reducers, selectors, middleware) to separate pure functions from effects:
+## Store Structure
 
 ```
 src/store/
@@ -20,42 +18,40 @@ src/hooks/
 └── index.ts          # typed hooks (useAppDispatch, useAppSelector)
 ```
 
-**Key patterns:**
+## Violations
 
-- **Minimal, normalized state** - store only essential data; derive everything else through selectors
-- **disc-union** for type-safe discriminated union actions with `'type'` discriminant
-- **Namespaced actions** - prefix actions by source/layer (e.g., `ui/`, `eff/`, `fs/`, `shell/`)
-- **Typed hooks**: `useAppDispatch` and `useAppSelector` instead of raw redux hooks
-- **Dependency injection** in middleware for testability (side effects as parameters with defaults)
-- **React components** - avoid `useEffect`; rely on `useAppDispatch` and `useAppSelector` for state management
+### Store
 
-**Middleware vs Reducer responsibilities:**
+- VIOLATION: derived data in state (use selector)
+- VIOLATION: action without namespace (`ui/`, `eff/`, `fs/`, `shell/`)
+- VIOLATION: raw `useDispatch`/`useSelector` (use typed hooks)
+- VIOLATION: side effect in reducer (use middleware)
+- VIOLATION: pure logic in middleware (use reducer)
+- VIOLATION: logic in component (pure → reducer, effects → middleware, React → hook)
 
-- **Middleware** handles side effects only: timers, random numbers, API calls, reading external state. Pass all necessary data as action payload.
-- **Reducers** handle all pure logic: state transitions, calculations, decisions. If logic doesn't require side effects, it belongs in the reducer.
-- Actions from middleware (prefixed `eff/`) should carry any externally-generated data the reducer needs to make decisions purely.
+### Components
 
-## Component Architecture
+- VIOLATION: component >100 lines outside `src/components/`
+- VIOLATION: colocated helper >50 lines
+- VIOLATION: reusable component not in own file
 
-- **One component per file** when >100 lines or reusable
-- **Extract to `src/components/`** - large or reusable components get their own file
-- **Colocate** small helper components in same file only if single-use and <50 lines
+### Constants
 
-## Constants & Utilities
+- VIOLATION: inline hex color or magic number (→ `src/constants.ts`)
+- VIOLATION: duplicated pure helper (→ `src/utils.ts`)
 
-- **Colors, dimensions** → `src/constants.ts` (not inline hex codes)
-- **Pure helpers** → `src/utils.ts` or domain-specific file
-- **Shape defaults** (fill, stroke) → store state or constants, not hardcoded in render
+### React
 
-## React Patterns
+- VIOLATION: mutating `let` during render (use index or `.flatMap()`)
+- VIOLATION: redundant type annotation
+- VIOLATION: unmemoized expensive calculation
 
-- **No mutations during render** - avoid `let` counters in `.map()`; use index param or `.flatMap()`
-- **Avoid redundant type annotations** - let TS infer from selectors
-- **Memoize expensive derived values** with `useMemo`
+### Style
 
-## Code Style
+- VIOLATION: class where function + data suffices
+- VIOLATION: abstraction for single-use ≤3 line logic
 
-- **Procedural over OOP** - data and functions are separate hierarchies; prefer plain functions and data structures over classes
-- **Inline vs Extract** - keep simple logic (≤3 lines) inline; extract complex logic to separate functions or files. Don't over-abstract simple things.
-- Prettier: no semicolons, single quotes, Tailwind class sorting
-- ESLint: TypeScript-ESLint with React Hooks rules
+## Tooling
+
+- Prettier: no semicolons, single quotes, Tailwind sorting
+- ESLint: TypeScript-ESLint + React Hooks
