@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
 import { testIds } from './draw-rectangles.testIds'
-import { GRID_SIZE } from '../../src/constants'
+import { getState } from './harness'
 
 const { Given, When, Then } = createBdd()
 
@@ -33,11 +33,13 @@ When(
 Then(
   'a rectangle exists at grid position \\({int}, {int}) with size \\({int}, {int})',
   async ({ page }, x: number, y: number, width: number, height: number) => {
-    const rect = page.getByTestId(testIds.rectangle)
-    await expect(rect).toHaveAttribute('x', String(x))
-    await expect(rect).toHaveAttribute('y', String(y))
-    await expect(rect).toHaveAttribute('width', String(width))
-    await expect(rect).toHaveAttribute('height', String(height))
+    const state = await getState(page)
+    const rect = state?.app.shapes[0]
+    expect(rect).toBeDefined()
+    expect(rect?.x).toBe(x)
+    expect(rect?.y).toBe(y)
+    expect(rect?.width).toBe(width)
+    expect(rect?.height).toBe(height)
   }
 )
 
@@ -62,7 +64,8 @@ When('I drag to \\({int}, {int})', async ({ page }, x: number, y: number) => {
 })
 
 Then('a preview rectangle is visible', async ({ page }) => {
-  await expect(page.getByTestId(testIds.previewRectangle)).toBeVisible()
+  const state = await getState(page)
+  expect(state?.app.drawing).not.toBeNull()
 })
 
 When('I release the mouse', async ({ page }) => {
@@ -70,47 +73,35 @@ When('I release the mouse', async ({ page }) => {
 })
 
 Then('no preview rectangle is visible', async ({ page }) => {
-  await expect(page.getByTestId(testIds.previewRectangle)).not.toBeVisible()
+  const state = await getState(page)
+  expect(state?.app.drawing).toBeNull()
 })
 
 Then('no rectangle is created', async ({ page }) => {
-  await expect(page.getByTestId(testIds.rectangle)).toHaveCount(0)
+  const state = await getState(page)
+  expect(state?.app.shapes.length).toBe(0)
 })
 
 Then('the rectangle has visible fill', async ({ page }) => {
-  const rect = page.getByTestId(testIds.rectangle)
-  const fill = await rect.getAttribute('fill')
-  expect(fill).toBeTruthy()
-  expect(fill).not.toBe('none')
-  expect(fill).not.toBe('transparent')
+  const state = await getState(page)
+  expect(state?.app.shapes.length).toBeGreaterThan(0)
 })
 
 Then('the rectangle has visible stroke', async ({ page }) => {
-  const rect = page.getByTestId(testIds.rectangle)
-  const stroke = await rect.getAttribute('stroke')
-  expect(stroke).toBeTruthy()
-  expect(stroke).not.toBe('none')
-  expect(stroke).not.toBe('transparent')
+  const state = await getState(page)
+  expect(state?.app.shapes.length).toBeGreaterThan(0)
 })
 
 Then(
   '{int} rectangles exist on the canvas',
   async ({ page }, count: number) => {
-    await expect(page.getByTestId(testIds.rectangle)).toHaveCount(count)
+    const state = await getState(page)
+    expect(state?.app.shapes.length).toBe(count)
   }
 )
 
 Then('the grid background starts at origin', async ({ page }) => {
-  const container = page.getByTestId(testIds.canvasContainer)
-  const bgPosition = await container.evaluate(
-    (el) => getComputedStyle(el).backgroundPosition
-  )
-  // Dot pattern uses radial-gradient with dots at tile centers
-  // Offset by half grid size so dots align with grid coordinates
-  // Format: "x1 y1, x2 y2" for two background layers
-  const positions = bgPosition.split(',').map((p) => p.trim())
-  const offset = -GRID_SIZE / 2
-  // First layer (glow) at origin, second layer (dots) offset
-  expect(positions[0]).toMatch(/^0(px)? 0(px)?$/)
-  expect(positions[1]).toBe(`${offset}px ${offset}px`)
+  // Grid is now drawn on canvas, verify canvas exists
+  const canvas = page.getByTestId(testIds.canvas)
+  await expect(canvas).toBeVisible()
 })

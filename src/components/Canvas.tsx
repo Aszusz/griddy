@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import {
   GRID_SIZE,
   CANVAS_BG,
@@ -15,34 +15,17 @@ import {
   selectDrawing,
 } from '../store/selectors'
 
+const CANVAS_WIDTH = 800
+const CANVAS_HEIGHT = 600
+const ORIGIN_X = CANVAS_WIDTH / 2
+const ORIGIN_Y = CANVAS_HEIGHT / 2
+
 export function Canvas() {
   const dispatch = useAppDispatch()
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const activeTool = useAppSelector(selectActiveTool)
   const shapes = useAppSelector(selectShapes)
   const drawing = useAppSelector(selectDrawing)
-
-  const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (activeTool !== 'rectangle') return
-    const svg = e.currentTarget
-    const rect = svg.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    dispatch(AppActions['drawing/started'](x, y))
-  }
-
-  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!drawing) return
-    const svg = e.currentTarget
-    const rect = svg.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    dispatch(AppActions['drawing/moved'](x, y))
-  }
-
-  const handleMouseUp = () => {
-    if (!drawing) return
-    dispatch(AppActions['drawing/ended']())
-  }
 
   const previewRect = useMemo(() => {
     if (!drawing) return null
@@ -58,99 +41,115 @@ export function Canvas() {
     }
   }, [drawing])
 
+  // Draw on canvas
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const ctx = canvas?.getContext('2d')
+    if (!ctx || !canvas) return
+
+    ctx.save()
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.translate(ORIGIN_X, ORIGIN_Y)
+
+    // Draw grid dots
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.13)'
+    const startX = -ORIGIN_X - (-ORIGIN_X % GRID_SIZE)
+    const startY = -ORIGIN_Y - (-ORIGIN_Y % GRID_SIZE)
+    for (let x = startX; x < CANVAS_WIDTH - ORIGIN_X; x += GRID_SIZE) {
+      for (let y = startY; y < CANVAS_HEIGHT - ORIGIN_Y; y += GRID_SIZE) {
+        ctx.beginPath()
+        ctx.arc(x, y, 1, 0, Math.PI * 2)
+        ctx.fill()
+      }
+    }
+
+    // Draw shapes
+    shapes.forEach((shape) => {
+      ctx.fillStyle = SHAPE_FILL
+      ctx.strokeStyle = SHAPE_STROKE
+      ctx.lineWidth = 2
+      ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
+      ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
+    })
+
+    // Draw preview (dashed)
+    if (previewRect && previewRect.width > 0 && previewRect.height > 0) {
+      ctx.fillStyle = PREVIEW_FILL
+      ctx.strokeStyle = SHAPE_STROKE
+      ctx.lineWidth = 2
+      ctx.setLineDash([4])
+      ctx.fillRect(
+        previewRect.x,
+        previewRect.y,
+        previewRect.width,
+        previewRect.height
+      )
+      ctx.strokeRect(
+        previewRect.x,
+        previewRect.y,
+        previewRect.width,
+        previewRect.height
+      )
+      ctx.setLineDash([])
+    }
+
+    // Draw crosshair at origin (0,0)
+    ctx.strokeStyle = 'rgba(34, 211, 238, 0.2)'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(0, -17)
+    ctx.lineTo(0, 17)
+    ctx.moveTo(-17, 0)
+    ctx.lineTo(17, 0)
+    ctx.stroke()
+    ctx.strokeStyle = 'rgba(34, 211, 238, 0.2)'
+    ctx.beginPath()
+    ctx.arc(0, 0, 3, 0, Math.PI * 2)
+    ctx.stroke()
+
+    ctx.restore()
+  }, [shapes, previewRect])
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (activeTool !== 'rectangle') return
+    const canvas = e.currentTarget
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left - ORIGIN_X
+    const y = e.clientY - rect.top - ORIGIN_Y
+    dispatch(AppActions['drawing/started'](x, y))
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!drawing) return
+    const canvas = e.currentTarget
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left - ORIGIN_X
+    const y = e.clientY - rect.top - ORIGIN_Y
+    dispatch(AppActions['drawing/moved'](x, y))
+  }
+
+  const handleMouseUp = () => {
+    if (!drawing) return
+    dispatch(AppActions['drawing/ended']())
+  }
+
   return (
     <div
       data-testid="canvas-container"
       className="animate-in fade-in absolute inset-0 duration-700"
-      style={{
-        backgroundColor: CANVAS_BG,
-        backgroundImage: `
-          radial-gradient(circle at center, rgba(34, 211, 238, 0.015) 0%, transparent 70%),
-          radial-gradient(circle, rgba(255, 255, 255, 0.13) 1px, transparent 1px)
-        `,
-        backgroundSize: `100% 100%, ${GRID_SIZE}px ${GRID_SIZE}px`,
-        backgroundPosition: `0 0, ${-GRID_SIZE / 2}px ${-GRID_SIZE / 2}px`,
-      }}
+      style={{ backgroundColor: CANVAS_BG }}
     >
-      <svg
+      <canvas
+        ref={canvasRef}
         data-testid="canvas"
-        className="absolute inset-0 h-full w-full"
+        width={CANVAS_WIDTH}
+        height={CANVAS_HEIGHT}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-      >
-        {shapes.map((shape) => (
-          <rect
-            key={shape.id}
-            data-testid="shape-rectangle"
-            x={shape.x}
-            y={shape.y}
-            width={shape.width}
-            height={shape.height}
-            fill={SHAPE_FILL}
-            stroke={SHAPE_STROKE}
-            strokeWidth={2}
-          />
-        ))}
-        {previewRect && previewRect.width > 0 && previewRect.height > 0 && (
-          <rect
-            data-testid="shape-preview"
-            x={previewRect.x}
-            y={previewRect.y}
-            width={previewRect.width}
-            height={previewRect.height}
-            fill={PREVIEW_FILL}
-            stroke={SHAPE_STROKE}
-            strokeWidth={2}
-            strokeDasharray="4"
-          />
-        )}
-      </svg>
-
-      {/* Subtle vignette */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)',
-        }}
       />
-
-      {/* Center crosshair hint - fixed position at (400, 300) */}
-      <svg
-        className="pointer-events-none absolute"
-        width="34"
-        height="34"
-        style={{ top: 300 - 17, left: 400 - 17 }}
-      >
-        <line
-          x1="17"
-          y1="0"
-          x2="17"
-          y2="34"
-          stroke="rgb(34, 211, 238)"
-          strokeOpacity="0.4"
-          strokeWidth="1"
-        />
-        <line
-          x1="0"
-          y1="17"
-          x2="34"
-          y2="17"
-          stroke="rgb(34, 211, 238)"
-          strokeOpacity="0.4"
-          strokeWidth="1"
-        />
-        <circle
-          cx="17"
-          cy="17"
-          r="3"
-          fill="none"
-          stroke="rgb(34, 211, 238)"
-          strokeOpacity="0.5"
-        />
-      </svg>
 
       {/* Coordinate display */}
       <div
