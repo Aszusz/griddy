@@ -8,6 +8,7 @@ export const AppActions = discUnion(
     'drawing/started': (x: number, y: number) => ({ x, y }),
     'drawing/moved': (x: number, y: number) => ({ x, y }),
     'drawing/ended': () => ({}),
+    'viewport/resized': (width: number, height: number) => ({ width, height }),
   },
   'type'
 )

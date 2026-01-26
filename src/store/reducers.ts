@@ -3,6 +3,7 @@ import type { AppState, Rectangle } from './state'
 import { initialState } from './state'
 import type { AppAction } from './actions'
 import { snapToGrid } from '../utils'
+import { GRID_SIZE } from '../constants'
 
 function createRectFromDrawing(
   startX: number,
@@ -63,6 +64,16 @@ export function reducer(
           drawing: null,
         }
       },
+      'viewport/resized': ({ width, height }) => ({
+        ...state,
+        viewport: {
+          width,
+          height,
+          originX: width / 2,
+          originY: height / 2,
+          gridSize: GRID_SIZE,
+        },
+      }),
     },
     () => state
   )

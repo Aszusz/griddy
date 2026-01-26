@@ -1,10 +1,17 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   GRID_SIZE,
   CANVAS_BG,
   SHAPE_FILL,
   SHAPE_STROKE,
   PREVIEW_FILL,
+  GRID_DOT_COLOR,
+  GRID_DOT_RADIUS,
+  CROSSHAIR_COLOR,
+  CROSSHAIR_SIZE,
+  CROSSHAIR_CENTER_RADIUS,
+  SHAPE_STROKE_WIDTH,
+  PREVIEW_DASH,
 } from '../constants'
 import { snapToGrid } from '../utils'
 import { useAppDispatch, useAppSelector } from '../hooks'
@@ -15,17 +22,37 @@ import {
   selectDrawing,
 } from '../store/selectors'
 
-const CANVAS_WIDTH = 800
-const CANVAS_HEIGHT = 600
-const ORIGIN_X = CANVAS_WIDTH / 2
-const ORIGIN_Y = CANVAS_HEIGHT / 2
-
 export function Canvas() {
   const dispatch = useAppDispatch()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const activeTool = useAppSelector(selectActiveTool)
   const shapes = useAppSelector(selectShapes)
   const drawing = useAppSelector(selectDrawing)
+  const [canvasSize, setCanvasSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  })
+
+  const originX = canvasSize.width / 2
+  const originY = canvasSize.height / 2
+
+  // Handle viewport resize using ResizeObserver for reliable updates
+  const containerRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0]
+      if (entry) {
+        const { width, height } = entry.contentRect
+        setCanvasSize({ width, height })
+        dispatch(AppActions['viewport/resized'](width, height))
+      }
+    })
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [dispatch])
 
   const previewRect = useMemo(() => {
     if (!drawing) return null
@@ -49,16 +76,16 @@ export function Canvas() {
 
     ctx.save()
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.translate(ORIGIN_X, ORIGIN_Y)
+    ctx.translate(originX, originY)
 
     // Draw grid dots
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.13)'
-    const startX = -ORIGIN_X - (-ORIGIN_X % GRID_SIZE)
-    const startY = -ORIGIN_Y - (-ORIGIN_Y % GRID_SIZE)
-    for (let x = startX; x < CANVAS_WIDTH - ORIGIN_X; x += GRID_SIZE) {
-      for (let y = startY; y < CANVAS_HEIGHT - ORIGIN_Y; y += GRID_SIZE) {
+    ctx.fillStyle = GRID_DOT_COLOR
+    const startX = -originX - (((-originX % GRID_SIZE) + GRID_SIZE) % GRID_SIZE)
+    const startY = -originY - (((-originY % GRID_SIZE) + GRID_SIZE) % GRID_SIZE)
+    for (let x = startX; x < canvasSize.width - originX; x += GRID_SIZE) {
+      for (let y = startY; y < canvasSize.height - originY; y += GRID_SIZE) {
         ctx.beginPath()
-        ctx.arc(x, y, 1, 0, Math.PI * 2)
+        ctx.arc(x, y, GRID_DOT_RADIUS, 0, Math.PI * 2)
         ctx.fill()
       }
     }
@@ -67,7 +94,7 @@ export function Canvas() {
     shapes.forEach((shape) => {
       ctx.fillStyle = SHAPE_FILL
       ctx.strokeStyle = SHAPE_STROKE
-      ctx.lineWidth = 2
+      ctx.lineWidth = SHAPE_STROKE_WIDTH
       ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
       ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
     })
@@ -76,8 +103,8 @@ export function Canvas() {
     if (previewRect && previewRect.width > 0 && previewRect.height > 0) {
       ctx.fillStyle = PREVIEW_FILL
       ctx.strokeStyle = SHAPE_STROKE
-      ctx.lineWidth = 2
-      ctx.setLineDash([4])
+      ctx.lineWidth = SHAPE_STROKE_WIDTH
+      ctx.setLineDash(PREVIEW_DASH)
       ctx.fillRect(
         previewRect.x,
         previewRect.y,
@@ -94,28 +121,27 @@ export function Canvas() {
     }
 
     // Draw crosshair at origin (0,0)
-    ctx.strokeStyle = 'rgba(34, 211, 238, 0.2)'
+    ctx.strokeStyle = CROSSHAIR_COLOR
     ctx.lineWidth = 1
     ctx.beginPath()
-    ctx.moveTo(0, -17)
-    ctx.lineTo(0, 17)
-    ctx.moveTo(-17, 0)
-    ctx.lineTo(17, 0)
+    ctx.moveTo(0, -CROSSHAIR_SIZE)
+    ctx.lineTo(0, CROSSHAIR_SIZE)
+    ctx.moveTo(-CROSSHAIR_SIZE, 0)
+    ctx.lineTo(CROSSHAIR_SIZE, 0)
     ctx.stroke()
-    ctx.strokeStyle = 'rgba(34, 211, 238, 0.2)'
     ctx.beginPath()
-    ctx.arc(0, 0, 3, 0, Math.PI * 2)
+    ctx.arc(0, 0, CROSSHAIR_CENTER_RADIUS, 0, Math.PI * 2)
     ctx.stroke()
 
     ctx.restore()
-  }, [shapes, previewRect])
+  }, [shapes, previewRect, canvasSize, originX, originY])
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (activeTool !== 'rectangle') return
     const canvas = e.currentTarget
     const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left - ORIGIN_X
-    const y = e.clientY - rect.top - ORIGIN_Y
+    const x = e.clientX - rect.left - originX
+    const y = e.clientY - rect.top - originY
     dispatch(AppActions['drawing/started'](x, y))
   }
 
@@ -123,8 +149,8 @@ export function Canvas() {
     if (!drawing) return
     const canvas = e.currentTarget
     const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left - ORIGIN_X
-    const y = e.clientY - rect.top - ORIGIN_Y
+    const x = e.clientX - rect.left - originX
+    const y = e.clientY - rect.top - originY
     dispatch(AppActions['drawing/moved'](x, y))
   }
 
@@ -135,6 +161,7 @@ export function Canvas() {
 
   return (
     <div
+      ref={containerRef}
       data-testid="canvas-container"
       className="animate-in fade-in absolute inset-0 duration-700"
       style={{ backgroundColor: CANVAS_BG }}
@@ -142,9 +169,9 @@ export function Canvas() {
       <canvas
         ref={canvasRef}
         data-testid="canvas"
-        width={CANVAS_WIDTH}
-        height={CANVAS_HEIGHT}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        width={canvasSize.width}
+        height={canvasSize.height}
+        className="absolute inset-0"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}

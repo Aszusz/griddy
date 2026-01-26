@@ -15,6 +15,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:5200',
     actionTimeout: 500,
+    viewport: { width: 800, height: 600 },
   },
   webServer: {
     command: 'VITE_TEST_HARNESS=1 vite --port 5200',
