@@ -117,18 +117,40 @@ export function Canvas() {
         }}
       />
 
-      {/* Center crosshair hint */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="flex flex-col items-center gap-4 opacity-20">
-          <div className="h-8 w-px bg-linear-to-b from-transparent via-cyan-500/50 to-transparent" />
-          <div className="flex items-center gap-4">
-            <div className="h-px w-8 bg-linear-to-r from-transparent via-cyan-500/50 to-transparent" />
-            <div className="h-2 w-2 rounded-full border border-cyan-500/30" />
-            <div className="h-px w-8 bg-linear-to-r from-transparent via-cyan-500/50 to-transparent" />
-          </div>
-          <div className="h-8 w-px bg-linear-to-b from-transparent via-cyan-500/50 to-transparent" />
-        </div>
-      </div>
+      {/* Center crosshair hint - fixed position at (400, 300) */}
+      <svg
+        className="pointer-events-none absolute"
+        width="34"
+        height="34"
+        style={{ top: 300 - 17, left: 400 - 17 }}
+      >
+        <line
+          x1="17"
+          y1="0"
+          x2="17"
+          y2="34"
+          stroke="rgb(34, 211, 238)"
+          strokeOpacity="0.4"
+          strokeWidth="1"
+        />
+        <line
+          x1="0"
+          y1="17"
+          x2="34"
+          y2="17"
+          stroke="rgb(34, 211, 238)"
+          strokeOpacity="0.4"
+          strokeWidth="1"
+        />
+        <circle
+          cx="17"
+          cy="17"
+          r="3"
+          fill="none"
+          stroke="rgb(34, 211, 238)"
+          strokeOpacity="0.5"
+        />
+      </svg>
 
       {/* Coordinate display */}
       <div
