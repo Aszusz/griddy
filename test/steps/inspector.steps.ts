@@ -106,9 +106,38 @@ When(
   }
 )
 
+When(
+  'I type {string} in Inspector X and press Backspace',
+  async ({ page }, value: string) => {
+    const input = page.getByTestId(testIds.xInput)
+    await input.focus()
+    await input.clear()
+    await input.pressSequentially(value)
+    await input.press('Backspace')
+    await input.blur()
+  }
+)
+
 When('I focus Inspector X field', async ({ page }) => {
   await page.getByTestId(testIds.xInput).focus()
 })
+
+When(
+  'I copy Inspector W value and paste into Inspector H',
+  async ({ page }) => {
+    const wInput = page.getByTestId(testIds.widthInput)
+    const hInput = page.getByTestId(testIds.heightInput)
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+
+    await wInput.focus()
+    await wInput.press(`${modifier}+a`)
+    await wInput.press(`${modifier}+c`)
+    await hInput.focus()
+    await hInput.press(`${modifier}+a`)
+    await hInput.press(`${modifier}+v`)
+    await hInput.blur()
+  }
+)
 
 When('I press Tab', async ({ page }) => {
   await page.keyboard.press('Tab')
@@ -156,4 +185,9 @@ Then(
 
 Then('Inspector Y field is focused', async ({ page }) => {
   await expect(page.getByTestId(testIds.yInput)).toBeFocused()
+})
+
+Then('the rectangle still exists', async ({ page }) => {
+  const state = await getState(page)
+  expect(state.app.shapes.length).toBe(1)
 })

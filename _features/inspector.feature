@@ -138,3 +138,19 @@ Feature: Inspector Panel
     When I focus Inspector X field
     And I press Tab
     Then Inspector Y field is focused
+
+  Scenario: Backspace in Inspector field does not delete shape
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    And the rectangle is selected
+    When I type "200" in Inspector X and press Backspace
+    Then the rectangle still exists
+    And the Inspector shows X as 20
+
+  Scenario: Copy and paste text within Inspector fields
+    Given I open the app
+    And an ellipse exists at (100, 100) with size (80, 120)
+    And the ellipse is selected
+    When I copy Inspector W value and paste into Inspector H
+    Then the Inspector shows H as 80
+    And the ellipse has size (80, 80)

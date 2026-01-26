@@ -3,12 +3,19 @@ import { useAppDispatch, useAppSelector } from './index'
 import { AppActions } from '../store/actions'
 import { selectActiveTool } from '../store/selectors'
 
+function isCanvasFocused(): boolean {
+  const active = document.activeElement
+  return active?.getAttribute('data-testid') === 'canvas'
+}
+
 export function useKeyboardShortcuts() {
   const dispatch = useAppDispatch()
   const activeTool = useAppSelector(selectActiveTool)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isCanvasFocused()) return
+
       const isMod = e.metaKey || e.ctrlKey
 
       // Tool shortcuts (work from any tool)
@@ -56,6 +63,8 @@ export function useKeyboardShortcuts() {
     }
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      if (!isCanvasFocused()) return
+
       if (e.key === ' ') {
         e.preventDefault()
         dispatch(AppActions['spacebar/released']())
