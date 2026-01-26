@@ -15,7 +15,7 @@ export const selectPan = (state: RootState) => state.app.pan
 export const selectPanX = (state: RootState) => state.app.panX
 export const selectPanY = (state: RootState) => state.app.panY
 
-function computePreviewRect(drawing: DrawingState) {
+function computePreviewRect(drawing: DrawingState, isEllipse: boolean) {
   if (!drawing) return null
   return {
     x: snapToGrid(Math.min(drawing.startX, drawing.currentX)),
@@ -26,8 +26,9 @@ function computePreviewRect(drawing: DrawingState) {
     height:
       snapToGrid(Math.max(drawing.startY, drawing.currentY)) -
       snapToGrid(Math.min(drawing.startY, drawing.currentY)),
+    isEllipse,
   }
 }
 
 export const selectPreviewRect = (state: RootState) =>
-  computePreviewRect(state.app.drawing)
+  computePreviewRect(state.app.drawing, state.app.activeTool === 'ellipse')

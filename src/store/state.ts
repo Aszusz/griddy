@@ -1,7 +1,12 @@
-export type Tool = 'select' | 'rectangle' | 'pan'
+import { GRID_SIZE } from '../constants'
 
-export type Rectangle = {
+export type Tool = 'select' | 'rectangle' | 'ellipse' | 'pan'
+
+export type ShapeType = 'rectangle' | 'ellipse'
+
+export type Shape = {
   id: string
+  type: ShapeType
   x: number
   y: number
   width: number
@@ -55,13 +60,13 @@ export type PanState = {
 } | null
 
 export type ClipboardState = {
-  shapes: Rectangle[]
+  shapes: Shape[]
   pasteCount: number
 } | null
 
 export type AppState = {
   activeTool: Tool
-  shapes: Rectangle[]
+  shapes: Shape[]
   drawing: DrawingState
   viewport: ViewportState
   selectedIds: string[]
@@ -85,7 +90,7 @@ export const initialState: AppState = {
     height: 0,
     originX: 0,
     originY: 0,
-    gridSize: 20,
+    gridSize: GRID_SIZE,
   },
   selectedIds: [],
   marquee: null,

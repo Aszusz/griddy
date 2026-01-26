@@ -49,7 +49,7 @@ export function useCanvasEvents(originX: number, originY: number) {
       return
     }
     const { x, y } = getCoords(e)
-    if (activeTool === 'rectangle') {
+    if (activeTool === 'rectangle' || activeTool === 'ellipse') {
       dispatch(AppActions['drawing/started'](x, y))
     } else if (activeTool === 'select') {
       const clickedShape = shapes.find((s) => pointInRect(x, y, s))

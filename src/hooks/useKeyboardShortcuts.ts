@@ -17,6 +17,11 @@ export function useKeyboardShortcuts() {
         dispatch(AppActions['tool/selected']('pan'))
         return
       }
+      if (e.key === 'e' || e.key === 'E') {
+        e.preventDefault()
+        dispatch(AppActions['tool/selected']('ellipse'))
+        return
+      }
 
       // Reset view (Cmd/Ctrl+0)
       if (isMod && e.key === '0') {

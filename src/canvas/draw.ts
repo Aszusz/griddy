@@ -1,5 +1,6 @@
-import type { Rectangle, MarqueeState } from '../store/state'
+import type { Shape, MarqueeState } from '../store/state'
 import {
+  TWO_PI,
   GRID_SIZE,
   GRID_DOT_COLOR,
   GRID_DOT_RADIUS,
@@ -18,6 +19,16 @@ import {
 } from '../constants'
 
 type Rect = { x: number; y: number; width: number; height: number }
+type PreviewRect = Rect & { isEllipse: boolean }
+
+function fillAndStrokeEllipse(ctx: CanvasRenderingContext2D, rect: Rect): void {
+  const cx = rect.x + rect.width / 2
+  const cy = rect.y + rect.height / 2
+  ctx.beginPath()
+  ctx.ellipse(cx, cy, rect.width / 2, rect.height / 2, 0, 0, TWO_PI)
+  ctx.fill()
+  ctx.stroke()
+}
 
 export function drawGrid(
   ctx: CanvasRenderingContext2D,
@@ -32,7 +43,7 @@ export function drawGrid(
   for (let x = startX; x < canvasWidth - originX; x += GRID_SIZE) {
     for (let y = startY; y < canvasHeight - originY; y += GRID_SIZE) {
       ctx.beginPath()
-      ctx.arc(x, y, GRID_DOT_RADIUS, 0, Math.PI * 2)
+      ctx.arc(x, y, GRID_DOT_RADIUS, 0, TWO_PI)
       ctx.fill()
     }
   }
@@ -40,20 +51,24 @@ export function drawGrid(
 
 export function drawShapes(
   ctx: CanvasRenderingContext2D,
-  shapes: Rectangle[]
+  shapes: Shape[]
 ): void {
   shapes.forEach((shape) => {
     ctx.fillStyle = shape.fill
     ctx.strokeStyle = shape.stroke
     ctx.lineWidth = SHAPE_STROKE_WIDTH
-    ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
-    ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
+    if (shape.type === 'ellipse') {
+      fillAndStrokeEllipse(ctx, shape)
+    } else {
+      ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
+      ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
+    }
   })
 }
 
 export function drawSelectionBounds(
   ctx: CanvasRenderingContext2D,
-  selectedShapes: Rectangle[]
+  selectedShapes: Shape[]
 ): void {
   if (selectedShapes.length === 0) return
   const minX = Math.min(...selectedShapes.map((s) => s.x))
@@ -73,24 +88,28 @@ export function drawSelectionBounds(
 
 export function drawPreview(
   ctx: CanvasRenderingContext2D,
-  previewRect: Rect | null
+  previewRect: PreviewRect | null
 ): void {
   if (!previewRect || previewRect.width <= 0 || previewRect.height <= 0) return
   ctx.fillStyle = PREVIEW_FILL
   ctx.strokeStyle = PREVIEW_STROKE
   ctx.lineWidth = SHAPE_STROKE_WIDTH
-  ctx.fillRect(
-    previewRect.x,
-    previewRect.y,
-    previewRect.width,
-    previewRect.height
-  )
-  ctx.strokeRect(
-    previewRect.x,
-    previewRect.y,
-    previewRect.width,
-    previewRect.height
-  )
+  if (previewRect.isEllipse) {
+    fillAndStrokeEllipse(ctx, previewRect)
+  } else {
+    ctx.fillRect(
+      previewRect.x,
+      previewRect.y,
+      previewRect.width,
+      previewRect.height
+    )
+    ctx.strokeRect(
+      previewRect.x,
+      previewRect.y,
+      previewRect.width,
+      previewRect.height
+    )
+  }
 }
 
 export function drawMarquee(
@@ -121,6 +140,6 @@ export function drawCrosshair(ctx: CanvasRenderingContext2D): void {
   ctx.lineTo(CROSSHAIR_SIZE, 0)
   ctx.stroke()
   ctx.beginPath()
-  ctx.arc(0, 0, CROSSHAIR_CENTER_RADIUS, 0, Math.PI * 2)
+  ctx.arc(0, 0, CROSSHAIR_CENTER_RADIUS, 0, TWO_PI)
   ctx.stroke()
 }

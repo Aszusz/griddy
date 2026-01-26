@@ -31,8 +31,10 @@ export function Inspector() {
 
   const shape = selectedShapes[0]
 
+  const title = shape.type === 'ellipse' ? 'Ellipse' : 'Rectangle'
+
   return (
-    <InspectorPanel title="Rectangle">
+    <InspectorPanel title={title}>
       {/* Position Section */}
       <InspectorSection title="Position" delay={50}>
         <div className="grid grid-cols-2 gap-2">

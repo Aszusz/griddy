@@ -1,5 +1,5 @@
 import { match } from 'disc-union'
-import type { AppState, Rectangle, MarqueeState, HandlePosition } from './state'
+import type { AppState, Shape, MarqueeState, HandlePosition } from './state'
 import { initialState } from './state'
 import type { AppAction } from './actions'
 import { snapToGrid, pointInRect } from '../utils'
@@ -39,7 +39,7 @@ function createRectFromDrawing(
   startY: number,
   endX: number,
   endY: number
-): Omit<Rectangle, 'id' | 'fill' | 'stroke'> {
+): Omit<Shape, 'id' | 'type' | 'fill' | 'stroke'> {
   const x1 = snapToGrid(Math.min(startX, endX))
   const y1 = snapToGrid(Math.min(startY, endY))
   const x2 = snapToGrid(Math.max(startX, endX))
@@ -54,7 +54,7 @@ function createRectFromDrawing(
 
 function rectsIntersect(
   a: { x: number; y: number; width: number; height: number },
-  b: Rectangle
+  b: Shape
 ): boolean {
   return (
     a.x < b.x + b.width &&
@@ -108,9 +108,12 @@ export function reducer(
         if (rect.width === 0 || rect.height === 0) {
           return { ...state, drawing: null }
         }
-        const newShape: Rectangle = {
+        const shapeType =
+          state.activeTool === 'ellipse' ? 'ellipse' : 'rectangle'
+        const newShape: Shape = {
           ...rect,
           id: crypto.randomUUID(),
+          type: shapeType,
           fill: SHAPE_FILL,
           stroke: SHAPE_STROKE,
         }
@@ -304,7 +307,7 @@ export function reducer(
           return state
         }
         const offset = (state.clipboard.pasteCount + 1) * PASTE_OFFSET
-        const newShapes: Rectangle[] = state.clipboard.shapes.map((s) => ({
+        const newShapes: Shape[] = state.clipboard.shapes.map((s) => ({
           ...s,
           id: crypto.randomUUID(),
           x: s.x + offset,

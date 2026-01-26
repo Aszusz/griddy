@@ -40,7 +40,13 @@ const toolGroups: ToolDef[][] = [
       tool: 'rectangle',
       testId: 'toolbox-rectangle',
     },
-    { icon: Circle, label: 'Ellipse', shortcut: 'O' },
+    {
+      icon: Circle,
+      label: 'Ellipse',
+      shortcut: 'E',
+      tool: 'ellipse',
+      testId: 'toolbox-ellipse',
+    },
   ],
   [
     { icon: MoveRight, label: 'Arrow', shortcut: 'A' },

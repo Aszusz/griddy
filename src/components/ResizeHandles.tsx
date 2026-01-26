@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import type { Rectangle, HandlePosition } from '../store/state'
+import type { Shape, HandlePosition } from '../store/state'
 import { useAppDispatch } from '../hooks'
 import { AppActions } from '../store/actions'
 import {
@@ -11,7 +11,7 @@ import {
 } from '../constants'
 
 type Props = {
-  shape: Rectangle | undefined
+  shape: Shape | undefined
   originX: number
   originY: number
 }

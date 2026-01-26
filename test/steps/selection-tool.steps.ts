@@ -27,6 +27,7 @@ Given(
       ...state.app.shapes,
       {
         id: `rect-${state.app.shapes.length}`,
+        type: 'rectangle' as const,
         x,
         y,
         width,

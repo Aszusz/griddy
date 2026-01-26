@@ -1,3 +1,5 @@
+export const TWO_PI = Math.PI * 2
+
 export const GRID_SIZE = 20
 
 export const CANVAS_BG = '#0a0a0b'
