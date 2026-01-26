@@ -49,7 +49,13 @@ const toolGroups: ToolDef[][] = [
   [{ icon: Type, label: 'Text', shortcut: 'T' }],
   [
     { icon: ZoomIn, label: 'Zoom', shortcut: 'Z' },
-    { icon: Hand, label: 'Pan', shortcut: 'H' },
+    {
+      icon: Hand,
+      label: 'Pan',
+      shortcut: 'H',
+      tool: 'pan',
+      testId: 'toolbox-pan',
+    },
   ],
 ]
 

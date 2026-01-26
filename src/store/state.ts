@@ -1,4 +1,4 @@
-export type Tool = 'select' | 'rectangle'
+export type Tool = 'select' | 'rectangle' | 'pan'
 
 export type Rectangle = {
   id: string
@@ -47,6 +47,13 @@ export type MoveState = {
   originalPositions: { id: string; x: number; y: number }[]
 } | null
 
+export type PanState = {
+  startX: number
+  startY: number
+  originalPanX: number
+  originalPanY: number
+} | null
+
 export type ClipboardState = {
   shapes: Rectangle[]
   pasteCount: number
@@ -62,6 +69,11 @@ export type AppState = {
   resize: ResizeState
   move: MoveState
   clipboard: ClipboardState
+  panX: number
+  panY: number
+  pan: PanState
+  spacebarHeld: boolean
+  toolBeforeSpacebar: Tool | null
 }
 
 export const initialState: AppState = {
@@ -80,4 +92,9 @@ export const initialState: AppState = {
   resize: null,
   move: null,
   clipboard: null,
+  panX: 0,
+  panY: 0,
+  pan: null,
+  spacebarHeld: false,
+  toolBeforeSpacebar: null,
 }

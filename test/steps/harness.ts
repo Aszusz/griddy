@@ -30,3 +30,7 @@ export async function setupDefault(page: Page) {
 export async function getState(page: Page): Promise<RootState> {
   return page.evaluate(() => window.__TEST_HARNESS__!.getState())
 }
+
+export async function focusCanvas(page: Page) {
+  await page.getByTestId('canvas').focus()
+}

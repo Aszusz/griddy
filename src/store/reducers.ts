@@ -330,6 +330,52 @@ export function reducer(
           selectedIds: [],
         }
       },
+      'pan/started': ({ x, y }) => ({
+        ...state,
+        pan: {
+          startX: x,
+          startY: y,
+          originalPanX: state.panX,
+          originalPanY: state.panY,
+        },
+      }),
+      'pan/moved': ({ x, y }) => {
+        if (!state.pan) return state
+        const dx = x - state.pan.startX
+        const dy = y - state.pan.startY
+        return {
+          ...state,
+          panX: state.pan.originalPanX + dx,
+          panY: state.pan.originalPanY + dy,
+        }
+      },
+      'pan/ended': () => ({
+        ...state,
+        pan: null,
+      }),
+      'pan/reset': () => ({
+        ...state,
+        panX: 0,
+        panY: 0,
+      }),
+      'spacebar/pressed': () => {
+        if (state.spacebarHeld) return state
+        return {
+          ...state,
+          spacebarHeld: true,
+          toolBeforeSpacebar: state.activeTool,
+          activeTool: 'pan' as const,
+        }
+      },
+      'spacebar/released': () => {
+        if (!state.spacebarHeld) return state
+        return {
+          ...state,
+          spacebarHeld: false,
+          activeTool: state.toolBeforeSpacebar ?? 'select',
+          toolBeforeSpacebar: null,
+        }
+      },
     },
     () => state
   )

@@ -11,6 +11,9 @@ export const selectSelectedShapes = (state: RootState) =>
   state.app.shapes.filter((s) => state.app.selectedIds.includes(s.id))
 export const selectResize = (state: RootState) => state.app.resize
 export const selectMove = (state: RootState) => state.app.move
+export const selectPan = (state: RootState) => state.app.pan
+export const selectPanX = (state: RootState) => state.app.panX
+export const selectPanY = (state: RootState) => state.app.panY
 
 function computePreviewRect(drawing: DrawingState) {
   if (!drawing) return null

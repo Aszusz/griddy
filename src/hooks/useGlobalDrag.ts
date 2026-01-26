@@ -6,6 +6,7 @@ import {
   selectMarquee,
   selectMove,
   selectResize,
+  selectPan,
 } from '../store/selectors'
 
 export function useGlobalDrag(
@@ -18,9 +19,10 @@ export function useGlobalDrag(
   const marquee = useAppSelector(selectMarquee)
   const move = useAppSelector(selectMove)
   const resize = useAppSelector(selectResize)
+  const pan = useAppSelector(selectPan)
 
   useEffect(() => {
-    const isDragging = drawing || marquee || move || resize
+    const isDragging = drawing || marquee || move || resize || pan
     if (!isDragging) return
     const canvas = canvasRef.current
     if (!canvas) return
@@ -33,6 +35,12 @@ export function useGlobalDrag(
       if (marquee) dispatch(AppActions['marquee/moved'](x, y))
       if (move) dispatch(AppActions['move/moved'](x, y))
       if (resize) dispatch(AppActions['resize/moved'](x, y))
+      if (pan) {
+        // Pan uses screen coordinates, not world coordinates
+        const screenX = e.clientX - rect.left
+        const screenY = e.clientY - rect.top
+        dispatch(AppActions['pan/moved'](screenX, screenY))
+      }
     }
 
     const onGlobalMouseUp = () => {
@@ -40,6 +48,7 @@ export function useGlobalDrag(
       if (marquee) dispatch(AppActions['marquee/ended']())
       if (move) dispatch(AppActions['move/ended']())
       if (resize) dispatch(AppActions['resize/ended']())
+      if (pan) dispatch(AppActions['pan/ended']())
     }
 
     window.addEventListener('mousemove', onGlobalMouseMove)
@@ -48,5 +57,15 @@ export function useGlobalDrag(
       window.removeEventListener('mousemove', onGlobalMouseMove)
       window.removeEventListener('mouseup', onGlobalMouseUp)
     }
-  }, [drawing, marquee, move, resize, dispatch, originX, originY, canvasRef])
+  }, [
+    drawing,
+    marquee,
+    move,
+    resize,
+    pan,
+    dispatch,
+    originX,
+    originY,
+    canvasRef,
+  ])
 }

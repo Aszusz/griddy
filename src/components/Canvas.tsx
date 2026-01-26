@@ -11,6 +11,8 @@ import {
   selectSelectedIds,
   selectMarquee,
   selectPreviewRect,
+  selectPanX,
+  selectPanY,
 } from '../store/selectors'
 import {
   drawGrid,
@@ -28,10 +30,12 @@ export function Canvas() {
   const selectedIds = useAppSelector(selectSelectedIds)
   const marquee = useAppSelector(selectMarquee)
   const previewRect = useAppSelector(selectPreviewRect)
+  const panX = useAppSelector(selectPanX)
+  const panY = useAppSelector(selectPanY)
 
   const { containerRef, canvasSize } = useCanvasSize()
-  const originX = canvasSize.width / 2
-  const originY = canvasSize.height / 2
+  const originX = canvasSize.width / 2 + panX
+  const originY = canvasSize.height / 2 + panY
 
   const { handlers, hoverCursor } = useCanvasEvents(originX, originY)
   useGlobalDrag(canvasRef, originX, originY)

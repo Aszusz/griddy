@@ -1,12 +1,8 @@
 import { expect } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
-import { getState } from './harness'
+import { getState, focusCanvas } from './harness'
 
 const { When, Then } = createBdd()
-
-async function focusCanvas(page: import('@playwright/test').Page) {
-  await page.getByTestId('canvas').focus()
-}
 
 When('I press Delete', async ({ page }) => {
   await focusCanvas(page)

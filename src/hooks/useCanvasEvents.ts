@@ -9,6 +9,7 @@ import {
   selectMarquee,
   selectMove,
   selectResize,
+  selectPan,
 } from '../store/selectors'
 import { pointInRect } from '../utils'
 
@@ -21,17 +22,32 @@ export function useCanvasEvents(originX: number, originY: number) {
   const marquee = useAppSelector(selectMarquee)
   const move = useAppSelector(selectMove)
   const resize = useAppSelector(selectResize)
+  const pan = useAppSelector(selectPan)
   const [hoverCursor, setHoverCursor] = useState('auto')
 
   const getCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
+    // originX/originY already includes panX/panY from Canvas
     return {
       x: e.clientX - rect.left - originX,
       y: e.clientY - rect.top - originY,
     }
   }
 
+  const getScreenCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    }
+  }
+
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (activeTool === 'pan') {
+      const { x, y } = getScreenCoords(e)
+      dispatch(AppActions['pan/started'](x, y))
+      return
+    }
     const { x, y } = getCoords(e)
     if (activeTool === 'rectangle') {
       dispatch(AppActions['drawing/started'](x, y))
@@ -54,6 +70,11 @@ export function useCanvasEvents(originX: number, originY: number) {
   }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (pan) {
+      const { x, y } = getScreenCoords(e)
+      dispatch(AppActions['pan/moved'](x, y))
+      return
+    }
     const { x, y } = getCoords(e)
     if (drawing) {
       dispatch(AppActions['drawing/moved'](x, y))
@@ -70,15 +91,25 @@ export function useCanvasEvents(originX: number, originY: number) {
       } else {
         setHoverCursor('auto')
       }
-    } else {
+    } else if (activeTool !== 'pan') {
       setHoverCursor('auto')
     }
   }
 
   const handleMouseUp = () => {
+    if (pan) {
+      dispatch(AppActions['pan/ended']())
+      return
+    }
     if (drawing) dispatch(AppActions['drawing/ended']())
     else if (marquee) dispatch(AppActions['marquee/ended']())
     else if (move) dispatch(AppActions['move/ended']())
+  }
+
+  // Compute cursor based on tool and state
+  let cursor = hoverCursor
+  if (activeTool === 'pan') {
+    cursor = pan ? 'grabbing' : 'grab'
   }
 
   return {
@@ -87,6 +118,6 @@ export function useCanvasEvents(originX: number, originY: number) {
       onMouseMove: handleMouseMove,
       onMouseUp: handleMouseUp,
     },
-    hoverCursor,
+    hoverCursor: cursor,
   }
 }

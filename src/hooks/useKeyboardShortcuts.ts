@@ -9,9 +9,31 @@ export function useKeyboardShortcuts() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (activeTool !== 'select') return
-
       const isMod = e.metaKey || e.ctrlKey
+
+      // Tool shortcuts (work from any tool)
+      if (e.key === 'h' || e.key === 'H') {
+        e.preventDefault()
+        dispatch(AppActions['tool/selected']('pan'))
+        return
+      }
+
+      // Reset view (Cmd/Ctrl+0)
+      if (isMod && e.key === '0') {
+        e.preventDefault()
+        dispatch(AppActions['pan/reset']())
+        return
+      }
+
+      // Spacebar pan mode
+      if (e.key === ' ' && !e.repeat) {
+        e.preventDefault()
+        dispatch(AppActions['spacebar/pressed']())
+        return
+      }
+
+      // Select tool shortcuts
+      if (activeTool !== 'select') return
 
       if (isMod && e.key === 'c') {
         e.preventDefault()
@@ -28,7 +50,18 @@ export function useKeyboardShortcuts() {
       }
     }
 
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === ' ') {
+        e.preventDefault()
+        dispatch(AppActions['spacebar/released']())
+      }
+    }
+
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
   }, [dispatch, activeTool])
 }
