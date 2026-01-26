@@ -2,6 +2,7 @@ import { expect } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
 import { testIds } from './inspector.testIds'
 import { getState } from './harness'
+import type { RectShape } from '../../src/store/state'
 
 const { When, Then } = createBdd()
 
@@ -159,7 +160,7 @@ Then(
   'the rectangle has size \\({int}, {int})',
   async ({ page }, w: number, h: number) => {
     const state = await getState(page)
-    const rect = state.app.shapes[0]
+    const rect = state.app.shapes[0] as RectShape
     expect(rect.width).toBe(w)
     expect(rect.height).toBe(h)
   }
@@ -169,7 +170,7 @@ Then(
   'the rectangle has fill color {string}',
   async ({ page }, color: string) => {
     const state = await getState(page)
-    const rect = state.app.shapes[0]
+    const rect = state.app.shapes[0] as RectShape
     expect(rect.fill).toBe(color)
   }
 )

@@ -11,18 +11,22 @@ import {
   selectSelectedIds,
   selectMarquee,
   selectPreviewRect,
+  selectPreviewLine,
   selectPanX,
   selectPanY,
 } from '../store/selectors'
+import { isLineShape } from '../utils'
 import {
   drawGrid,
   drawShapes,
   drawSelectionBounds,
   drawPreview,
+  drawPreviewLine,
   drawMarquee,
   drawCrosshair,
 } from '../canvas/draw'
 import { ResizeHandles } from './ResizeHandles'
+import { LineEndpointHandles } from './LineEndpointHandles'
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -30,6 +34,7 @@ export function Canvas() {
   const selectedIds = useAppSelector(selectSelectedIds)
   const marquee = useAppSelector(selectMarquee)
   const previewRect = useAppSelector(selectPreviewRect)
+  const previewLine = useAppSelector(selectPreviewLine)
   const panX = useAppSelector(selectPanX)
   const panY = useAppSelector(selectPanY)
 
@@ -43,6 +48,14 @@ export function Canvas() {
   const selectedShapes = shapes.filter((s) => selectedIds.includes(s.id))
   const singleSelectedShape =
     selectedIds.length === 1 ? selectedShapes[0] : undefined
+  const singleSelectedLine =
+    singleSelectedShape && isLineShape(singleSelectedShape)
+      ? singleSelectedShape
+      : undefined
+  const singleSelectedRectShape =
+    singleSelectedShape && !isLineShape(singleSelectedShape)
+      ? singleSelectedShape
+      : undefined
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d')
@@ -56,6 +69,7 @@ export function Canvas() {
     drawShapes(ctx, shapes)
     drawSelectionBounds(ctx, selectedShapes)
     drawPreview(ctx, previewRect)
+    drawPreviewLine(ctx, previewLine)
     drawMarquee(ctx, marquee)
     drawCrosshair(ctx)
 
@@ -63,6 +77,7 @@ export function Canvas() {
   }, [
     shapes,
     previewRect,
+    previewLine,
     canvasSize,
     originX,
     originY,
@@ -88,7 +103,12 @@ export function Canvas() {
         {...handlers}
       />
       <ResizeHandles
-        shape={singleSelectedShape}
+        shape={singleSelectedRectShape}
+        originX={originX}
+        originY={originY}
+      />
+      <LineEndpointHandles
+        line={singleSelectedLine}
         originX={originX}
         originY={originY}
       />

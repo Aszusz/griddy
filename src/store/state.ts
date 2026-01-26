@@ -1,12 +1,12 @@
 import { GRID_SIZE } from '../constants'
 
-export type Tool = 'select' | 'rectangle' | 'ellipse' | 'pan'
+export type Tool = 'select' | 'rectangle' | 'ellipse' | 'line' | 'pan'
 
-export type ShapeType = 'rectangle' | 'ellipse'
+export type ShapeType = 'rectangle' | 'ellipse' | 'line'
 
-export type Shape = {
+export type RectShape = {
   id: string
-  type: ShapeType
+  type: 'rectangle' | 'ellipse'
   x: number
   y: number
   width: number
@@ -14,6 +14,18 @@ export type Shape = {
   fill: string
   stroke: string
 }
+
+export type LineShape = {
+  id: string
+  type: 'line'
+  x: number
+  y: number
+  x2: number
+  y2: number
+  stroke: string
+}
+
+export type Shape = RectShape | LineShape
 
 export type DrawingState = {
   startX: number
@@ -46,10 +58,23 @@ export type ResizeState = {
   originalShape: { x: number; y: number; width: number; height: number }
 } | null
 
+export type LineEndpointDragState = {
+  endpoint: 'start' | 'end'
+  startX: number
+  startY: number
+  originalLine: { x: number; y: number; x2: number; y2: number }
+} | null
+
 export type MoveState = {
   startX: number
   startY: number
-  originalPositions: { id: string; x: number; y: number }[]
+  originalPositions: {
+    id: string
+    x: number
+    y: number
+    x2?: number
+    y2?: number
+  }[]
 } | null
 
 export type PanState = {
@@ -72,6 +97,7 @@ export type AppState = {
   selectedIds: string[]
   marquee: MarqueeState
   resize: ResizeState
+  lineEndpointDrag: LineEndpointDragState
   move: MoveState
   clipboard: ClipboardState
   panX: number
@@ -95,6 +121,7 @@ export const initialState: AppState = {
   selectedIds: [],
   marquee: null,
   resize: null,
+  lineEndpointDrag: null,
   move: null,
   clipboard: null,
   panX: 0,

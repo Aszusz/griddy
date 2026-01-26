@@ -28,6 +28,8 @@ export const MARQUEE_DASH_PATTERN = [4, 4] as const
 
 export const PASTE_OFFSET = GRID_SIZE
 
+export const LINE_HIT_TOLERANCE = 5
+
 import type { HandlePosition } from './store/state'
 
 type ShapeBounds = { x: number; y: number; width: number; height: number }

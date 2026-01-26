@@ -50,7 +50,13 @@ const toolGroups: ToolDef[][] = [
   ],
   [
     { icon: MoveRight, label: 'Arrow', shortcut: 'A' },
-    { icon: Minus, label: 'Line', shortcut: 'L' },
+    {
+      icon: Minus,
+      label: 'Line',
+      shortcut: 'L',
+      tool: 'line',
+      testId: 'toolbox-line',
+    },
   ],
   [{ icon: Type, label: 'Text', shortcut: 'T' }],
   [

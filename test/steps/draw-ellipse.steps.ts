@@ -5,6 +5,7 @@ import { testIds as drawTestIds } from './draw-rectangles.testIds'
 import { getState, setupWithState } from './harness'
 import { modelToBrowser } from './coords'
 import { SHAPE_FILL, SHAPE_STROKE } from '../../src/constants'
+import type { RectShape } from '../../src/store/state'
 
 const { Given, When, Then } = createBdd()
 
@@ -44,7 +45,9 @@ Then(
   'an ellipse exists at grid position \\({int}, {int}) with size \\({int}, {int})',
   async ({ page }, x: number, y: number, width: number, height: number) => {
     const state = await getState(page)
-    const ellipse = state.app.shapes.find((s) => s.type === 'ellipse')
+    const ellipse = state.app.shapes.find((s) => s.type === 'ellipse') as
+      | RectShape
+      | undefined
     expect(ellipse).toBeDefined()
     expect(ellipse?.x).toBe(x)
     expect(ellipse?.y).toBe(y)
@@ -126,7 +129,9 @@ Then(
   'the ellipse has size \\({int}, {int})',
   async ({ page }, width: number, height: number) => {
     const state = await getState(page)
-    const ellipse = state.app.shapes.find((s) => s.type === 'ellipse')
+    const ellipse = state.app.shapes.find((s) => s.type === 'ellipse') as
+      | RectShape
+      | undefined
     expect(ellipse?.width).toBe(width)
     expect(ellipse?.height).toBe(height)
   }

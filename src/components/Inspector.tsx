@@ -5,6 +5,8 @@ import { ColorField } from './ColorField'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { selectSelectedShapes } from '../store/selectors'
 import { AppActions } from '../store/actions'
+import type { RectShape } from '../store/state'
+import { isLineShape } from '../utils'
 
 export function Inspector() {
   const selectedShapes = useAppSelector(selectSelectedShapes)
@@ -31,7 +33,27 @@ export function Inspector() {
 
   const shape = selectedShapes[0]
 
-  const title = shape.type === 'ellipse' ? 'Ellipse' : 'Rectangle'
+  // Line inspector (simplified - only position and stroke)
+  if (isLineShape(shape)) {
+    return (
+      <InspectorPanel title="Line">
+        <InspectorSection title="Stroke" delay={50} last>
+          <ColorField
+            value={shape.stroke}
+            testId="inspector-stroke"
+            inputTestId="inspector-stroke-input"
+            previewBorder
+            onCommit={(v) =>
+              dispatch(AppActions['shape/colorChanged'](shape.id, 'stroke', v))
+            }
+          />
+        </InspectorSection>
+      </InspectorPanel>
+    )
+  }
+
+  const rectShape = shape as RectShape
+  const title = rectShape.type === 'ellipse' ? 'Ellipse' : 'Rectangle'
 
   return (
     <InspectorPanel title={title}>
@@ -40,20 +62,24 @@ export function Inspector() {
         <div className="grid grid-cols-2 gap-2">
           <InspectorField
             label="X"
-            value={String(shape.x)}
+            value={String(rectShape.x)}
             testId="inspector-x"
             inputTestId="inspector-x-input"
             onCommit={(v) =>
-              dispatch(AppActions['shape/positionChanged'](shape.id, 'x', v))
+              dispatch(
+                AppActions['shape/positionChanged'](rectShape.id, 'x', v)
+              )
             }
           />
           <InspectorField
             label="Y"
-            value={String(shape.y)}
+            value={String(rectShape.y)}
             testId="inspector-y"
             inputTestId="inspector-y-input"
             onCommit={(v) =>
-              dispatch(AppActions['shape/positionChanged'](shape.id, 'y', v))
+              dispatch(
+                AppActions['shape/positionChanged'](rectShape.id, 'y', v)
+              )
             }
           />
         </div>
@@ -64,20 +90,24 @@ export function Inspector() {
         <div className="grid grid-cols-2 gap-2">
           <InspectorField
             label="W"
-            value={String(shape.width)}
+            value={String(rectShape.width)}
             testId="inspector-width"
             inputTestId="inspector-width-input"
             onCommit={(v) =>
-              dispatch(AppActions['shape/sizeChanged'](shape.id, 'width', v))
+              dispatch(
+                AppActions['shape/sizeChanged'](rectShape.id, 'width', v)
+              )
             }
           />
           <InspectorField
             label="H"
-            value={String(shape.height)}
+            value={String(rectShape.height)}
             testId="inspector-height"
             inputTestId="inspector-height-input"
             onCommit={(v) =>
-              dispatch(AppActions['shape/sizeChanged'](shape.id, 'height', v))
+              dispatch(
+                AppActions['shape/sizeChanged'](rectShape.id, 'height', v)
+              )
             }
           />
         </div>
@@ -86,11 +116,11 @@ export function Inspector() {
       {/* Fill Section */}
       <InspectorSection title="Fill" delay={100}>
         <ColorField
-          value={shape.fill}
+          value={rectShape.fill}
           testId="inspector-fill"
           inputTestId="inspector-fill-input"
           onCommit={(v) =>
-            dispatch(AppActions['shape/colorChanged'](shape.id, 'fill', v))
+            dispatch(AppActions['shape/colorChanged'](rectShape.id, 'fill', v))
           }
         />
       </InspectorSection>
@@ -98,12 +128,14 @@ export function Inspector() {
       {/* Stroke Section */}
       <InspectorSection title="Stroke" delay={125} last>
         <ColorField
-          value={shape.stroke}
+          value={rectShape.stroke}
           testId="inspector-stroke"
           inputTestId="inspector-stroke-input"
           previewBorder
           onCommit={(v) =>
-            dispatch(AppActions['shape/colorChanged'](shape.id, 'stroke', v))
+            dispatch(
+              AppActions['shape/colorChanged'](rectShape.id, 'stroke', v)
+            )
           }
         />
       </InspectorSection>

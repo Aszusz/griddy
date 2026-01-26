@@ -3,6 +3,7 @@ import { createBdd } from 'playwright-bdd'
 import { testIds } from './draw-rectangles.testIds'
 import { getState } from './harness'
 import { modelToBrowser } from './coords'
+import type { RectShape } from '../../src/store/state'
 
 const { Given, When, Then } = createBdd()
 
@@ -37,7 +38,7 @@ Then(
   'a rectangle exists at grid position \\({int}, {int}) with size \\({int}, {int})',
   async ({ page }, x: number, y: number, width: number, height: number) => {
     const state = await getState(page)
-    const rect = state?.app.shapes[0]
+    const rect = state?.app.shapes[0] as RectShape | undefined
     expect(rect).toBeDefined()
     expect(rect?.x).toBe(x)
     expect(rect?.y).toBe(y)
@@ -80,11 +81,6 @@ When('I release the mouse', async ({ page }) => {
 Then('no preview rectangle is visible', async ({ page }) => {
   const state = await getState(page)
   expect(state?.app.drawing).toBeNull()
-})
-
-Then('no rectangle is created', async ({ page }) => {
-  const state = await getState(page)
-  expect(state?.app.shapes.length).toBe(0)
 })
 
 Then('the rectangle has visible fill', async ({ page }) => {

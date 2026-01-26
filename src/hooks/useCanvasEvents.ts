@@ -11,7 +11,8 @@ import {
   selectResize,
   selectPan,
 } from '../store/selectors'
-import { pointInRect } from '../utils'
+import { pointInRect, pointNearLine, isLineShape } from '../utils'
+import { LINE_HIT_TOLERANCE } from '../constants'
 
 export function useCanvasEvents(originX: number, originY: number) {
   const dispatch = useAppDispatch()
@@ -49,10 +50,19 @@ export function useCanvasEvents(originX: number, originY: number) {
       return
     }
     const { x, y } = getCoords(e)
-    if (activeTool === 'rectangle' || activeTool === 'ellipse') {
+    if (
+      activeTool === 'rectangle' ||
+      activeTool === 'ellipse' ||
+      activeTool === 'line'
+    ) {
       dispatch(AppActions['drawing/started'](x, y))
     } else if (activeTool === 'select') {
-      const clickedShape = shapes.find((s) => pointInRect(x, y, s))
+      const clickedShape = shapes.find((s) => {
+        if (isLineShape(s)) {
+          return pointNearLine(x, y, s.x, s.y, s.x2, s.y2, LINE_HIT_TOLERANCE)
+        }
+        return pointInRect(x, y, s)
+      })
       if (clickedShape) {
         const isAlreadySelected = selectedIds.includes(clickedShape.id)
         if (e.shiftKey) {
@@ -85,7 +95,12 @@ export function useCanvasEvents(originX: number, originY: number) {
     }
 
     if (activeTool === 'select' && !drawing && !marquee && !resize) {
-      const hoveredShape = shapes.find((s) => pointInRect(x, y, s))
+      const hoveredShape = shapes.find((s) => {
+        if (isLineShape(s)) {
+          return pointNearLine(x, y, s.x, s.y, s.x2, s.y2, LINE_HIT_TOLERANCE)
+        }
+        return pointInRect(x, y, s)
+      })
       if (hoveredShape && selectedIds.includes(hoveredShape.id)) {
         setHoverCursor('move')
       } else {

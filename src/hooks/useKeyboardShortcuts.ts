@@ -31,6 +31,11 @@ export function useKeyboardShortcuts() {
         dispatch(AppActions['tool/selected']('ellipse'))
         return
       }
+      if (e.key === 'l' || e.key === 'L') {
+        e.preventDefault()
+        dispatch(AppActions['tool/selected']('line'))
+        return
+      }
 
       // Reset view (Cmd/Ctrl+0)
       if (isMod && e.key === '0') {

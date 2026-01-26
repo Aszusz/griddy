@@ -5,6 +5,7 @@ import { testIds as drawTestIds } from './draw-rectangles.testIds'
 import { getState, setupWithState } from './harness'
 import { modelToBrowser } from './coords'
 import { SHAPE_FILL, SHAPE_STROKE } from '../../src/constants'
+import type { RectShape } from '../../src/store/state'
 
 const { Given, When, Then } = createBdd()
 
@@ -81,7 +82,7 @@ Given('the first rectangle is selected', async ({ page }) => {
 
 When('I shift-click the second rectangle', async ({ page }) => {
   const { shapes } = (await getState(page)).app
-  const rect = shapes[1]
+  const rect = shapes[1] as RectShape
   const canvas = page.getByTestId(drawTestIds.canvas)
   const box = await canvas.boundingBox()
   if (!box) throw new Error('Canvas not found')
@@ -107,7 +108,7 @@ Given('both rectangles are selected', async ({ page }) => {
 
 When('I shift-click the first rectangle', async ({ page }) => {
   const { shapes } = (await getState(page)).app
-  const rect = shapes[0]
+  const rect = shapes[0] as RectShape
   const canvas = page.getByTestId(drawTestIds.canvas)
   const box = await canvas.boundingBox()
   if (!box) throw new Error('Canvas not found')

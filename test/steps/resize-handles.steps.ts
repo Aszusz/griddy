@@ -52,7 +52,7 @@ async function getHandleCenter(page: Page, handleName: string) {
 }
 
 When(
-  /^I drag the ([a-z-]+) handle by \((-?\d+), (-?\d+)\)$/,
+  /^I drag the (top-left|top|top-right|right|bottom-right|bottom|bottom-left|left) handle by \((-?\d+), (-?\d+)\)$/,
   async ({ page }, handle: string, dxStr: string, dyStr: string) => {
     const dx = parseInt(dxStr, 10)
     const dy = parseInt(dyStr, 10)

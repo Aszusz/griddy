@@ -1,4 +1,5 @@
 import type { Shape, MarqueeState } from '../store/state'
+import { isLineShape } from '../utils'
 import {
   TWO_PI,
   GRID_SIZE,
@@ -20,6 +21,7 @@ import {
 
 type Rect = { x: number; y: number; width: number; height: number }
 type PreviewRect = Rect & { isEllipse: boolean }
+type PreviewLine = { x: number; y: number; x2: number; y2: number }
 
 function fillAndStrokeEllipse(ctx: CanvasRenderingContext2D, rect: Rect): void {
   const cx = rect.x + rect.width / 2
@@ -54,16 +56,40 @@ export function drawShapes(
   shapes: Shape[]
 ): void {
   shapes.forEach((shape) => {
-    ctx.fillStyle = shape.fill
     ctx.strokeStyle = shape.stroke
     ctx.lineWidth = SHAPE_STROKE_WIDTH
-    if (shape.type === 'ellipse') {
-      fillAndStrokeEllipse(ctx, shape)
+    if (isLineShape(shape)) {
+      ctx.beginPath()
+      ctx.moveTo(shape.x, shape.y)
+      ctx.lineTo(shape.x2, shape.y2)
+      ctx.stroke()
     } else {
-      ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
-      ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
+      ctx.fillStyle = shape.fill
+      if (shape.type === 'ellipse') {
+        fillAndStrokeEllipse(ctx, shape)
+      } else {
+        ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
+        ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
+      }
     }
   })
+}
+
+function getShapeBounds(s: Shape): {
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+} {
+  if (isLineShape(s)) {
+    return {
+      minX: Math.min(s.x, s.x2),
+      minY: Math.min(s.y, s.y2),
+      maxX: Math.max(s.x, s.x2),
+      maxY: Math.max(s.y, s.y2),
+    }
+  }
+  return { minX: s.x, minY: s.y, maxX: s.x + s.width, maxY: s.y + s.height }
 }
 
 export function drawSelectionBounds(
@@ -71,10 +97,11 @@ export function drawSelectionBounds(
   selectedShapes: Shape[]
 ): void {
   if (selectedShapes.length === 0) return
-  const minX = Math.min(...selectedShapes.map((s) => s.x))
-  const minY = Math.min(...selectedShapes.map((s) => s.y))
-  const maxX = Math.max(...selectedShapes.map((s) => s.x + s.width))
-  const maxY = Math.max(...selectedShapes.map((s) => s.y + s.height))
+  const bounds = selectedShapes.map(getShapeBounds)
+  const minX = Math.min(...bounds.map((b) => b.minX))
+  const minY = Math.min(...bounds.map((b) => b.minY))
+  const maxX = Math.max(...bounds.map((b) => b.maxX))
+  const maxY = Math.max(...bounds.map((b) => b.maxY))
 
   ctx.strokeStyle = SELECTION_BORDER_COLOR
   ctx.lineWidth = SELECTION_BORDER_WIDTH
@@ -110,6 +137,19 @@ export function drawPreview(
       previewRect.height
     )
   }
+}
+
+export function drawPreviewLine(
+  ctx: CanvasRenderingContext2D,
+  previewLine: PreviewLine | null
+): void {
+  if (!previewLine) return
+  ctx.strokeStyle = PREVIEW_STROKE
+  ctx.lineWidth = SHAPE_STROKE_WIDTH
+  ctx.beginPath()
+  ctx.moveTo(previewLine.x, previewLine.y)
+  ctx.lineTo(previewLine.x2, previewLine.y2)
+  ctx.stroke()
 }
 
 export function drawMarquee(
