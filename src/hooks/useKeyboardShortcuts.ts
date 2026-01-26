@@ -3,9 +3,11 @@ import { useAppDispatch, useAppSelector } from './index'
 import { AppActions } from '../store/actions'
 import { selectActiveTool } from '../store/selectors'
 
-function isCanvasFocused(): boolean {
+function isInputFocused(): boolean {
   const active = document.activeElement
-  return active?.getAttribute('data-testid') === 'canvas'
+  return (
+    active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement
+  )
 }
 
 export function useKeyboardShortcuts() {
@@ -14,7 +16,7 @@ export function useKeyboardShortcuts() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isCanvasFocused()) return
+      if (isInputFocused()) return
 
       const isMod = e.metaKey || e.ctrlKey
 
@@ -63,7 +65,7 @@ export function useKeyboardShortcuts() {
     }
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (!isCanvasFocused()) return
+      if (isInputFocused()) return
 
       if (e.key === ' ') {
         e.preventDefault()
