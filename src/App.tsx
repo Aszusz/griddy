@@ -8,7 +8,9 @@ import {
   ZoomIn,
   Hand,
 } from 'lucide-react'
-import { GRID_SIZE } from './constants'
+import { useMemo } from 'react'
+import { GRID_SIZE, SHAPE_FILL, SHAPE_STROKE, PREVIEW_FILL } from './constants'
+import { snapToGrid } from './utils'
 import { useAppDispatch, useAppSelector } from './hooks'
 import { AppActions } from './store/actions'
 import {
@@ -16,7 +18,7 @@ import {
   selectShapes,
   selectDrawing,
 } from './store/selectors'
-import type { Tool, Rectangle } from './store/state'
+import type { Tool } from './store/state'
 
 type ToolDef = {
   icon: React.ComponentType<{ className?: string }>
@@ -89,10 +91,18 @@ function ToolButton({
   )
 }
 
+// Pre-compute tool items with global indices for animation delays
+const toolItems = toolGroups.flatMap((group, groupIndex) =>
+  group.map((toolDef, indexInGroup) => ({
+    ...toolDef,
+    groupIndex,
+    isFirstInGroup: indexInGroup === 0,
+  }))
+)
+
 function Toolbox() {
   const dispatch = useAppDispatch()
   const activeTool = useAppSelector(selectActiveTool)
-  let toolIndex = 0
 
   return (
     <div
@@ -103,29 +113,21 @@ function Toolbox() {
         <div className="absolute -inset-1 rounded-2xl bg-linear-to-b from-cyan-500/20 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
 
         <div className="relative flex flex-col gap-1 rounded-2xl border border-white/8 bg-zinc-900/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
-          {toolGroups.map((group, groupIndex) => (
-            <div key={groupIndex} className="flex flex-col gap-1">
-              {groupIndex > 0 && (
+          {toolItems.map((item, index) => (
+            <div key={item.label} className="flex flex-col gap-1">
+              {item.isFirstInGroup && item.groupIndex > 0 && (
                 <div className="mx-2 my-0.5 h-px bg-white/4" />
               )}
-              {group.map((toolDef) => {
-                const delay = 300 + toolIndex * 50
-                toolIndex++
-                return (
-                  <ToolButton
-                    key={toolDef.label}
-                    {...toolDef}
-                    delay={delay}
-                    isActive={toolDef.tool === activeTool}
-                    onClick={
-                      toolDef.tool
-                        ? () =>
-                            dispatch(AppActions['tool/selected'](toolDef.tool!))
-                        : undefined
-                    }
-                  />
-                )
-              })}
+              <ToolButton
+                {...item}
+                delay={300 + index * 50}
+                isActive={item.tool === activeTool}
+                onClick={
+                  item.tool
+                    ? () => dispatch(AppActions['tool/selected'](item.tool!))
+                    : undefined
+                }
+              />
             </div>
           ))}
         </div>
@@ -242,10 +244,6 @@ function InspectorField({ label, value }: { label: string; value: string }) {
   )
 }
 
-function snapToGrid(value: number): number {
-  return Math.round(value / GRID_SIZE) * GRID_SIZE
-}
-
 function Canvas() {
   const dispatch = useAppDispatch()
   const activeTool = useAppSelector(selectActiveTool)
@@ -275,18 +273,19 @@ function Canvas() {
     dispatch(AppActions['drawing/ended']())
   }
 
-  const previewRect = drawing
-    ? {
-        x: snapToGrid(Math.min(drawing.startX, drawing.currentX)),
-        y: snapToGrid(Math.min(drawing.startY, drawing.currentY)),
-        width:
-          snapToGrid(Math.max(drawing.startX, drawing.currentX)) -
-          snapToGrid(Math.min(drawing.startX, drawing.currentX)),
-        height:
-          snapToGrid(Math.max(drawing.startY, drawing.currentY)) -
-          snapToGrid(Math.min(drawing.startY, drawing.currentY)),
-      }
-    : null
+  const previewRect = useMemo(() => {
+    if (!drawing) return null
+    return {
+      x: snapToGrid(Math.min(drawing.startX, drawing.currentX)),
+      y: snapToGrid(Math.min(drawing.startY, drawing.currentY)),
+      width:
+        snapToGrid(Math.max(drawing.startX, drawing.currentX)) -
+        snapToGrid(Math.min(drawing.startX, drawing.currentX)),
+      height:
+        snapToGrid(Math.max(drawing.startY, drawing.currentY)) -
+        snapToGrid(Math.min(drawing.startY, drawing.currentY)),
+    }
+  }, [drawing])
 
   return (
     <div
@@ -310,7 +309,7 @@ function Canvas() {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        {shapes.map((shape: Rectangle) => (
+        {shapes.map((shape) => (
           <rect
             key={shape.id}
             data-testid="shape-rectangle"
@@ -318,8 +317,8 @@ function Canvas() {
             y={shape.y}
             width={shape.width}
             height={shape.height}
-            fill="#3b82f6"
-            stroke="#60a5fa"
+            fill={SHAPE_FILL}
+            stroke={SHAPE_STROKE}
             strokeWidth={2}
           />
         ))}
@@ -330,8 +329,8 @@ function Canvas() {
             y={previewRect.y}
             width={previewRect.width}
             height={previewRect.height}
-            fill="#3b82f680"
-            stroke="#60a5fa"
+            fill={PREVIEW_FILL}
+            stroke={SHAPE_STROKE}
             strokeWidth={2}
             strokeDasharray="4"
           />

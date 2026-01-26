@@ -35,6 +35,7 @@ For each issue found:
 - Refactor both implementation AND test steps
 - Remove dead code aggressively
 - Follow ARCHITECTURE.md relentlessly
+- Never stage changes (no `git add`)
 
 ## Phase 4: Iterate
 

@@ -38,20 +38,20 @@ src/hooks/
 ## Component Architecture
 
 - **One component per file** when >100 lines or reusable
-- **Extract to `src/components/`**: Canvas, Toolbox, Inspector, etc.
+- **Extract to `src/components/`** - large or reusable components get their own file
 - **Colocate** small helper components in same file only if single-use and <50 lines
 
 ## Constants & Utilities
 
 - **Colors, dimensions** → `src/constants.ts` (not inline hex codes)
-- **Pure helpers** (e.g., `snapToGrid`) → `src/utils.ts` or domain-specific file
+- **Pure helpers** → `src/utils.ts` or domain-specific file
 - **Shape defaults** (fill, stroke) → store state or constants, not hardcoded in render
 
 ## React Patterns
 
 - **No mutations during render** - avoid `let` counters in `.map()`; use index param or `.flatMap()`
 - **Avoid redundant type annotations** - let TS infer from selectors
-- **Memoize expensive derived values** - `useMemo` for calculations like `previewRect`
+- **Memoize expensive derived values** with `useMemo`
 
 ## Code Style
 

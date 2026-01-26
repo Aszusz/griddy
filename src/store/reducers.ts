@@ -2,11 +2,7 @@ import { match } from 'disc-union'
 import type { AppState, Rectangle } from './state'
 import { initialState } from './state'
 import type { AppAction } from './actions'
-import { GRID_SIZE } from '../constants'
-
-function snapToGrid(value: number): number {
-  return Math.round(value / GRID_SIZE) * GRID_SIZE
-}
+import { snapToGrid } from '../utils'
 
 function createRectFromDrawing(
   startX: number,
@@ -67,10 +63,6 @@ export function reducer(
           drawing: null,
         }
       },
-      'shape/added': ({ shape }) => ({
-        ...state,
-        shapes: [...state.shapes, shape],
-      }),
     },
     () => state
   )
