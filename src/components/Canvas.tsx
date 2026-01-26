@@ -12,6 +12,14 @@ import {
   CROSSHAIR_SIZE,
   CROSSHAIR_CENTER_RADIUS,
   SHAPE_STROKE_WIDTH,
+  SELECTION_BORDER_COLOR,
+  SELECTION_BORDER_WIDTH,
+  SELECTION_BORDER_OFFSET,
+  SELECTION_HANDLE_SIZE,
+  SELECTION_HANDLE_FILL,
+  SELECTION_HANDLE_STROKE_WIDTH,
+  MARQUEE_FILL,
+  MARQUEE_DASH_PATTERN,
 } from '../constants'
 import { snapToGrid } from '../utils'
 import { useAppDispatch, useAppSelector } from '../hooks'
@@ -20,6 +28,8 @@ import {
   selectActiveTool,
   selectShapes,
   selectDrawing,
+  selectSelectedIds,
+  selectMarquee,
 } from '../store/selectors'
 
 export function Canvas() {
@@ -28,6 +38,8 @@ export function Canvas() {
   const activeTool = useAppSelector(selectActiveTool)
   const shapes = useAppSelector(selectShapes)
   const drawing = useAppSelector(selectDrawing)
+  const selectedIds = useAppSelector(selectSelectedIds)
+  const marquee = useAppSelector(selectMarquee)
   const [canvasSize, setCanvasSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -97,6 +109,43 @@ export function Canvas() {
       ctx.lineWidth = SHAPE_STROKE_WIDTH
       ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
       ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
+
+      // Draw selection border and handles
+      if (selectedIds.includes(shape.id)) {
+        ctx.strokeStyle = SELECTION_BORDER_COLOR
+        ctx.lineWidth = SELECTION_BORDER_WIDTH
+        ctx.strokeRect(
+          shape.x - SELECTION_BORDER_OFFSET,
+          shape.y - SELECTION_BORDER_OFFSET,
+          shape.width + SELECTION_BORDER_WIDTH,
+          shape.height + SELECTION_BORDER_WIDTH
+        )
+
+        // Draw resize handles at corners
+        ctx.fillStyle = SELECTION_HANDLE_FILL
+        ctx.strokeStyle = SELECTION_BORDER_COLOR
+        ctx.lineWidth = SELECTION_HANDLE_STROKE_WIDTH
+        const corners = [
+          [shape.x, shape.y],
+          [shape.x + shape.width, shape.y],
+          [shape.x, shape.y + shape.height],
+          [shape.x + shape.width, shape.y + shape.height],
+        ]
+        corners.forEach(([cx, cy]) => {
+          ctx.fillRect(
+            cx - SELECTION_HANDLE_SIZE / 2,
+            cy - SELECTION_HANDLE_SIZE / 2,
+            SELECTION_HANDLE_SIZE,
+            SELECTION_HANDLE_SIZE
+          )
+          ctx.strokeRect(
+            cx - SELECTION_HANDLE_SIZE / 2,
+            cy - SELECTION_HANDLE_SIZE / 2,
+            SELECTION_HANDLE_SIZE,
+            SELECTION_HANDLE_SIZE
+          )
+        })
+      }
     })
 
     // Draw preview
@@ -118,6 +167,21 @@ export function Canvas() {
       )
     }
 
+    // Draw marquee selection box
+    if (marquee) {
+      const mx = Math.min(marquee.startX, marquee.currentX)
+      const my = Math.min(marquee.startY, marquee.currentY)
+      const mw = Math.abs(marquee.currentX - marquee.startX)
+      const mh = Math.abs(marquee.currentY - marquee.startY)
+      ctx.fillStyle = MARQUEE_FILL
+      ctx.strokeStyle = SELECTION_BORDER_COLOR
+      ctx.lineWidth = SELECTION_HANDLE_STROKE_WIDTH
+      ctx.setLineDash([...MARQUEE_DASH_PATTERN])
+      ctx.fillRect(mx, my, mw, mh)
+      ctx.strokeRect(mx, my, mw, mh)
+      ctx.setLineDash([])
+    }
+
     // Draw crosshair at origin (0,0)
     ctx.strokeStyle = CROSSHAIR_COLOR
     ctx.lineWidth = 1
@@ -132,38 +196,73 @@ export function Canvas() {
     ctx.stroke()
 
     ctx.restore()
-  }, [shapes, previewRect, canvasSize, originX, originY])
+  }, [shapes, previewRect, canvasSize, originX, originY, selectedIds, marquee])
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (activeTool !== 'rectangle') return
     const canvas = e.currentTarget
     const rect = canvas.getBoundingClientRect()
     const x = e.clientX - rect.left - originX
     const y = e.clientY - rect.top - originY
-    dispatch(AppActions['drawing/started'](x, y))
+
+    if (activeTool === 'rectangle') {
+      dispatch(AppActions['drawing/started'](x, y))
+    } else if (activeTool === 'select') {
+      const clickedShape = shapes.find(
+        (s) => x >= s.x && x <= s.x + s.width && y >= s.y && y <= s.y + s.height
+      )
+      if (clickedShape) {
+        dispatch(AppActions['selection/clicked'](x, y, e.shiftKey))
+      } else {
+        dispatch(AppActions['marquee/started'](x, y))
+      }
+    }
   }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!drawing) return
     const canvas = e.currentTarget
     const rect = canvas.getBoundingClientRect()
     const x = e.clientX - rect.left - originX
     const y = e.clientY - rect.top - originY
-    dispatch(AppActions['drawing/moved'](x, y))
+
+    if (drawing) {
+      dispatch(AppActions['drawing/moved'](x, y))
+    } else if (marquee) {
+      dispatch(AppActions['marquee/moved'](x, y))
+    }
   }
 
   const handleMouseUp = () => {
-    if (!drawing) return
-    dispatch(AppActions['drawing/ended']())
+    if (drawing) {
+      dispatch(AppActions['drawing/ended']())
+    } else if (marquee) {
+      dispatch(AppActions['marquee/ended']())
+    }
   }
 
-  // Global mouseup listener to handle release outside canvas
+  // Global mouse listeners to handle drag outside canvas
   useEffect(() => {
-    if (!drawing) return
-    const onGlobalMouseUp = () => dispatch(AppActions['drawing/ended']())
+    if (!drawing && !marquee) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const onGlobalMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      const x = e.clientX - rect.left - originX
+      const y = e.clientY - rect.top - originY
+      if (drawing) dispatch(AppActions['drawing/moved'](x, y))
+      if (marquee) dispatch(AppActions['marquee/moved'](x, y))
+    }
+    const onGlobalMouseUp = () => {
+      if (drawing) dispatch(AppActions['drawing/ended']())
+      if (marquee) dispatch(AppActions['marquee/ended']())
+    }
+    window.addEventListener('mousemove', onGlobalMouseMove)
     window.addEventListener('mouseup', onGlobalMouseUp)
-    return () => window.removeEventListener('mouseup', onGlobalMouseUp)
-  }, [drawing, dispatch])
+    return () => {
+      window.removeEventListener('mousemove', onGlobalMouseMove)
+      window.removeEventListener('mouseup', onGlobalMouseUp)
+    }
+  }, [drawing, marquee, dispatch, originX, originY])
 
   return (
     <div

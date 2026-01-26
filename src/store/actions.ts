@@ -9,6 +9,14 @@ export const AppActions = discUnion(
     'drawing/moved': (x: number, y: number) => ({ x, y }),
     'drawing/ended': () => ({}),
     'viewport/resized': (width: number, height: number) => ({ width, height }),
+    'selection/clicked': (x: number, y: number, shiftKey: boolean) => ({
+      x,
+      y,
+      shiftKey,
+    }),
+    'marquee/started': (x: number, y: number) => ({ x, y }),
+    'marquee/moved': (x: number, y: number) => ({ x, y }),
+    'marquee/ended': () => ({}),
   },
   'type'
 )

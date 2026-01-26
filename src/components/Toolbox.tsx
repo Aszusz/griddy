@@ -23,7 +23,15 @@ type ToolDef = {
 }
 
 const toolGroups: ToolDef[][] = [
-  [{ icon: MousePointer2, label: 'Select', shortcut: 'V', tool: 'select' }],
+  [
+    {
+      icon: MousePointer2,
+      label: 'Select',
+      shortcut: 'V',
+      tool: 'select',
+      testId: 'toolbox-selection',
+    },
+  ],
   [
     {
       icon: Square,

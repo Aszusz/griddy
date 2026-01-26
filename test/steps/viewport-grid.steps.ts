@@ -26,6 +26,16 @@ Then('the origin crosshair is at viewport center', async ({ page }) => {
   const viewportSize = page.viewportSize()
   if (!viewportSize) throw new Error('No viewport size')
 
+  // Wait for ResizeObserver to update state
+  await page.waitForFunction(
+    (expected) => {
+      const state = window.__TEST_HARNESS__?.getState()
+      return state?.app.viewport.originX === expected
+    },
+    viewportSize.width / 2,
+    { timeout: 5000 }
+  )
+
   const state = await getState(page)
   expect(state?.app.viewport.originX).toBe(viewportSize.width / 2)
   expect(state?.app.viewport.originY).toBe(viewportSize.height / 2)

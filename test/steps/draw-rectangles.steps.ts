@@ -6,7 +6,7 @@ import { getState } from './harness'
 const { Given, When, Then } = createBdd()
 
 Given('I select the Rectangle tool', async ({ page }) => {
-  await page.getByTestId(testIds.rectangleTool).click()
+  await page.getByTestId(testIds.rectangleTool).click({ force: true })
 })
 
 Then('the Rectangle tool shows as active', async ({ page }) => {

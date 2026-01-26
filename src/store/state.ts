@@ -23,11 +23,20 @@ export type ViewportState = {
   gridSize: number
 }
 
+export type MarqueeState = {
+  startX: number
+  startY: number
+  currentX: number
+  currentY: number
+} | null
+
 export type AppState = {
   activeTool: Tool
   shapes: Rectangle[]
   drawing: DrawingState
   viewport: ViewportState
+  selectedIds: string[]
+  marquee: MarqueeState
 }
 
 export const initialState: AppState = {
@@ -41,4 +50,6 @@ export const initialState: AppState = {
     originY: 0,
     gridSize: 20,
   },
+  selectedIds: [],
+  marquee: null,
 }

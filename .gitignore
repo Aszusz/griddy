@@ -33,3 +33,6 @@ test/report
 
 # MCP
 .playwright-mcp
+
+# Delulu
+docs/tmp

@@ -1,5 +1,5 @@
 import { match } from 'disc-union'
-import type { AppState, Rectangle } from './state'
+import type { AppState, Rectangle, MarqueeState } from './state'
 import { initialState } from './state'
 import type { AppAction } from './actions'
 import { snapToGrid } from '../utils'
@@ -23,6 +23,36 @@ function createRectFromDrawing(
   }
 }
 
+function pointInRect(x: number, y: number, rect: Rectangle): boolean {
+  return (
+    x >= rect.x &&
+    x <= rect.x + rect.width &&
+    y >= rect.y &&
+    y <= rect.y + rect.height
+  )
+}
+
+function rectsIntersect(
+  a: { x: number; y: number; width: number; height: number },
+  b: Rectangle
+): boolean {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  )
+}
+
+function getMarqueeBounds(marquee: NonNullable<MarqueeState>) {
+  return {
+    x: Math.min(marquee.startX, marquee.currentX),
+    y: Math.min(marquee.startY, marquee.currentY),
+    width: Math.abs(marquee.currentX - marquee.startX),
+    height: Math.abs(marquee.currentY - marquee.startY),
+  }
+}
+
 export function reducer(
   state: AppState = initialState,
   action: AppAction
@@ -31,7 +61,11 @@ export function reducer(
     action,
     {
       'app/started': () => state,
-      'tool/selected': ({ tool }) => ({ ...state, activeTool: tool }),
+      'tool/selected': ({ tool }) => ({
+        ...state,
+        activeTool: tool,
+        selectedIds: [],
+      }),
       'drawing/started': ({ x, y }) => ({
         ...state,
         drawing: { startX: x, startY: y, currentX: x, currentY: y },
@@ -74,6 +108,48 @@ export function reducer(
           gridSize: GRID_SIZE,
         },
       }),
+      'selection/clicked': ({ x, y, shiftKey }) => {
+        const clickedShape = state.shapes.find((s) => pointInRect(x, y, s))
+        if (!clickedShape) {
+          return { ...state, selectedIds: [] }
+        }
+        if (shiftKey) {
+          const isSelected = state.selectedIds.includes(clickedShape.id)
+          if (isSelected) {
+            return {
+              ...state,
+              selectedIds: state.selectedIds.filter(
+                (id) => id !== clickedShape.id
+              ),
+            }
+          } else {
+            return {
+              ...state,
+              selectedIds: [...state.selectedIds, clickedShape.id],
+            }
+          }
+        }
+        return { ...state, selectedIds: [clickedShape.id] }
+      },
+      'marquee/started': ({ x, y }) => ({
+        ...state,
+        marquee: { startX: x, startY: y, currentX: x, currentY: y },
+      }),
+      'marquee/moved': ({ x, y }) =>
+        state.marquee
+          ? {
+              ...state,
+              marquee: { ...state.marquee, currentX: x, currentY: y },
+            }
+          : state,
+      'marquee/ended': () => {
+        if (!state.marquee) return state
+        const bounds = getMarqueeBounds(state.marquee)
+        const intersectingIds = state.shapes
+          .filter((s) => rectsIntersect(bounds, s))
+          .map((s) => s.id)
+        return { ...state, selectedIds: intersectingIds, marquee: null }
+      },
     },
     () => state
   )
