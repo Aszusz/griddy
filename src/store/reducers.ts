@@ -240,6 +240,39 @@ export function reducer(
         ...state,
         resize: null,
       }),
+      'move/started': ({ x, y }) => {
+        if (state.selectedIds.length === 0) return state
+        const originalPositions = state.shapes
+          .filter((s) => state.selectedIds.includes(s.id))
+          .map((s) => ({ id: s.id, x: s.x, y: s.y }))
+        return {
+          ...state,
+          move: { startX: x, startY: y, originalPositions },
+        }
+      },
+      'move/moved': ({ x, y }) => {
+        if (!state.move) return state
+        const dx = x - state.move.startX
+        const dy = y - state.move.startY
+        return {
+          ...state,
+          shapes: state.shapes.map((s) => {
+            const original = state.move!.originalPositions.find(
+              (p) => p.id === s.id
+            )
+            if (!original) return s
+            return {
+              ...s,
+              x: snapToGrid(original.x + dx),
+              y: snapToGrid(original.y + dy),
+            }
+          }),
+        }
+      },
+      'move/ended': () => ({
+        ...state,
+        move: null,
+      }),
     },
     () => state
   )

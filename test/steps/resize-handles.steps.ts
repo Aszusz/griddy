@@ -1,11 +1,17 @@
 import { expect, type Page } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
 import { testIds } from './resize-handles.testIds'
-import { testIds as drawTestIds } from './draw-rectangles.testIds'
-import { getState } from './harness'
-import { modelToBrowser } from './coords'
 
 const { When, Then } = createBdd()
+
+// Shared drag start position for multi-step drag operations
+let dragStartX = 0
+let dragStartY = 0
+
+export function setDragStart(x: number, y: number) {
+  dragStartX = x
+  dragStartY = y
+}
 
 Then('{int} resize handles are visible', async ({ page }, count: number) => {
   const handles = [
@@ -60,6 +66,8 @@ When(
 
 When('I start dragging the right handle', async ({ page }) => {
   const center = await getHandleCenter(page, 'right')
+  dragStartX = center.x
+  dragStartY = center.y
   await page.mouse.move(center.x, center.y)
   await page.mouse.down()
 })
@@ -67,18 +75,6 @@ When('I start dragging the right handle', async ({ page }) => {
 When(
   'I drag to offset \\({int}, {int})',
   async ({ page }, dx: number, dy: number) => {
-    const canvas = page.getByTestId(drawTestIds.canvas)
-    const box = await canvas.boundingBox()
-    if (!box) throw new Error('Canvas not found')
-    // Get current mouse position from state and move relative to it
-    const state = await getState(page)
-    const shape = state.app.shapes[0]
-    // Calculate current handle position and add offset
-    const handlePos = modelToBrowser(
-      shape.x + shape.width,
-      shape.y + shape.height / 2,
-      box
-    )
-    await page.mouse.move(handlePos.x + dx, handlePos.y + dy)
+    await page.mouse.move(dragStartX + dx, dragStartY + dy)
   }
 )

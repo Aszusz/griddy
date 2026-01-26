@@ -8,3 +8,4 @@ export const selectMarquee = (state: RootState) => state.app.marquee
 export const selectSelectedShapes = (state: RootState) =>
   state.app.shapes.filter((s) => state.app.selectedIds.includes(s.id))
 export const selectResize = (state: RootState) => state.app.resize
+export const selectMove = (state: RootState) => state.app.move

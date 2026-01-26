@@ -39,6 +39,9 @@ export const AppActions = discUnion(
     }),
     'resize/moved': (x: number, y: number) => ({ x, y }),
     'resize/ended': () => ({}),
+    'move/started': (x: number, y: number) => ({ x, y }),
+    'move/moved': (x: number, y: number) => ({ x, y }),
+    'move/ended': () => ({}),
   },
   'type'
 )

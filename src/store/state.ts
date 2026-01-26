@@ -41,6 +41,12 @@ export type ResizeState = {
   originalShape: { x: number; y: number; width: number; height: number }
 } | null
 
+export type MoveState = {
+  startX: number
+  startY: number
+  originalPositions: { id: string; x: number; y: number }[]
+} | null
+
 export type AppState = {
   activeTool: Tool
   shapes: Rectangle[]
@@ -49,6 +55,7 @@ export type AppState = {
   selectedIds: string[]
   marquee: MarqueeState
   resize: ResizeState
+  move: MoveState
 }
 
 export const initialState: AppState = {
@@ -65,4 +72,5 @@ export const initialState: AppState = {
   selectedIds: [],
   marquee: null,
   resize: null,
+  move: null,
 }

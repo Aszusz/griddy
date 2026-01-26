@@ -29,6 +29,7 @@ import {
   selectSelectedIds,
   selectMarquee,
   selectResize,
+  selectMove,
 } from '../store/selectors'
 import type { HandlePosition } from '../store/state'
 
@@ -90,10 +91,12 @@ export function Canvas() {
   const selectedIds = useAppSelector(selectSelectedIds)
   const marquee = useAppSelector(selectMarquee)
   const resize = useAppSelector(selectResize)
+  const move = useAppSelector(selectMove)
   const [canvasSize, setCanvasSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   })
+  const [hoverCursor, setHoverCursor] = useState('auto')
 
   const originX = canvasSize.width / 2
   const originY = canvasSize.height / 2
@@ -234,7 +237,16 @@ export function Canvas() {
     } else if (activeTool === 'select') {
       const clickedShape = shapes.find((s) => pointInRect(x, y, s))
       if (clickedShape) {
-        dispatch(AppActions['selection/clicked'](x, y, e.shiftKey))
+        const isAlreadySelected = selectedIds.includes(clickedShape.id)
+        if (e.shiftKey) {
+          // Shift-click toggles selection, no move
+          dispatch(AppActions['selection/clicked'](x, y, e.shiftKey))
+        } else {
+          if (!isAlreadySelected) {
+            dispatch(AppActions['selection/clicked'](x, y, false))
+          }
+          dispatch(AppActions['move/started'](x, y))
+        }
       } else {
         dispatch(AppActions['marquee/started'](x, y))
       }
@@ -251,6 +263,20 @@ export function Canvas() {
       dispatch(AppActions['drawing/moved'](x, y))
     } else if (marquee) {
       dispatch(AppActions['marquee/moved'](x, y))
+    } else if (move) {
+      dispatch(AppActions['move/moved'](x, y))
+    }
+
+    // Update cursor for hover state
+    if (activeTool === 'select' && !drawing && !marquee && !resize) {
+      const hoveredShape = shapes.find((s) => pointInRect(x, y, s))
+      if (hoveredShape && selectedIds.includes(hoveredShape.id)) {
+        setHoverCursor('move')
+      } else {
+        setHoverCursor('auto')
+      }
+    } else {
+      setHoverCursor('auto')
     }
   }
 
@@ -259,12 +285,14 @@ export function Canvas() {
       dispatch(AppActions['drawing/ended']())
     } else if (marquee) {
       dispatch(AppActions['marquee/ended']())
+    } else if (move) {
+      dispatch(AppActions['move/ended']())
     }
   }
 
   // Global mouse listeners to handle drag outside canvas
   useEffect(() => {
-    if (!drawing && !marquee) return
+    if (!drawing && !marquee && !move) return
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -274,10 +302,12 @@ export function Canvas() {
       const y = e.clientY - rect.top - originY
       if (drawing) dispatch(AppActions['drawing/moved'](x, y))
       if (marquee) dispatch(AppActions['marquee/moved'](x, y))
+      if (move) dispatch(AppActions['move/moved'](x, y))
     }
     const onGlobalMouseUp = () => {
       if (drawing) dispatch(AppActions['drawing/ended']())
       if (marquee) dispatch(AppActions['marquee/ended']())
+      if (move) dispatch(AppActions['move/ended']())
     }
     window.addEventListener('mousemove', onGlobalMouseMove)
     window.addEventListener('mouseup', onGlobalMouseUp)
@@ -285,7 +315,7 @@ export function Canvas() {
       window.removeEventListener('mousemove', onGlobalMouseMove)
       window.removeEventListener('mouseup', onGlobalMouseUp)
     }
-  }, [drawing, marquee, dispatch, originX, originY])
+  }, [drawing, marquee, move, dispatch, originX, originY])
 
   // Resize handles global listeners
   useEffect(() => {
@@ -342,6 +372,7 @@ export function Canvas() {
         width={canvasSize.width}
         height={canvasSize.height}
         className="absolute inset-0"
+        style={{ cursor: hoverCursor }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
