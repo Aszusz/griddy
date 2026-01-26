@@ -4,33 +4,37 @@ import { getState } from './harness'
 
 const { When, Then } = createBdd()
 
+async function focusCanvas(page: import('@playwright/test').Page) {
+  await page.getByTestId('canvas').focus()
+}
+
 When('I press Delete', async ({ page }) => {
-  await page.waitForTimeout(100)
+  await focusCanvas(page)
   await page.keyboard.press('Delete')
 })
 
 When('I press Backspace', async ({ page }) => {
-  await page.waitForTimeout(100)
+  await focusCanvas(page)
   await page.keyboard.press('Backspace')
 })
 
 When('I delete the selection', async ({ page }) => {
-  await page.waitForTimeout(100)
+  await focusCanvas(page)
   await page.keyboard.press('Delete')
 })
 
 When('I copy the selection', async ({ page }) => {
-  await page.waitForTimeout(100)
+  await focusCanvas(page)
   await page.keyboard.press('Meta+c')
 })
 
 When('I cut the selection', async ({ page }) => {
-  await page.waitForTimeout(100)
+  await focusCanvas(page)
   await page.keyboard.press('Meta+x')
 })
 
 When('I paste', async ({ page }) => {
-  await page.waitForTimeout(100)
+  await focusCanvas(page)
   await page.keyboard.press('Meta+v')
 })
 

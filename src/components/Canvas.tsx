@@ -76,6 +76,7 @@ export function Canvas() {
       <canvas
         ref={canvasRef}
         data-testid="canvas"
+        tabIndex={0}
         width={canvasSize.width}
         height={canvasSize.height}
         className="absolute inset-0"
