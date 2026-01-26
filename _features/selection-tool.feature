@@ -13,14 +13,14 @@ Feature: Selection Tool
   Scenario: Click shape to select it
     Given I open the app
     And a rectangle exists at (100, 100) with size (100, 100)
-    When I click at (550, 450)
+    When I click at (150, 150)
     Then 1 shape is selected
 
   Scenario: Click empty canvas to deselect
     Given I open the app
     And a rectangle exists at (100, 100) with size (100, 100)
     And the rectangle is selected
-    When I click at (200, 200)
+    When I click at (-200, -100)
     Then no shapes are selected
 
   Scenario: Shift-click to add to selection
@@ -56,13 +56,13 @@ Feature: Selection Tool
   Scenario: Selected shape shows selection border
     Given I open the app
     And a rectangle exists at (100, 100) with size (100, 100)
-    When I click at (550, 450)
+    When I click at (150, 150)
     Then the selected shape has a selection border
 
   Scenario: Selected shape shows resize handles
     Given I open the app
     And a rectangle exists at (100, 100) with size (100, 100)
-    When I click at (550, 450)
+    When I click at (150, 150)
     Then the selected shape has resize handles at corners
 
   Scenario: Switching tools clears selection

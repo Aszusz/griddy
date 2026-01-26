@@ -2,6 +2,7 @@ import { expect } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
 import { testIds } from './draw-rectangles.testIds'
 import { getState } from './harness'
+import { modelToBrowser } from './coords'
 
 const { Given, When, Then } = createBdd()
 
@@ -23,9 +24,11 @@ When(
     const box = await canvas.boundingBox()
     if (!box) throw new Error('Canvas not found')
 
-    await page.mouse.move(box.x + x1, box.y + y1)
+    const start = modelToBrowser(x1, y1, box)
+    const end = modelToBrowser(x2, y2, box)
+    await page.mouse.move(start.x, start.y)
     await page.mouse.down()
-    await page.mouse.move(box.x + x2, box.y + y2)
+    await page.mouse.move(end.x, end.y)
     await page.mouse.up()
   }
 )
@@ -50,7 +53,8 @@ When(
     const box = await canvas.boundingBox()
     if (!box) throw new Error('Canvas not found')
 
-    await page.mouse.move(box.x + x, box.y + y)
+    const pos = modelToBrowser(x, y, box)
+    await page.mouse.move(pos.x, pos.y)
     await page.mouse.down()
   }
 )
@@ -60,7 +64,8 @@ When('I drag to \\({int}, {int})', async ({ page }, x: number, y: number) => {
   const box = await canvas.boundingBox()
   if (!box) throw new Error('Canvas not found')
 
-  await page.mouse.move(box.x + x, box.y + y)
+  const pos = modelToBrowser(x, y, box)
+  await page.mouse.move(pos.x, pos.y)
 })
 
 Then('a preview rectangle is visible', async ({ page }) => {

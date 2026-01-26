@@ -3,6 +3,7 @@ import { createBdd } from 'playwright-bdd'
 import { testIds } from './selection-tool.testIds'
 import { testIds as drawTestIds } from './draw-rectangles.testIds'
 import { getState, setupWithState } from './harness'
+import { modelToBrowser } from './coords'
 
 const { Given, When, Then } = createBdd()
 
@@ -33,7 +34,8 @@ When('I click at \\({int}, {int})', async ({ page }, x: number, y: number) => {
   const canvas = page.getByTestId(drawTestIds.canvas)
   const box = await canvas.boundingBox()
   if (!box) throw new Error('Canvas not found')
-  await page.mouse.click(box.x + x, box.y + y)
+  const pos = modelToBrowser(x, y, box)
+  await page.mouse.click(pos.x, pos.y)
 })
 
 Then('{int} shape is selected', async ({ page }, count: number) => {
@@ -73,13 +75,14 @@ When('I shift-click the second rectangle', async ({ page }) => {
   const canvas = page.getByTestId(drawTestIds.canvas)
   const box = await canvas.boundingBox()
   if (!box) throw new Error('Canvas not found')
-  const originX = box.width / 2
-  const originY = box.height / 2
-  const centerX = originX + rect.x + rect.width / 2
-  const centerY = originY + rect.y + rect.height / 2
+  const pos = modelToBrowser(
+    rect.x + rect.width / 2,
+    rect.y + rect.height / 2,
+    box
+  )
 
   await page.keyboard.down('Shift')
-  await page.mouse.move(box.x + centerX, box.y + centerY)
+  await page.mouse.move(pos.x, pos.y)
   await page.mouse.down()
   await page.mouse.up()
   await page.keyboard.up('Shift')
@@ -98,12 +101,13 @@ When('I shift-click the first rectangle', async ({ page }) => {
   const canvas = page.getByTestId(drawTestIds.canvas)
   const box = await canvas.boundingBox()
   if (!box) throw new Error('Canvas not found')
-  const originX = box.width / 2
-  const originY = box.height / 2
-  const centerX = originX + rect.x + rect.width / 2
-  const centerY = originY + rect.y + rect.height / 2
+  const pos = modelToBrowser(
+    rect.x + rect.width / 2,
+    rect.y + rect.height / 2,
+    box
+  )
   await page.keyboard.down('Shift')
-  await page.mouse.move(box.x + centerX, box.y + centerY)
+  await page.mouse.move(pos.x, pos.y)
   await page.mouse.down()
   await page.mouse.up()
   await page.keyboard.up('Shift')
@@ -115,16 +119,11 @@ When(
     const canvas = page.getByTestId(drawTestIds.canvas)
     const box = await canvas.boundingBox()
     if (!box) throw new Error('Canvas not found')
-    // World coords to canvas coords (origin at center of viewport)
-    const originX = box.width / 2
-    const originY = box.height / 2
-    const canvasX1 = box.x + originX + x1
-    const canvasY1 = box.y + originY + y1
-    const canvasX2 = box.x + originX + x2
-    const canvasY2 = box.y + originY + y2
-    await page.mouse.move(canvasX1, canvasY1)
+    const start = modelToBrowser(x1, y1, box)
+    const end = modelToBrowser(x2, y2, box)
+    await page.mouse.move(start.x, start.y)
     await page.mouse.down()
-    await page.mouse.move(canvasX2, canvasY2)
+    await page.mouse.move(end.x, end.y)
     await page.mouse.up()
   }
 )
