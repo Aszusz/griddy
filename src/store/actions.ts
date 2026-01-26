@@ -42,6 +42,10 @@ export const AppActions = discUnion(
     'move/started': (x: number, y: number) => ({ x, y }),
     'move/moved': (x: number, y: number) => ({ x, y }),
     'move/ended': () => ({}),
+    'clipboard/copy': () => ({}),
+    'clipboard/cut': () => ({}),
+    'clipboard/paste': () => ({}),
+    'selection/delete': () => ({}),
   },
   'type'
 )

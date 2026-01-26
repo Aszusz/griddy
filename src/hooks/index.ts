@@ -7,3 +7,4 @@ export const useAppSelector = useSelector.withTypes<RootState>()
 export { useCanvasSize } from './useCanvasSize'
 export { useGlobalDrag } from './useGlobalDrag'
 export { useCanvasEvents } from './useCanvasEvents'
+export { useKeyboardShortcuts } from './useKeyboardShortcuts'

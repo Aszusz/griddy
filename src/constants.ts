@@ -24,6 +24,8 @@ export const SELECTION_HANDLE_STROKE_WIDTH = 1
 export const MARQUEE_FILL = 'rgba(34, 211, 238, 0.1)'
 export const MARQUEE_DASH_PATTERN = [4, 4] as const
 
+export const PASTE_OFFSET = GRID_SIZE
+
 import type { HandlePosition } from './store/state'
 
 type ShapeBounds = { x: number; y: number; width: number; height: number }

@@ -3,7 +3,7 @@ import type { AppState, Rectangle, MarqueeState, HandlePosition } from './state'
 import { initialState } from './state'
 import type { AppAction } from './actions'
 import { snapToGrid, pointInRect } from '../utils'
-import { GRID_SIZE, SHAPE_FILL, SHAPE_STROKE } from '../constants'
+import { GRID_SIZE, SHAPE_FILL, SHAPE_STROKE, PASTE_OFFSET } from '../constants'
 
 function computeResizedShape(
   original: { x: number; y: number; width: number; height: number },
@@ -273,6 +273,63 @@ export function reducer(
         ...state,
         move: null,
       }),
+      'clipboard/copy': () => {
+        if (state.activeTool !== 'select' || state.selectedIds.length === 0) {
+          return state
+        }
+        const selectedShapes = state.shapes.filter((s) =>
+          state.selectedIds.includes(s.id)
+        )
+        return {
+          ...state,
+          clipboard: { shapes: selectedShapes, pasteCount: 0 },
+        }
+      },
+      'clipboard/cut': () => {
+        if (state.activeTool !== 'select' || state.selectedIds.length === 0) {
+          return state
+        }
+        const selectedShapes = state.shapes.filter((s) =>
+          state.selectedIds.includes(s.id)
+        )
+        return {
+          ...state,
+          shapes: state.shapes.filter((s) => !state.selectedIds.includes(s.id)),
+          selectedIds: [],
+          clipboard: { shapes: selectedShapes, pasteCount: 0 },
+        }
+      },
+      'clipboard/paste': () => {
+        if (state.activeTool !== 'select' || !state.clipboard) {
+          return state
+        }
+        const offset = (state.clipboard.pasteCount + 1) * PASTE_OFFSET
+        const newShapes: Rectangle[] = state.clipboard.shapes.map((s) => ({
+          ...s,
+          id: crypto.randomUUID(),
+          x: s.x + offset,
+          y: s.y + offset,
+        }))
+        return {
+          ...state,
+          shapes: [...state.shapes, ...newShapes],
+          selectedIds: newShapes.map((s) => s.id),
+          clipboard: {
+            ...state.clipboard,
+            pasteCount: state.clipboard.pasteCount + 1,
+          },
+        }
+      },
+      'selection/delete': () => {
+        if (state.activeTool !== 'select' || state.selectedIds.length === 0) {
+          return state
+        }
+        return {
+          ...state,
+          shapes: state.shapes.filter((s) => !state.selectedIds.includes(s.id)),
+          selectedIds: [],
+        }
+      },
     },
     () => state
   )

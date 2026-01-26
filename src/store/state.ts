@@ -47,6 +47,11 @@ export type MoveState = {
   originalPositions: { id: string; x: number; y: number }[]
 } | null
 
+export type ClipboardState = {
+  shapes: Rectangle[]
+  pasteCount: number
+} | null
+
 export type AppState = {
   activeTool: Tool
   shapes: Rectangle[]
@@ -56,6 +61,7 @@ export type AppState = {
   marquee: MarqueeState
   resize: ResizeState
   move: MoveState
+  clipboard: ClipboardState
 }
 
 export const initialState: AppState = {
@@ -73,4 +79,5 @@ export const initialState: AppState = {
   marquee: null,
   resize: null,
   move: null,
+  clipboard: null,
 }
