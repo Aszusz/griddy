@@ -63,7 +63,7 @@ Feature: Selection Tool
     Given I open the app
     And a rectangle exists at (100, 100) with size (100, 100)
     When I click at (150, 150)
-    Then the selected shape has resize handles at corners
+    Then 8 resize handles are visible
 
   Scenario: Switching tools clears selection
     Given I open the app

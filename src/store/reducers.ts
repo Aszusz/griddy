@@ -1,9 +1,38 @@
 import { match } from 'disc-union'
-import type { AppState, Rectangle, MarqueeState } from './state'
+import type { AppState, Rectangle, MarqueeState, HandlePosition } from './state'
 import { initialState } from './state'
 import type { AppAction } from './actions'
 import { snapToGrid, pointInRect } from '../utils'
 import { GRID_SIZE, SHAPE_FILL, SHAPE_STROKE } from '../constants'
+
+function computeResizedShape(
+  original: { x: number; y: number; width: number; height: number },
+  handle: HandlePosition,
+  dx: number,
+  dy: number
+): { x: number; y: number; width: number; height: number } {
+  let { x, y, width, height } = original
+
+  // Apply deltas based on handle position
+  if (handle.includes('e')) {
+    width = Math.max(GRID_SIZE, snapToGrid(original.width + dx))
+  }
+  if (handle.includes('w')) {
+    const newWidth = Math.max(GRID_SIZE, snapToGrid(original.width - dx))
+    x = original.x + original.width - newWidth
+    width = newWidth
+  }
+  if (handle.includes('s')) {
+    height = Math.max(GRID_SIZE, snapToGrid(original.height + dy))
+  }
+  if (handle.includes('n')) {
+    const newHeight = Math.max(GRID_SIZE, snapToGrid(original.height - dy))
+    y = original.y + original.height - newHeight
+    height = newHeight
+  }
+
+  return { x, y, width, height }
+}
 
 function createRectFromDrawing(
   startX: number,
@@ -170,6 +199,46 @@ export function reducer(
         shapes: state.shapes.map((s) =>
           s.id === id ? { ...s, [prop]: color } : s
         ),
+      }),
+      'resize/started': ({ handle, x, y }) => {
+        if (state.selectedIds.length !== 1) return state
+        const shape = state.shapes.find((s) => s.id === state.selectedIds[0])
+        if (!shape) return state
+        return {
+          ...state,
+          resize: {
+            handle,
+            startX: x,
+            startY: y,
+            originalShape: {
+              x: shape.x,
+              y: shape.y,
+              width: shape.width,
+              height: shape.height,
+            },
+          },
+        }
+      },
+      'resize/moved': ({ x, y }) => {
+        if (!state.resize || state.selectedIds.length !== 1) return state
+        const dx = x - state.resize.startX
+        const dy = y - state.resize.startY
+        const newBounds = computeResizedShape(
+          state.resize.originalShape,
+          state.resize.handle,
+          dx,
+          dy
+        )
+        return {
+          ...state,
+          shapes: state.shapes.map((s) =>
+            s.id === state.selectedIds[0] ? { ...s, ...newBounds } : s
+          ),
+        }
+      },
+      'resize/ended': () => ({
+        ...state,
+        resize: null,
       }),
     },
     () => state

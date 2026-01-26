@@ -1,5 +1,5 @@
 import { discUnion, type DiscUnionOf } from 'disc-union'
-import type { Tool } from './state'
+import type { Tool, HandlePosition } from './state'
 
 export const AppActions = discUnion(
   {
@@ -32,6 +32,13 @@ export const AppActions = discUnion(
       prop: 'fill' | 'stroke',
       color: string
     ) => ({ id, prop, color }),
+    'resize/started': (handle: HandlePosition, x: number, y: number) => ({
+      handle,
+      x,
+      y,
+    }),
+    'resize/moved': (x: number, y: number) => ({ x, y }),
+    'resize/ended': () => ({}),
   },
   'type'
 )

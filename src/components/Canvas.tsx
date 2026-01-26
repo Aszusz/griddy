@@ -28,7 +28,58 @@ import {
   selectDrawing,
   selectSelectedIds,
   selectMarquee,
+  selectResize,
 } from '../store/selectors'
+import type { HandlePosition } from '../store/state'
+
+type ShapeBounds = { x: number; y: number; width: number; height: number }
+
+const HANDLE_POSITIONS: {
+  position: HandlePosition
+  cursor: string
+  getOffset: (shape: ShapeBounds) => { x: number; y: number }
+}[] = [
+  {
+    position: 'nw',
+    cursor: 'nwse-resize',
+    getOffset: (s) => ({ x: s.x, y: s.y }),
+  },
+  {
+    position: 'n',
+    cursor: 'ns-resize',
+    getOffset: (s) => ({ x: s.x + s.width / 2, y: s.y }),
+  },
+  {
+    position: 'ne',
+    cursor: 'nesw-resize',
+    getOffset: (s) => ({ x: s.x + s.width, y: s.y }),
+  },
+  {
+    position: 'e',
+    cursor: 'ew-resize',
+    getOffset: (s) => ({ x: s.x + s.width, y: s.y + s.height / 2 }),
+  },
+  {
+    position: 'se',
+    cursor: 'nwse-resize',
+    getOffset: (s) => ({ x: s.x + s.width, y: s.y + s.height }),
+  },
+  {
+    position: 's',
+    cursor: 'ns-resize',
+    getOffset: (s) => ({ x: s.x + s.width / 2, y: s.y + s.height }),
+  },
+  {
+    position: 'sw',
+    cursor: 'nesw-resize',
+    getOffset: (s) => ({ x: s.x, y: s.y + s.height }),
+  },
+  {
+    position: 'w',
+    cursor: 'ew-resize',
+    getOffset: (s) => ({ x: s.x, y: s.y + s.height / 2 }),
+  },
+]
 
 export function Canvas() {
   const dispatch = useAppDispatch()
@@ -38,6 +89,7 @@ export function Canvas() {
   const drawing = useAppSelector(selectDrawing)
   const selectedIds = useAppSelector(selectSelectedIds)
   const marquee = useAppSelector(selectMarquee)
+  const resize = useAppSelector(selectResize)
   const [canvasSize, setCanvasSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -118,31 +170,6 @@ export function Canvas() {
           shape.width + SELECTION_BORDER_WIDTH,
           shape.height + SELECTION_BORDER_WIDTH
         )
-
-        // Draw resize handles at corners
-        ctx.fillStyle = SELECTION_HANDLE_FILL
-        ctx.strokeStyle = SELECTION_BORDER_COLOR
-        ctx.lineWidth = SELECTION_HANDLE_STROKE_WIDTH
-        const corners = [
-          [shape.x, shape.y],
-          [shape.x + shape.width, shape.y],
-          [shape.x, shape.y + shape.height],
-          [shape.x + shape.width, shape.y + shape.height],
-        ]
-        corners.forEach(([cx, cy]) => {
-          ctx.fillRect(
-            cx - SELECTION_HANDLE_SIZE / 2,
-            cy - SELECTION_HANDLE_SIZE / 2,
-            SELECTION_HANDLE_SIZE,
-            SELECTION_HANDLE_SIZE
-          )
-          ctx.strokeRect(
-            cx - SELECTION_HANDLE_SIZE / 2,
-            cy - SELECTION_HANDLE_SIZE / 2,
-            SELECTION_HANDLE_SIZE,
-            SELECTION_HANDLE_SIZE
-          )
-        })
       }
     })
 
@@ -260,6 +287,48 @@ export function Canvas() {
     }
   }, [drawing, marquee, dispatch, originX, originY])
 
+  // Resize handles global listeners
+  useEffect(() => {
+    if (!resize) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const onGlobalMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      const x = e.clientX - rect.left - originX
+      const y = e.clientY - rect.top - originY
+      dispatch(AppActions['resize/moved'](x, y))
+    }
+    const onGlobalMouseUp = () => {
+      dispatch(AppActions['resize/ended']())
+    }
+    window.addEventListener('mousemove', onGlobalMouseMove)
+    window.addEventListener('mouseup', onGlobalMouseUp)
+    return () => {
+      window.removeEventListener('mousemove', onGlobalMouseMove)
+      window.removeEventListener('mouseup', onGlobalMouseUp)
+    }
+  }, [resize, dispatch, originX, originY])
+
+  // Get single selected shape for resize handles
+  const singleSelectedShape =
+    selectedIds.length === 1
+      ? shapes.find((s) => s.id === selectedIds[0])
+      : undefined
+
+  const handleResizeMouseDown = (
+    e: React.MouseEvent,
+    position: HandlePosition
+  ) => {
+    e.stopPropagation()
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left - originX
+    const y = e.clientY - rect.top - originY
+    dispatch(AppActions['resize/started'](position, x, y))
+  }
+
   return (
     <div
       ref={containerRef}
@@ -277,6 +346,30 @@ export function Canvas() {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       />
+
+      {/* Resize handles - only for single selection */}
+      {singleSelectedShape &&
+        HANDLE_POSITIONS.map(({ position, cursor, getOffset }) => {
+          const offset = getOffset(singleSelectedShape)
+          return (
+            <div
+              key={position}
+              data-testid={`resize-handle-${position}`}
+              onMouseDown={(e) => handleResizeMouseDown(e, position)}
+              style={{
+                position: 'absolute',
+                left: originX + offset.x - SELECTION_HANDLE_SIZE / 2,
+                top: originY + offset.y - SELECTION_HANDLE_SIZE / 2,
+                width: SELECTION_HANDLE_SIZE,
+                height: SELECTION_HANDLE_SIZE,
+                backgroundColor: SELECTION_HANDLE_FILL,
+                border: `${SELECTION_HANDLE_STROKE_WIDTH}px solid ${SELECTION_BORDER_COLOR}`,
+                cursor,
+                boxSizing: 'border-box',
+              }}
+            />
+          )
+        })}
 
       {/* Coordinate display */}
       <div

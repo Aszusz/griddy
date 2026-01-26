@@ -142,9 +142,3 @@ Then('the selected shape has a selection border', async ({ page }) => {
   expect(state.app.selectedIds.length).toBeGreaterThan(0)
   // Visual verification - selection border rendered on canvas
 })
-
-Then('the selected shape has resize handles at corners', async ({ page }) => {
-  const state = await getState(page)
-  expect(state.app.selectedIds.length).toBeGreaterThan(0)
-  // Visual verification - resize handles rendered on canvas
-})

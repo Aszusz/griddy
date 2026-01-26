@@ -32,6 +32,15 @@ export type MarqueeState = {
   currentY: number
 } | null
 
+export type HandlePosition = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w'
+
+export type ResizeState = {
+  handle: HandlePosition
+  startX: number
+  startY: number
+  originalShape: { x: number; y: number; width: number; height: number }
+} | null
+
 export type AppState = {
   activeTool: Tool
   shapes: Rectangle[]
@@ -39,6 +48,7 @@ export type AppState = {
   viewport: ViewportState
   selectedIds: string[]
   marquee: MarqueeState
+  resize: ResizeState
 }
 
 export const initialState: AppState = {
@@ -54,4 +64,5 @@ export const initialState: AppState = {
   },
   selectedIds: [],
   marquee: null,
+  resize: null,
 }
