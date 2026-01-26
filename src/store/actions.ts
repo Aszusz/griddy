@@ -17,6 +17,21 @@ export const AppActions = discUnion(
     'marquee/started': (x: number, y: number) => ({ x, y }),
     'marquee/moved': (x: number, y: number) => ({ x, y }),
     'marquee/ended': () => ({}),
+    'shape/positionChanged': (
+      id: string,
+      axis: 'x' | 'y',
+      rawValue: string
+    ) => ({ id, axis, rawValue }),
+    'shape/sizeChanged': (
+      id: string,
+      dim: 'width' | 'height',
+      rawValue: string
+    ) => ({ id, dim, rawValue }),
+    'shape/colorChanged': (
+      id: string,
+      prop: 'fill' | 'stroke',
+      color: string
+    ) => ({ id, prop, color }),
   },
   'type'
 )

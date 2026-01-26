@@ -8,4 +8,10 @@ export const testIds = {
   fill: 'inspector-fill',
   stroke: 'inspector-stroke',
   multiSelectLabel: 'inspector-multi-select-label',
+  xInput: 'inspector-x-input',
+  yInput: 'inspector-y-input',
+  widthInput: 'inspector-width-input',
+  heightInput: 'inspector-height-input',
+  fillInput: 'inspector-fill-input',
+  strokeInput: 'inspector-stroke-input',
 }

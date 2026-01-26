@@ -143,6 +143,34 @@ export function reducer(
           .map((s) => s.id)
         return { ...state, selectedIds: intersectingIds, marquee: null }
       },
+      'shape/positionChanged': ({ id, axis, rawValue }) => {
+        const parsed = parseInt(rawValue, 10)
+        if (isNaN(parsed)) return state
+        return {
+          ...state,
+          shapes: state.shapes.map((s) =>
+            s.id === id ? { ...s, [axis]: snapToGrid(parsed) } : s
+          ),
+        }
+      },
+      'shape/sizeChanged': ({ id, dim, rawValue }) => {
+        const parsed = parseInt(rawValue, 10)
+        if (isNaN(parsed)) return state
+        return {
+          ...state,
+          shapes: state.shapes.map((s) =>
+            s.id === id
+              ? { ...s, [dim]: Math.max(GRID_SIZE, snapToGrid(parsed)) }
+              : s
+          ),
+        }
+      },
+      'shape/colorChanged': ({ id, prop, color }) => ({
+        ...state,
+        shapes: state.shapes.map((s) =>
+          s.id === id ? { ...s, [prop]: color } : s
+        ),
+      }),
     },
     () => state
   )
