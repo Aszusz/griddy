@@ -43,7 +43,7 @@ Feature: Draw Rectangles
     Given I open the app
     And I select the Rectangle tool
     When I draw a rectangle from (440, 340) to (540, 440)
-    And I draw a rectangle from (560, 360) to (660, 460)
+    And I draw a rectangle from (200, 200) to (300, 300)
     Then 2 rectangles exist on the canvas
 
   Scenario: Grid dots align with rectangle snap points
