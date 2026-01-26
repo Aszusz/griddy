@@ -2,15 +2,15 @@ import { match } from 'disc-union'
 import type { AppState, Rectangle, MarqueeState } from './state'
 import { initialState } from './state'
 import type { AppAction } from './actions'
-import { snapToGrid } from '../utils'
-import { GRID_SIZE } from '../constants'
+import { snapToGrid, pointInRect } from '../utils'
+import { GRID_SIZE, SHAPE_FILL, SHAPE_STROKE } from '../constants'
 
 function createRectFromDrawing(
   startX: number,
   startY: number,
   endX: number,
   endY: number
-): Omit<Rectangle, 'id'> {
+): Omit<Rectangle, 'id' | 'fill' | 'stroke'> {
   const x1 = snapToGrid(Math.min(startX, endX))
   const y1 = snapToGrid(Math.min(startY, endY))
   const x2 = snapToGrid(Math.max(startX, endX))
@@ -21,15 +21,6 @@ function createRectFromDrawing(
     width: x2 - x1,
     height: y2 - y1,
   }
-}
-
-function pointInRect(x: number, y: number, rect: Rectangle): boolean {
-  return (
-    x >= rect.x &&
-    x <= rect.x + rect.width &&
-    y >= rect.y &&
-    y <= rect.y + rect.height
-  )
 }
 
 function rectsIntersect(
@@ -91,6 +82,8 @@ export function reducer(
         const newShape: Rectangle = {
           ...rect,
           id: crypto.randomUUID(),
+          fill: SHAPE_FILL,
+          stroke: SHAPE_STROKE,
         }
         return {
           ...state,

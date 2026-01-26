@@ -11,7 +11,7 @@ export function InspectorSection({
 }) {
   return (
     <div
-      className={`animate-in fade-in px-4 py-3 ${!last ? 'border-b border-white/4' : ''}`}
+      className={`animate-in fade-in px-4 py-3 duration-100 ${!last ? 'border-b border-white/4' : ''}`}
       style={{ animationDelay: `${delay}ms`, animationFillMode: 'backwards' }}
     >
       <div className="mb-2 font-mono text-[10px] font-medium tracking-widest text-zinc-600">

@@ -5,3 +5,5 @@ export const selectShapes = (state: RootState) => state.app.shapes
 export const selectDrawing = (state: RootState) => state.app.drawing
 export const selectSelectedIds = (state: RootState) => state.app.selectedIds
 export const selectMarquee = (state: RootState) => state.app.marquee
+export const selectSelectedShapes = (state: RootState) =>
+  state.app.shapes.filter((s) => state.app.selectedIds.includes(s.id))

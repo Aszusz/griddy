@@ -2,8 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   GRID_SIZE,
   CANVAS_BG,
-  SHAPE_FILL,
-  SHAPE_STROKE,
   PREVIEW_FILL,
   PREVIEW_STROKE,
   GRID_DOT_COLOR,
@@ -21,7 +19,7 @@ import {
   MARQUEE_FILL,
   MARQUEE_DASH_PATTERN,
 } from '../constants'
-import { snapToGrid } from '../utils'
+import { snapToGrid, pointInRect } from '../utils'
 import { useAppDispatch, useAppSelector } from '../hooks'
 import { AppActions } from '../store/actions'
 import {
@@ -104,8 +102,8 @@ export function Canvas() {
 
     // Draw shapes
     shapes.forEach((shape) => {
-      ctx.fillStyle = SHAPE_FILL
-      ctx.strokeStyle = SHAPE_STROKE
+      ctx.fillStyle = shape.fill
+      ctx.strokeStyle = shape.stroke
       ctx.lineWidth = SHAPE_STROKE_WIDTH
       ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
       ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
@@ -207,9 +205,7 @@ export function Canvas() {
     if (activeTool === 'rectangle') {
       dispatch(AppActions['drawing/started'](x, y))
     } else if (activeTool === 'select') {
-      const clickedShape = shapes.find(
-        (s) => x >= s.x && x <= s.x + s.width && y >= s.y && y <= s.y + s.height
-      )
+      const clickedShape = shapes.find((s) => pointInRect(x, y, s))
       if (clickedShape) {
         dispatch(AppActions['selection/clicked'](x, y, e.shiftKey))
       } else {

@@ -6,6 +6,8 @@ export type Rectangle = {
   y: number
   width: number
   height: number
+  fill: string
+  stroke: string
 }
 
 export type DrawingState = {

@@ -4,6 +4,7 @@ import { testIds } from './selection-tool.testIds'
 import { testIds as drawTestIds } from './draw-rectangles.testIds'
 import { getState, setupWithState } from './harness'
 import { modelToBrowser } from './coords'
+import { SHAPE_FILL, SHAPE_STROKE } from '../../src/constants'
 
 const { Given, When, Then } = createBdd()
 
@@ -24,7 +25,15 @@ Given(
     const state = await getState(page)
     const shapes = [
       ...state.app.shapes,
-      { id: `rect-${state.app.shapes.length}`, x, y, width, height },
+      {
+        id: `rect-${state.app.shapes.length}`,
+        x,
+        y,
+        width,
+        height,
+        fill: SHAPE_FILL,
+        stroke: SHAPE_STROKE,
+      },
     ]
     await setupWithState(page, { initialState: { shapes } })
   }
