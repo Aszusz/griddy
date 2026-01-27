@@ -16,6 +16,7 @@ const UNDOABLE_ACTIONS = new Set([
   'clipboard/cut',
   'clipboard/paste',
   'selection/delete',
+  'text/startEdit', // Push before editing starts to capture state before changes
 ])
 
 export function reducer(
@@ -104,6 +105,15 @@ export function reducer(
       'zoom/set': ({ zoom }) => handlers.handleZoomSet(stateForAction, zoom),
       'zoom/atPoint': ({ delta, screenX, screenY }) =>
         handlers.handleZoomAtPoint(stateForAction, delta, screenX, screenY),
+      'text/startEdit': ({ id }) =>
+        handlers.handleTextStartEdit(stateForAction, id),
+      'text/stopEdit': () => handlers.handleTextStopEdit(stateForAction),
+      'text/updateContent': ({ id, text }) =>
+        handlers.handleTextUpdateContent(stateForAction, id, text),
+      'text/fontChanged': ({ id, fontFamily }) =>
+        handlers.handleTextFontChanged(stateForAction, id, fontFamily),
+      'text/alignChanged': ({ id, align }) =>
+        handlers.handleTextAlignChanged(stateForAction, id, align),
     },
     () => stateForAction
   )

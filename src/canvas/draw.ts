@@ -1,5 +1,5 @@
 import type { Shape, MarqueeState } from '../store/state'
-import { isLineShape } from '../utils'
+import { isLineShape, isTextShape } from '../utils'
 import {
   TWO_PI,
   GRID_SIZE,
@@ -19,11 +19,18 @@ import {
   CROSSHAIR_CENTER_RADIUS,
   ARROWHEAD_SIZE,
   ARROWHEAD_ANGLE,
+  FONT_MAP,
+  TEXT_FONT_SIZE,
+  TEXT_LINE_HEIGHT,
+  TEXT_PADDING,
+  TEXT_PREVIEW_FILL,
+  TEXT_DASH_PATTERN,
 } from '../constants'
 
 type Rect = { x: number; y: number; width: number; height: number }
 type PreviewRect = Rect & { isEllipse: boolean }
 type PreviewLine = { x: number; y: number; x2: number; y2: number }
+type PreviewText = Rect
 
 function drawArrowhead(
   ctx: CanvasRenderingContext2D,
@@ -86,14 +93,66 @@ export function drawGrid(
   }
 }
 
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number
+): string[] {
+  const words = text.split(' ')
+  const lines: string[] = []
+  let currentLine = ''
+
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word
+    const metrics = ctx.measureText(testLine)
+    if (metrics.width > maxWidth && currentLine) {
+      lines.push(currentLine)
+      currentLine = word
+    } else {
+      currentLine = testLine
+    }
+  }
+  if (currentLine) {
+    lines.push(currentLine)
+  }
+  return lines
+}
+
 export function drawShapes(
   ctx: CanvasRenderingContext2D,
-  shapes: Shape[]
+  shapes: Shape[],
+  editingTextId?: string | null
 ): void {
   shapes.forEach((shape) => {
-    ctx.strokeStyle = shape.stroke
-    ctx.lineWidth = SHAPE_STROKE_WIDTH
-    if (isLineShape(shape)) {
+    if (isTextShape(shape)) {
+      // Don't draw text shape if it's being edited (will be rendered as HTML)
+      if (shape.id === editingTextId) return
+      ctx.save()
+      ctx.beginPath()
+      ctx.rect(shape.x, shape.y, shape.width, shape.height)
+      ctx.clip()
+      ctx.fillStyle = shape.fill
+      ctx.font = `${TEXT_FONT_SIZE}px ${FONT_MAP[shape.fontFamily]}`
+      ctx.textBaseline = 'top'
+      ctx.textAlign = shape.align
+      const lines = wrapText(ctx, shape.text, shape.width - TEXT_PADDING * 2)
+      const xOffset =
+        shape.align === 'center'
+          ? shape.width / 2
+          : shape.align === 'right'
+            ? shape.width - TEXT_PADDING
+            : TEXT_PADDING
+      lines.forEach((line, i) => {
+        ctx.fillText(
+          line,
+          shape.x + xOffset,
+          shape.y + TEXT_PADDING + i * TEXT_LINE_HEIGHT
+        )
+      })
+      ctx.restore()
+    } else if (isLineShape(shape)) {
+      ctx.strokeStyle = shape.stroke
+      ctx.lineWidth = SHAPE_STROKE_WIDTH
       ctx.beginPath()
       ctx.moveTo(shape.x, shape.y)
       ctx.lineTo(shape.x2, shape.y2)
@@ -105,6 +164,8 @@ export function drawShapes(
         drawArrowhead(ctx, shape.x2, shape.y2, shape.x, shape.y)
       }
     } else {
+      ctx.strokeStyle = shape.stroke
+      ctx.lineWidth = SHAPE_STROKE_WIDTH
       ctx.fillStyle = shape.fill
       if (shape.type === 'ellipse') {
         fillAndStrokeEllipse(ctx, shape)
@@ -196,6 +257,30 @@ export function drawPreviewLine(
   ctx.moveTo(previewLine.x, previewLine.y)
   ctx.lineTo(previewLine.x2, previewLine.y2)
   ctx.stroke()
+}
+
+export function drawPreviewText(
+  ctx: CanvasRenderingContext2D,
+  previewText: PreviewText | null
+): void {
+  if (!previewText || previewText.width <= 0 || previewText.height <= 0) return
+  ctx.fillStyle = TEXT_PREVIEW_FILL
+  ctx.strokeStyle = PREVIEW_STROKE
+  ctx.lineWidth = SHAPE_STROKE_WIDTH
+  ctx.setLineDash([...TEXT_DASH_PATTERN])
+  ctx.fillRect(
+    previewText.x,
+    previewText.y,
+    previewText.width,
+    previewText.height
+  )
+  ctx.strokeRect(
+    previewText.x,
+    previewText.y,
+    previewText.width,
+    previewText.height
+  )
+  ctx.setLineDash([])
 }
 
 export function drawMarquee(

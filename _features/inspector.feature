@@ -184,3 +184,59 @@ Feature: Inspector Panel
     And the line is selected
     When I toggle the end arrowhead off
     Then the line has no arrowhead at the end
+
+  # Text Inspector
+  Scenario: Text shows text-specific properties in Inspector
+    Given I open the app
+    And a text box exists at (100, 100) with size (160, 60) containing "Hello"
+    When I click at (150, 130)
+    Then the Inspector panel is visible
+    And the Inspector title is "Text"
+    And the Inspector shows X as 100
+    And the Inspector shows Y as 100
+    And the Inspector shows W as 160
+    And the Inspector shows H as 60
+    And the Inspector shows font family selector
+    And the Inspector shows alignment buttons
+    And the Inspector shows fill color
+    And the Inspector does not show stroke color
+
+  Scenario: Text has default Sans font
+    Given I open the app
+    And a text box exists at (100, 100) with size (160, 60) containing "Hello"
+    When I click at (150, 130)
+    Then the Inspector shows font family as "Sans"
+
+  Scenario Outline: Change font family
+    Given I open the app
+    And a text box exists at (100, 100) with size (160, 60) containing "Hello"
+    And the text box is selected
+    When I set Inspector font family to "<font>"
+    Then the Inspector shows font family as "<font>"
+    And the text box uses font "<font>"
+
+    Examples:
+      | font  |
+      | Serif |
+      | Sans  |
+      | Mono  |
+
+  Scenario: Text has default Left alignment
+    Given I open the app
+    And a text box exists at (100, 100) with size (160, 60) containing "Hello"
+    When I click at (150, 130)
+    Then the Inspector shows alignment as "Left"
+
+  Scenario Outline: Change text alignment
+    Given I open the app
+    And a text box exists at (100, 100) with size (160, 60) containing "Hello"
+    And the text box is selected
+    When I set Inspector alignment to "<alignment>"
+    Then the Inspector shows alignment as "<alignment>"
+    And the text box has alignment "<alignment>"
+
+    Examples:
+      | alignment |
+      | Left      |
+      | Center    |
+      | Right     |

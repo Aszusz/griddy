@@ -51,3 +51,8 @@ Given(
     }
   }
 )
+
+When('I clear the text', async ({ page }) => {
+  await page.keyboard.press('Meta+a')
+  await page.keyboard.press('Backspace')
+})

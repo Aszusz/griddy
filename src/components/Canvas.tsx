@@ -12,22 +12,26 @@ import {
   selectMarquee,
   selectPreviewRect,
   selectPreviewLine,
+  selectPreviewText,
   selectPanX,
   selectPanY,
   selectZoom,
+  selectEditingTextId,
 } from '../store/selectors'
 import { AppActions } from '../store/actions'
 import { useAppDispatch } from '../hooks'
-import { isLineShape } from '../utils'
+import { isLineShape, isTextShape } from '../utils'
 import {
   drawGrid,
   drawShapes,
   drawSelectionBounds,
   drawPreview,
   drawPreviewLine,
+  drawPreviewText,
   drawMarquee,
   drawCrosshair,
 } from '../canvas/draw'
+import { TextEditor } from './TextEditor'
 import { ResizeHandles } from './ResizeHandles'
 import { LineEndpointHandles } from './LineEndpointHandles'
 
@@ -39,6 +43,8 @@ export function Canvas() {
   const marquee = useAppSelector(selectMarquee)
   const previewRect = useAppSelector(selectPreviewRect)
   const previewLine = useAppSelector(selectPreviewLine)
+  const previewText = useAppSelector(selectPreviewText)
+  const editingTextId = useAppSelector(selectEditingTextId)
   const panX = useAppSelector(selectPanX)
   const panY = useAppSelector(selectPanY)
   const zoom = useAppSelector(selectZoom)
@@ -68,9 +74,18 @@ export function Canvas() {
       ? singleSelectedShape
       : undefined
   const singleSelectedRectShape =
-    singleSelectedShape && !isLineShape(singleSelectedShape)
+    singleSelectedShape &&
+    !isLineShape(singleSelectedShape) &&
+    !isTextShape(singleSelectedShape)
       ? singleSelectedShape
       : undefined
+  const singleSelectedTextShape =
+    singleSelectedShape && isTextShape(singleSelectedShape)
+      ? singleSelectedShape
+      : undefined
+  const editingTextShape = editingTextId
+    ? shapes.find((s) => s.id === editingTextId && isTextShape(s))
+    : undefined
   // Lines show point handles instead of selection border
   const selectionBoundsShapes = useMemo(
     () => (singleSelectedLine ? [] : selectedShapes),
@@ -87,10 +102,11 @@ export function Canvas() {
     ctx.scale(zoom, zoom)
 
     drawGrid(ctx, originX, originY, canvasSize.width, canvasSize.height, zoom)
-    drawShapes(ctx, shapes)
+    drawShapes(ctx, shapes, editingTextId)
     drawSelectionBounds(ctx, selectionBoundsShapes, zoom)
     drawPreview(ctx, previewRect)
     drawPreviewLine(ctx, previewLine)
+    drawPreviewText(ctx, previewText)
     drawMarquee(ctx, marquee)
     drawCrosshair(ctx)
 
@@ -99,12 +115,14 @@ export function Canvas() {
     shapes,
     previewRect,
     previewLine,
+    previewText,
     canvasSize,
     originX,
     originY,
     zoom,
     selectionBoundsShapes,
     marquee,
+    editingTextId,
   ])
 
   return (
@@ -137,6 +155,23 @@ export function Canvas() {
         originY={originY}
         zoom={zoom}
       />
+      {editingTextShape && isTextShape(editingTextShape) && (
+        <TextEditor
+          shape={editingTextShape}
+          originX={originX}
+          originY={originY}
+          zoom={zoom}
+        />
+      )}
+      {/* Text shapes also need resize handles */}
+      {singleSelectedTextShape && !editingTextId && (
+        <ResizeHandles
+          shape={singleSelectedTextShape}
+          originX={originX}
+          originY={originY}
+          zoom={zoom}
+        />
+      )}
     </div>
   )
 }

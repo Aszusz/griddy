@@ -1,6 +1,6 @@
-import type { AppState, RectShape, LineShape } from '../state'
+import type { AppState, RectShape, LineShape, TextShape } from '../state'
 import { snapToGrid } from '../../utils'
-import { SHAPE_FILL, SHAPE_STROKE } from '../../constants'
+import { SHAPE_FILL, SHAPE_STROKE, TEXT_FILL } from '../../constants'
 
 function createRectFromDrawing(
   startX: number,
@@ -46,6 +46,34 @@ export function handleDrawingEnded(state: AppState): AppState {
       arrowEnd: state.activeTool === 'arrow' ? true : undefined,
     }
     return { ...state, shapes: [...state.shapes, newLine], drawing: null }
+  }
+
+  if (state.activeTool === 'text') {
+    const rect = createRectFromDrawing(
+      state.drawing.startX,
+      state.drawing.startY,
+      state.drawing.currentX,
+      state.drawing.currentY
+    )
+    if (rect.width === 0 || rect.height === 0) {
+      return { ...state, drawing: null }
+    }
+    const newText: TextShape = {
+      ...rect,
+      id: crypto.randomUUID(),
+      type: 'text',
+      text: '',
+      fill: TEXT_FILL,
+      fontFamily: 'sans',
+      align: 'left',
+    }
+    return {
+      ...state,
+      shapes: [...state.shapes, newText],
+      drawing: null,
+      editingTextId: newText.id,
+      selectedIds: [newText.id],
+    }
   }
 
   const rect = createRectFromDrawing(

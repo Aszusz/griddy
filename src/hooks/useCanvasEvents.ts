@@ -10,8 +10,9 @@ import {
   selectMove,
   selectResize,
   selectPan,
+  selectEditingTextId,
 } from '../store/selectors'
-import { pointHitsShape } from '../utils'
+import { pointHitsShape, isTextShape } from '../utils'
 
 export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
   const dispatch = useAppDispatch()
@@ -23,6 +24,7 @@ export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
   const move = useAppSelector(selectMove)
   const resize = useAppSelector(selectResize)
   const pan = useAppSelector(selectPan)
+  const editingTextId = useAppSelector(selectEditingTextId)
   const [hoverCursor, setHoverCursor] = useState('auto')
 
   const getCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -44,6 +46,11 @@ export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
   }
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // If editing text and clicking on canvas, stop editing (blur will handle it)
+    // Don't start other actions on this click to avoid creating history entries
+    if (editingTextId) {
+      return
+    }
     if (activeTool === 'pan') {
       const { x, y } = getScreenCoords(e)
       dispatch(AppActions['pan/started'](x, y))
@@ -54,7 +61,8 @@ export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
       activeTool === 'rectangle' ||
       activeTool === 'ellipse' ||
       activeTool === 'line' ||
-      activeTool === 'arrow'
+      activeTool === 'arrow' ||
+      activeTool === 'text'
     ) {
       dispatch(AppActions['drawing/started'](x, y))
     } else if (activeTool === 'select') {
@@ -119,6 +127,14 @@ export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
     dispatch(AppActions['mouse/left']())
   }
 
+  const handleDoubleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const { x, y } = getCoords(e)
+    const clickedShape = shapes.find((s) => pointHitsShape(x, y, s))
+    if (clickedShape && isTextShape(clickedShape)) {
+      dispatch(AppActions['text/startEdit'](clickedShape.id))
+    }
+  }
+
   // Compute cursor based on tool and state
   let cursor = hoverCursor
   if (activeTool === 'pan') {
@@ -131,6 +147,7 @@ export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
       onMouseMove: handleMouseMove,
       onMouseUp: handleMouseUp,
       onMouseLeave: handleMouseLeave,
+      onDoubleClick: handleDoubleClick,
     },
     hoverCursor: cursor,
   }

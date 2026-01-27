@@ -6,6 +6,7 @@ export const CANVAS_BG = '#0a0a0b'
 
 export const SHAPE_FILL = '#3b82f6'
 export const SHAPE_STROKE = '#60a5fa'
+export const TEXT_FILL = '#000000'
 export const PREVIEW_FILL = '#3b82f680'
 export const PREVIEW_STROKE = '#60a5fa80'
 
@@ -42,6 +43,18 @@ export const MIN_ZOOM = 0.25
 export const MAX_ZOOM = 8
 export const ZOOM_STEP = 1.1
 export const ZOOM_PRESETS = [0.25, 0.5, 0.75, 1, 1.5, 2, 4, 8] as const
+
+export const FONT_MAP = {
+  serif: 'Georgia, serif',
+  sans: 'system-ui, sans-serif',
+  mono: 'ui-monospace, monospace',
+} as const
+
+export const TEXT_FONT_SIZE = 16
+export const TEXT_LINE_HEIGHT = 20
+export const TEXT_PADDING = 4
+export const TEXT_PREVIEW_FILL = 'rgba(0, 0, 0, 0.1)'
+export const TEXT_DASH_PATTERN = [4, 4] as const
 
 import type { HandlePosition } from './store/state'
 

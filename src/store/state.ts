@@ -1,6 +1,13 @@
 import { GRID_SIZE } from '../constants'
 
-export type Tool = 'select' | 'rectangle' | 'ellipse' | 'line' | 'arrow' | 'pan'
+export type Tool =
+  | 'select'
+  | 'rectangle'
+  | 'ellipse'
+  | 'line'
+  | 'arrow'
+  | 'pan'
+  | 'text'
 
 export type ShapeType = 'rectangle' | 'ellipse' | 'line'
 
@@ -27,7 +34,20 @@ export type LineShape = {
   arrowEnd?: boolean
 }
 
-export type Shape = RectShape | LineShape
+export type TextShape = {
+  id: string
+  type: 'text'
+  x: number
+  y: number
+  width: number
+  height: number
+  text: string
+  fill: string
+  fontFamily: 'serif' | 'sans' | 'mono'
+  align: 'left' | 'center' | 'right'
+}
+
+export type Shape = RectShape | LineShape | TextShape
 
 export type DrawingState = {
   startX: number
@@ -122,6 +142,7 @@ export type AppState = {
   future: UndoableState[]
   mouseX: number | null
   mouseY: number | null
+  editingTextId: string | null
 }
 
 export const initialState: AppState = {
@@ -151,4 +172,5 @@ export const initialState: AppState = {
   future: [],
   mouseX: null,
   mouseY: null,
+  editingTextId: null,
 }

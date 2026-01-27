@@ -180,7 +180,7 @@ Then(
   'the rectangle has stroke color {string}',
   async ({ page }, color: string) => {
     const state = await getState(page)
-    const rect = state.app.shapes[0]
+    const rect = state.app.shapes[0] as RectShape
     expect(rect.stroke).toBe(color)
   }
 )
@@ -254,5 +254,81 @@ Then(
     } else {
       expect(line?.arrowEnd).toBeFalsy()
     }
+  }
+)
+
+// Text-specific inspector steps
+
+Then('the Inspector shows font family selector', async ({ page }) => {
+  await expect(page.getByTestId(testIds.fontFamilySelector)).toBeVisible()
+})
+
+Then('the Inspector shows alignment buttons', async ({ page }) => {
+  await expect(page.getByTestId(testIds.alignmentButtons)).toBeVisible()
+})
+
+Then('the Inspector does not show stroke color', async ({ page }) => {
+  await expect(page.getByTestId(testIds.stroke)).toBeHidden()
+})
+
+Then(
+  'the Inspector shows font family as {string}',
+  async ({ page }, font: string) => {
+    await expect(page.getByTestId(testIds.fontFamilySelector)).toHaveValue(font)
+  }
+)
+
+When(
+  'I set Inspector font family to {string}',
+  async ({ page }, font: string) => {
+    await page.getByTestId(testIds.fontFamilySelector).selectOption(font)
+  }
+)
+
+Then('the text box uses font {string}', async ({ page }, font: string) => {
+  const state = await getState(page)
+  const textShape = state.app.shapes.find((s) => s.type === 'text')
+  expect(textShape).toBeDefined()
+  expect((textShape as { fontFamily: string }).fontFamily).toBe(
+    font.toLowerCase()
+  )
+})
+
+Then(
+  'the Inspector shows alignment as {string}',
+  async ({ page }, alignment: string) => {
+    const testId =
+      alignment === 'Left'
+        ? testIds.alignmentLeft
+        : alignment === 'Center'
+          ? testIds.alignmentCenter
+          : testIds.alignmentRight
+    await expect(page.getByTestId(testId)).toHaveAttribute(
+      'data-active',
+      'true'
+    )
+  }
+)
+
+When(
+  'I set Inspector alignment to {string}',
+  async ({ page }, alignment: string) => {
+    const testId =
+      alignment === 'Left'
+        ? testIds.alignmentLeft
+        : alignment === 'Center'
+          ? testIds.alignmentCenter
+          : testIds.alignmentRight
+    await page.getByTestId(testId).click()
+  }
+)
+
+Then(
+  'the text box has alignment {string}',
+  async ({ page }, alignment: string) => {
+    const state = await getState(page)
+    const textShape = state.app.shapes.find((s) => s.type === 'text')
+    expect(textShape).toBeDefined()
+    expect((textShape as { align: string }).align).toBe(alignment.toLowerCase())
   }
 )

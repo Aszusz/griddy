@@ -76,6 +76,20 @@ export const AppActions = discUnion(
       screenX,
       screenY,
     }),
+    'text/startEdit': (id: string) => ({ id }),
+    'text/stopEdit': () => ({}),
+    'text/updateContent': (id: string, text: string) => ({ id, text }),
+    'text/fontChanged': (
+      id: string,
+      fontFamily: 'serif' | 'sans' | 'mono'
+    ) => ({
+      id,
+      fontFamily,
+    }),
+    'text/alignChanged': (id: string, align: 'left' | 'center' | 'right') => ({
+      id,
+      align,
+    }),
   },
   'type'
 )

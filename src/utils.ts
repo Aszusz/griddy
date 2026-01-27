@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { GRID_SIZE, LINE_HIT_TOLERANCE } from './constants'
-import type { Shape, LineShape } from './store/state'
+import type { Shape, LineShape, TextShape } from './store/state'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -11,9 +11,16 @@ export function isLineShape(s: Shape): s is LineShape {
   return s.type === 'line'
 }
 
+export function isTextShape(s: Shape): s is TextShape {
+  return s.type === 'text'
+}
+
 export function pointHitsShape(x: number, y: number, s: Shape): boolean {
   if (isLineShape(s)) {
     return pointNearLine(x, y, s.x, s.y, s.x2, s.y2, LINE_HIT_TOLERANCE)
+  }
+  if (isTextShape(s)) {
+    return pointInRect(x, y, s)
   }
   if (s.type === 'ellipse') {
     return pointInEllipse(x, y, s)

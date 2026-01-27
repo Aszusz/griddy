@@ -6,8 +6,8 @@ import { ArrowheadControl } from './ArrowheadControl'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { selectSelectedShapes } from '../store/selectors'
 import { AppActions } from '../store/actions'
-import type { RectShape, LineShape } from '../store/state'
-import { isLineShape } from '../utils'
+import type { RectShape, LineShape, TextShape } from '../store/state'
+import { isLineShape, isTextShape } from '../utils'
 
 export function Inspector() {
   const selectedShapes = useAppSelector(selectSelectedShapes)
@@ -61,6 +61,141 @@ export function Inspector() {
             previewBorder
             onCommit={(v) =>
               dispatch(AppActions['shape/colorChanged'](shape.id, 'stroke', v))
+            }
+          />
+        </InspectorSection>
+      </InspectorPanel>
+    )
+  }
+
+  // Text inspector
+  if (isTextShape(shape)) {
+    const textShape = shape as TextShape
+    return (
+      <InspectorPanel title="Text">
+        <InspectorSection title="Position" delay={50}>
+          <div className="grid grid-cols-2 gap-2">
+            <InspectorField
+              label="X"
+              value={String(textShape.x)}
+              testId="inspector-x"
+              inputTestId="inspector-x-input"
+              onCommit={(v) =>
+                dispatch(
+                  AppActions['shape/positionChanged'](textShape.id, 'x', v)
+                )
+              }
+            />
+            <InspectorField
+              label="Y"
+              value={String(textShape.y)}
+              testId="inspector-y"
+              inputTestId="inspector-y-input"
+              onCommit={(v) =>
+                dispatch(
+                  AppActions['shape/positionChanged'](textShape.id, 'y', v)
+                )
+              }
+            />
+          </div>
+        </InspectorSection>
+
+        <InspectorSection title="Size" delay={75}>
+          <div className="grid grid-cols-2 gap-2">
+            <InspectorField
+              label="W"
+              value={String(textShape.width)}
+              testId="inspector-width"
+              inputTestId="inspector-width-input"
+              onCommit={(v) =>
+                dispatch(
+                  AppActions['shape/sizeChanged'](textShape.id, 'width', v)
+                )
+              }
+            />
+            <InspectorField
+              label="H"
+              value={String(textShape.height)}
+              testId="inspector-height"
+              inputTestId="inspector-height-input"
+              onCommit={(v) =>
+                dispatch(
+                  AppActions['shape/sizeChanged'](textShape.id, 'height', v)
+                )
+              }
+            />
+          </div>
+        </InspectorSection>
+
+        <InspectorSection title="Font" delay={100}>
+          <select
+            data-testid="inspector-font-family-selector"
+            value={
+              textShape.fontFamily.charAt(0).toUpperCase() +
+              textShape.fontFamily.slice(1)
+            }
+            onChange={(e) =>
+              dispatch(
+                AppActions['text/fontChanged'](
+                  textShape.id,
+                  e.target.value.toLowerCase() as 'serif' | 'sans' | 'mono'
+                )
+              )
+            }
+            className="w-full rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white"
+          >
+            <option value="Serif">Serif</option>
+            <option value="Sans">Sans</option>
+            <option value="Mono">Mono</option>
+          </select>
+        </InspectorSection>
+
+        <InspectorSection title="Alignment" delay={125}>
+          <div data-testid="inspector-alignment-buttons" className="flex gap-1">
+            <button
+              data-testid="inspector-alignment-left"
+              data-active={textShape.align === 'left'}
+              onClick={() =>
+                dispatch(AppActions['text/alignChanged'](textShape.id, 'left'))
+              }
+              className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+            >
+              Left
+            </button>
+            <button
+              data-testid="inspector-alignment-center"
+              data-active={textShape.align === 'center'}
+              onClick={() =>
+                dispatch(
+                  AppActions['text/alignChanged'](textShape.id, 'center')
+                )
+              }
+              className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+            >
+              Center
+            </button>
+            <button
+              data-testid="inspector-alignment-right"
+              data-active={textShape.align === 'right'}
+              onClick={() =>
+                dispatch(AppActions['text/alignChanged'](textShape.id, 'right'))
+              }
+              className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+            >
+              Right
+            </button>
+          </div>
+        </InspectorSection>
+
+        <InspectorSection title="Fill" delay={150} last>
+          <ColorField
+            value={textShape.fill}
+            testId="inspector-fill"
+            inputTestId="inspector-fill-input"
+            onCommit={(v) =>
+              dispatch(
+                AppActions['shape/colorChanged'](textShape.id, 'fill', v)
+              )
             }
           />
         </InspectorSection>

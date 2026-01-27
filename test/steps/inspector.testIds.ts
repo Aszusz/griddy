@@ -16,4 +16,9 @@ export const testIds = {
   strokeInput: 'inspector-stroke-input',
   arrowStartToggle: 'inspector-arrow-start-toggle',
   arrowEndToggle: 'inspector-arrow-end-toggle',
+  fontFamilySelector: 'inspector-font-family-selector',
+  alignmentButtons: 'inspector-alignment-buttons',
+  alignmentLeft: 'inspector-alignment-left',
+  alignmentCenter: 'inspector-alignment-center',
+  alignmentRight: 'inspector-alignment-right',
 }

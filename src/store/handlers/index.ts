@@ -44,3 +44,10 @@ export {
   handleZoomSet,
   handleZoomAtPoint,
 } from './zoom'
+export {
+  handleTextStartEdit,
+  handleTextStopEdit,
+  handleTextUpdateContent,
+  handleTextFontChanged,
+  handleTextAlignChanged,
+} from './text'

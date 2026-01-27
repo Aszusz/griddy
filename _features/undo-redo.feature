@@ -156,6 +156,26 @@ Feature: Undo/Redo
     And I undo
     Then 0 ellipses exist on the canvas
 
+  # Text-specific
+  Scenario: Undo text creation
+    Given I open the app
+    And I select the Text tool
+    When I draw a text box from (40, 40) to (200, 100)
+    And I type "Hello"
+    And I click outside the text box
+    And I undo
+    Then 0 text boxes exist on the canvas
+
+  Scenario: Undo text content edit
+    Given I open the app
+    And a text box exists at (100, 100) with size (160, 60) containing "Hello"
+    When I double-click at (150, 130)
+    And I clear the text
+    And I type "Goodbye"
+    And I click outside the text box
+    And I undo
+    Then the text box contains "Hello"
+
   # Viewport changes excluded
   Scenario: Zoom changes are not in undo history
     Given I open the app

@@ -64,7 +64,15 @@ const toolGroups: ToolDef[][] = [
       testId: 'toolbox-line',
     },
   ],
-  [{ icon: Type, label: 'Text', shortcut: 'T' }],
+  [
+    {
+      icon: Type,
+      label: 'Text',
+      shortcut: 'T',
+      tool: 'text',
+      testId: 'toolbox-text',
+    },
+  ],
   [
     { icon: ZoomIn, label: 'Zoom', shortcut: 'Z' },
     {

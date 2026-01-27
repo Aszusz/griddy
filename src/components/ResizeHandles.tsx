@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import type { RectShape, HandlePosition } from '../store/state'
+import type { RectShape, TextShape, HandlePosition } from '../store/state'
 import { useAppDispatch } from '../hooks'
 import { AppActions } from '../store/actions'
 import {
@@ -11,7 +11,7 @@ import {
 } from '../constants'
 
 type Props = {
-  shape: RectShape | undefined
+  shape: RectShape | TextShape | undefined
   originX: number
   originY: number
   zoom?: number
