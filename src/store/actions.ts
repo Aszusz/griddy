@@ -63,6 +63,14 @@ export const AppActions = discUnion(
     'history/redo': () => ({}),
     'mouse/moved': (x: number, y: number) => ({ x, y }),
     'mouse/left': () => ({}),
+    'zoom/in': () => ({}),
+    'zoom/out': () => ({}),
+    'zoom/set': (zoom: number) => ({ zoom }),
+    'zoom/atPoint': (delta: number, screenX: number, screenY: number) => ({
+      delta,
+      screenX,
+      screenY,
+    }),
   },
   'type'
 )

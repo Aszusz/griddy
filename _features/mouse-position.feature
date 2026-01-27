@@ -13,3 +13,16 @@ Feature: Mouse Position Display
     Then the status bar shows coordinates "100, 50"
     When I move the mouse outside the canvas
     Then the status bar shows coordinates "—, —"
+
+  # Coordinates with zoom
+  Scenario: Coordinates reflect world position when zoomed in
+    Given I open the app
+    And the zoom is at 200%
+    When I move the mouse to the viewport center
+    Then the status bar shows coordinates "0, 0"
+
+  Scenario: Coordinates reflect world position when zoomed out
+    Given I open the app
+    And the zoom is at 50%
+    When I move the mouse to the viewport center
+    Then the status bar shows coordinates "0, 0"

@@ -156,6 +156,17 @@ Feature: Undo/Redo
     And I undo
     Then 0 ellipses exist on the canvas
 
+  # Viewport changes excluded
+  Scenario: Zoom changes are not in undo history
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    And the rectangle is selected
+    When I press Delete
+    And I zoom in to 200%
+    And I undo
+    Then 1 rectangles exist on the canvas
+    And the status bar shows zoom "200%"
+
   # History limit
   Scenario: History limit prevents unbounded growth
     Given I open the app

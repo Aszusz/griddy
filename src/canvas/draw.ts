@@ -37,15 +37,24 @@ export function drawGrid(
   originX: number,
   originY: number,
   canvasWidth: number,
-  canvasHeight: number
+  canvasHeight: number,
+  zoom = 1
 ): void {
   ctx.fillStyle = GRID_DOT_COLOR
-  const startX = -originX - (((-originX % GRID_SIZE) + GRID_SIZE) % GRID_SIZE)
-  const startY = -originY - (((-originY % GRID_SIZE) + GRID_SIZE) % GRID_SIZE)
-  for (let x = startX; x < canvasWidth - originX; x += GRID_SIZE) {
-    for (let y = startY; y < canvasHeight - originY; y += GRID_SIZE) {
+  // Convert screen bounds to world coordinates
+  const worldLeft = -originX / zoom
+  const worldTop = -originY / zoom
+  const worldRight = (canvasWidth - originX) / zoom
+  const worldBottom = (canvasHeight - originY) / zoom
+
+  // Snap to grid
+  const startX = Math.floor(worldLeft / GRID_SIZE) * GRID_SIZE
+  const startY = Math.floor(worldTop / GRID_SIZE) * GRID_SIZE
+
+  for (let x = startX; x <= worldRight; x += GRID_SIZE) {
+    for (let y = startY; y <= worldBottom; y += GRID_SIZE) {
       ctx.beginPath()
-      ctx.arc(x, y, GRID_DOT_RADIUS, 0, TWO_PI)
+      ctx.arc(x, y, GRID_DOT_RADIUS / zoom, 0, TWO_PI)
       ctx.fill()
     }
   }
@@ -94,7 +103,8 @@ function getShapeBounds(s: Shape): {
 
 export function drawSelectionBounds(
   ctx: CanvasRenderingContext2D,
-  selectedShapes: Shape[]
+  selectedShapes: Shape[],
+  zoom = 1
 ): void {
   if (selectedShapes.length === 0) return
   const bounds = selectedShapes.map(getShapeBounds)
@@ -103,13 +113,17 @@ export function drawSelectionBounds(
   const maxX = Math.max(...bounds.map((b) => b.maxX))
   const maxY = Math.max(...bounds.map((b) => b.maxY))
 
+  // Keep border width constant on screen (divide by zoom since canvas is scaled)
+  const adjustedBorderWidth = SELECTION_BORDER_WIDTH / zoom
+  const adjustedOffset = SELECTION_BORDER_OFFSET / zoom
+
   ctx.strokeStyle = SELECTION_BORDER_COLOR
-  ctx.lineWidth = SELECTION_BORDER_WIDTH
+  ctx.lineWidth = adjustedBorderWidth
   ctx.strokeRect(
-    minX - SELECTION_BORDER_OFFSET,
-    minY - SELECTION_BORDER_OFFSET,
-    maxX - minX + SELECTION_BORDER_WIDTH,
-    maxY - minY + SELECTION_BORDER_WIDTH
+    minX - adjustedOffset,
+    minY - adjustedOffset,
+    maxX - minX + adjustedBorderWidth,
+    maxY - minY + adjustedBorderWidth
   )
 }
 

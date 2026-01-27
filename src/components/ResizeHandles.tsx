@@ -14,9 +14,10 @@ type Props = {
   shape: RectShape | undefined
   originX: number
   originY: number
+  zoom?: number
 }
 
-export function ResizeHandles({ shape, originX, originY }: Props) {
+export function ResizeHandles({ shape, originX, originY, zoom = 1 }: Props) {
   const dispatch = useAppDispatch()
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -28,8 +29,9 @@ export function ResizeHandles({ shape, originX, originY }: Props) {
     const canvas = container?.querySelector('canvas')
     if (!canvas) return
     const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left - originX
-    const y = e.clientY - rect.top - originY
+    // Convert to world coordinates
+    const x = (e.clientX - rect.left - originX) / zoom
+    const y = (e.clientY - rect.top - originY) / zoom
     dispatch(AppActions['resize/started'](position, x, y))
   }
 
@@ -44,8 +46,8 @@ export function ResizeHandles({ shape, originX, originY }: Props) {
             onMouseDown={(e) => handleMouseDown(e, position)}
             style={{
               position: 'absolute',
-              left: originX + offset.x - SELECTION_HANDLE_SIZE / 2,
-              top: originY + offset.y - SELECTION_HANDLE_SIZE / 2,
+              left: originX + offset.x * zoom - SELECTION_HANDLE_SIZE / 2,
+              top: originY + offset.y * zoom - SELECTION_HANDLE_SIZE / 2,
               width: SELECTION_HANDLE_SIZE,
               height: SELECTION_HANDLE_SIZE,
               backgroundColor: SELECTION_HANDLE_FILL,

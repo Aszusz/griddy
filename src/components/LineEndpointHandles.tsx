@@ -13,9 +13,15 @@ type Props = {
   line: LineShape | undefined
   originX: number
   originY: number
+  zoom?: number
 }
 
-export function LineEndpointHandles({ line, originX, originY }: Props) {
+export function LineEndpointHandles({
+  line,
+  originX,
+  originY,
+  zoom = 1,
+}: Props) {
   const dispatch = useAppDispatch()
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -27,8 +33,9 @@ export function LineEndpointHandles({ line, originX, originY }: Props) {
     const canvas = container?.querySelector('canvas')
     if (!canvas) return
     const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left - originX
-    const y = e.clientY - rect.top - originY
+    // Convert to world coordinates
+    const x = (e.clientX - rect.left - originX) / zoom
+    const y = (e.clientY - rect.top - originY) / zoom
     dispatch(AppActions['lineEndpoint/started'](endpoint, x, y))
   }
 
@@ -46,8 +53,8 @@ export function LineEndpointHandles({ line, originX, originY }: Props) {
           onMouseDown={(e) => handleMouseDown(e, position)}
           style={{
             position: 'absolute',
-            left: originX + x - SELECTION_HANDLE_SIZE / 2,
-            top: originY + y - SELECTION_HANDLE_SIZE / 2,
+            left: originX + x * zoom - SELECTION_HANDLE_SIZE / 2,
+            top: originY + y * zoom - SELECTION_HANDLE_SIZE / 2,
             width: SELECTION_HANDLE_SIZE,
             height: SELECTION_HANDLE_SIZE,
             backgroundColor: SELECTION_HANDLE_FILL,

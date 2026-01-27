@@ -44,6 +44,20 @@ export function useKeyboardShortcuts() {
         return
       }
 
+      // Zoom in (Cmd/Ctrl+=)
+      if (isMod && (e.key === '=' || e.key === '+')) {
+        e.preventDefault()
+        dispatch(AppActions['zoom/in']())
+        return
+      }
+
+      // Zoom out (Cmd/Ctrl+-)
+      if (isMod && e.key === '-') {
+        e.preventDefault()
+        dispatch(AppActions['zoom/out']())
+        return
+      }
+
       // Undo (Cmd/Ctrl+Z)
       if (isMod && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()

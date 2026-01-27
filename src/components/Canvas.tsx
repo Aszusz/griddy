@@ -14,9 +14,12 @@ import {
   selectPreviewLine,
   selectPanX,
   selectPanY,
+  selectZoom,
   selectMouseX,
   selectMouseY,
 } from '../store/selectors'
+import { AppActions } from '../store/actions'
+import { useAppDispatch } from '../hooks'
 import { isLineShape } from '../utils'
 import {
   drawGrid,
@@ -32,6 +35,7 @@ import { LineEndpointHandles } from './LineEndpointHandles'
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const dispatch = useAppDispatch()
   const shapes = useAppSelector(selectShapes)
   const selectedIds = useAppSelector(selectSelectedIds)
   const marquee = useAppSelector(selectMarquee)
@@ -39,6 +43,7 @@ export function Canvas() {
   const previewLine = useAppSelector(selectPreviewLine)
   const panX = useAppSelector(selectPanX)
   const panY = useAppSelector(selectPanY)
+  const zoom = useAppSelector(selectZoom)
   const mouseX = useAppSelector(selectMouseX)
   const mouseY = useAppSelector(selectMouseY)
 
@@ -46,8 +51,18 @@ export function Canvas() {
   const originX = canvasSize.width / 2 + panX
   const originY = canvasSize.height / 2 + panY
 
-  const { handlers, hoverCursor } = useCanvasEvents(originX, originY)
-  useGlobalDrag(canvasRef, originX, originY)
+  const { handlers, hoverCursor } = useCanvasEvents(originX, originY, zoom)
+  useGlobalDrag(canvasRef, originX, originY, zoom)
+
+  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
+    if (e.metaKey || e.ctrlKey) {
+      e.preventDefault()
+      const rect = e.currentTarget.getBoundingClientRect()
+      const screenX = e.clientX - rect.left
+      const screenY = e.clientY - rect.top
+      dispatch(AppActions['zoom/atPoint'](e.deltaY, screenX, screenY))
+    }
+  }
 
   const selectedShapes = shapes.filter((s) => selectedIds.includes(s.id))
   const singleSelectedShape =
@@ -73,10 +88,11 @@ export function Canvas() {
     ctx.save()
     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
     ctx.translate(originX, originY)
+    ctx.scale(zoom, zoom)
 
-    drawGrid(ctx, originX, originY, canvasSize.width, canvasSize.height)
+    drawGrid(ctx, originX, originY, canvasSize.width, canvasSize.height, zoom)
     drawShapes(ctx, shapes)
-    drawSelectionBounds(ctx, selectionBoundsShapes)
+    drawSelectionBounds(ctx, selectionBoundsShapes, zoom)
     drawPreview(ctx, previewRect)
     drawPreviewLine(ctx, previewLine)
     drawMarquee(ctx, marquee)
@@ -90,6 +106,7 @@ export function Canvas() {
     canvasSize,
     originX,
     originY,
+    zoom,
     selectionBoundsShapes,
     marquee,
   ])
@@ -110,16 +127,19 @@ export function Canvas() {
         className="absolute inset-0"
         style={{ cursor: hoverCursor }}
         {...handlers}
+        onWheel={handleWheel}
       />
       <ResizeHandles
         shape={singleSelectedRectShape}
         originX={originX}
         originY={originY}
+        zoom={zoom}
       />
       <LineEndpointHandles
         line={singleSelectedLine}
         originX={originX}
         originY={originY}
+        zoom={zoom}
       />
       <div
         className="animate-in fade-in absolute bottom-4 left-4 flex items-center gap-3 font-mono text-[10px] tracking-wider text-zinc-600 duration-500"
@@ -129,7 +149,7 @@ export function Canvas() {
           {mouseX !== null && mouseY !== null ? `${mouseX}, ${mouseY}` : '—, —'}
         </span>
         <span className="text-zinc-700">•</span>
-        <span>100%</span>
+        <span data-testid="status-bar-zoom">{Math.round(zoom * 100)}%</span>
       </div>
     </div>
   )

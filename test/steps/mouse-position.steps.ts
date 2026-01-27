@@ -29,3 +29,10 @@ When('I move the mouse outside the canvas', async ({ page }) => {
   // Move mouse outside viewport to trigger document mouseleave
   await page.mouse.move(-10, -10)
 })
+
+When('I move the mouse to the viewport center', async ({ page }) => {
+  const canvas = page.getByTestId(canvasTestIds.canvas)
+  const box = await canvas.boundingBox()
+  if (!box) throw new Error('Canvas not found')
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+})

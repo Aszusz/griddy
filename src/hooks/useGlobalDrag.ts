@@ -13,7 +13,8 @@ import {
 export function useGlobalDrag(
   canvasRef: RefObject<HTMLCanvasElement | null>,
   originX: number,
-  originY: number
+  originY: number,
+  zoom = 1
 ) {
   const dispatch = useAppDispatch()
   const drawing = useAppSelector(selectDrawing)
@@ -32,8 +33,9 @@ export function useGlobalDrag(
 
     const onGlobalMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left - originX
-      const y = e.clientY - rect.top - originY
+      // Convert from screen to world coordinates
+      const x = (e.clientX - rect.left - originX) / zoom
+      const y = (e.clientY - rect.top - originY) / zoom
       if (drawing) dispatch(AppActions['drawing/moved'](x, y))
       if (marquee) dispatch(AppActions['marquee/moved'](x, y))
       if (move) dispatch(AppActions['move/moved'](x, y))
@@ -72,6 +74,7 @@ export function useGlobalDrag(
     dispatch,
     originX,
     originY,
+    zoom,
     canvasRef,
   ])
 }

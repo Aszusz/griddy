@@ -97,6 +97,11 @@ export function reducer(
         mouseY: Math.round(y),
       }),
       'mouse/left': () => ({ ...stateForAction, mouseX: null, mouseY: null }),
+      'zoom/in': () => handlers.handleZoomIn(stateForAction),
+      'zoom/out': () => handlers.handleZoomOut(stateForAction),
+      'zoom/set': ({ zoom }) => handlers.handleZoomSet(stateForAction, zoom),
+      'zoom/atPoint': ({ delta, screenX, screenY }) =>
+        handlers.handleZoomAtPoint(stateForAction, delta, screenX, screenY),
     },
     () => stateForAction
   )

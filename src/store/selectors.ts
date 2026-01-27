@@ -16,6 +16,7 @@ export const selectMove = (state: RootState) => state.app.move
 export const selectPan = (state: RootState) => state.app.pan
 export const selectPanX = (state: RootState) => state.app.panX
 export const selectPanY = (state: RootState) => state.app.panY
+export const selectZoom = (state: RootState) => state.app.zoom
 export const selectMouseX = (state: RootState) => state.app.mouseX
 export const selectMouseY = (state: RootState) => state.app.mouseY
 

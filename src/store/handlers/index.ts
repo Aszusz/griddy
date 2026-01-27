@@ -37,3 +37,9 @@ export {
   pushHistory,
   pushHistoryEntry,
 } from './history'
+export {
+  handleZoomIn,
+  handleZoomOut,
+  handleZoomSet,
+  handleZoomAtPoint,
+} from './zoom'

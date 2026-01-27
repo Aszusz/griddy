@@ -113,6 +113,7 @@ export type AppState = {
   panX: number
   panY: number
   pan: PanState
+  zoom: number
   spacebarHeld: boolean
   toolBeforeSpacebar: Tool | null
   past: UndoableState[]
@@ -141,6 +142,7 @@ export const initialState: AppState = {
   panX: 0,
   panY: 0,
   pan: null,
+  zoom: 1,
   spacebarHeld: false,
   toolBeforeSpacebar: null,
   past: [],

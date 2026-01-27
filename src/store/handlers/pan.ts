@@ -32,7 +32,7 @@ export function handlePanMoved(
 }
 
 export function handlePanReset(state: AppState): AppState {
-  return { ...state, panX: 0, panY: 0 }
+  return { ...state, panX: 0, panY: 0, zoom: 1 }
 }
 
 export function handleSpacebarPressed(state: AppState): AppState {

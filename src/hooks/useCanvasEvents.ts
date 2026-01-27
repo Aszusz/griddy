@@ -13,7 +13,7 @@ import {
 } from '../store/selectors'
 import { pointHitsShape } from '../utils'
 
-export function useCanvasEvents(originX: number, originY: number) {
+export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
   const dispatch = useAppDispatch()
   const activeTool = useAppSelector(selectActiveTool)
   const shapes = useAppSelector(selectShapes)
@@ -28,9 +28,10 @@ export function useCanvasEvents(originX: number, originY: number) {
   const getCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     // originX/originY already includes panX/panY from Canvas
+    // Convert from screen to world coordinates by dividing by zoom
     return {
-      x: e.clientX - rect.left - originX,
-      y: e.clientY - rect.top - originY,
+      x: (e.clientX - rect.left - originX) / zoom,
+      y: (e.clientY - rect.top - originY) / zoom,
     }
   }
 

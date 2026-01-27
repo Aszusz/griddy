@@ -66,7 +66,7 @@ Feature: Canvas Panning
     When I pan the viewport by (10000, 10000)
     Then the viewport is panned by (10000, 10000)
 
-  # Reset View
+  # Reset View (see also canvas-zoom.feature for zoom reset)
   Scenario: Cmd+0 resets pan to origin
     Given I open the app
     And the viewport has pan offset (200, 150)
