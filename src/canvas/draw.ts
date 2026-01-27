@@ -167,7 +167,6 @@ export function drawShapes(
 ): void {
   shapes.forEach((shape) => {
     if (isTextShape(shape)) {
-      // Don't draw text shape if it's being edited (will be rendered as HTML)
       if (shape.id === editingTextId) return
       ctx.save()
       ctx.beginPath()
