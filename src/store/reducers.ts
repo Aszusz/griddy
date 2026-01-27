@@ -28,7 +28,8 @@ export function reducer(
         marquee: { startX: x, startY: y, currentX: x, currentY: y },
       }),
       'marquee/moved': ({ x, y }) => handlers.handleMarqueeMoved(state, x, y),
-      'marquee/ended': () => handlers.handleMarqueeEnded(state),
+      'marquee/ended': ({ shiftKey }) =>
+        handlers.handleMarqueeEnded(state, shiftKey),
       'shape/positionChanged': ({ id, axis, rawValue }) =>
         handlers.handleShapePositionChanged(state, id, axis, rawValue),
       'shape/sizeChanged': ({ id, dim, rawValue }) =>

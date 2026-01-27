@@ -1,8 +1,18 @@
-import { GRID_SIZE } from './constants'
+import { GRID_SIZE, LINE_HIT_TOLERANCE } from './constants'
 import type { Shape, LineShape } from './store/state'
 
 export function isLineShape(s: Shape): s is LineShape {
   return s.type === 'line'
+}
+
+export function pointHitsShape(x: number, y: number, s: Shape): boolean {
+  if (isLineShape(s)) {
+    return pointNearLine(x, y, s.x, s.y, s.x2, s.y2, LINE_HIT_TOLERANCE)
+  }
+  if (s.type === 'ellipse') {
+    return pointInEllipse(x, y, s)
+  }
+  return pointInRect(x, y, s)
 }
 
 export function snapToGrid(value: number): number {
@@ -20,6 +30,21 @@ export function pointInRect(
     y >= rect.y &&
     y <= rect.y + rect.height
   )
+}
+
+export function pointInEllipse(
+  px: number,
+  py: number,
+  rect: { x: number; y: number; width: number; height: number }
+): boolean {
+  const cx = rect.x + rect.width / 2
+  const cy = rect.y + rect.height / 2
+  const rx = rect.width / 2
+  const ry = rect.height / 2
+  if (rx === 0 || ry === 0) return false
+  const dx = px - cx
+  const dy = py - cy
+  return (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1
 }
 
 export function pointNearLine(

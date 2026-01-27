@@ -5,23 +5,9 @@ import { testIds as drawTestIds } from './draw-rectangles.testIds'
 import { getState, setupWithState, focusCanvas } from './harness'
 import { modelToBrowser } from './coords'
 import { SHAPE_STROKE } from '../../src/constants'
+import { isLineShape } from '../../src/utils'
 
 const { Given, When, Then } = createBdd()
-
-// Type for line shape (not yet in Shape union)
-type LineShape = {
-  id: string
-  type: 'line'
-  x: number
-  y: number
-  x2: number
-  y2: number
-  stroke: string
-}
-
-function isLine(s: unknown): s is LineShape {
-  return (s as { type: string }).type === 'line'
-}
 
 Given('I select the Line tool', async ({ page }) => {
   await page.getByTestId(testIds.lineTool).click({ force: true })
@@ -55,45 +41,25 @@ When(
   }
 )
 
-// Used as both Given (setup) and Then (assertion)
-// When shapes exist, it's an assertion. When none exist, it's setup.
 Given(
   'a line exists from \\({int}, {int}) to \\({int}, {int})',
   async ({ page }, x1: number, y1: number, x2: number, y2: number) => {
     const state = await getState(page)
-    const shapes = state.app.shapes as unknown[]
-    const existingLine = shapes.find(
-      (s) => isLine(s) && s.x === x1 && s.y === y1 && s.x2 === x2 && s.y2 === y2
-    ) as LineShape | undefined
-
-    if (existingLine) {
-      // Line exists - this is an assertion, just verify
-      expect(existingLine).toBeDefined()
-    } else if (shapes.some(isLine)) {
-      // Lines exist but not matching coords - this is an assertion
-      const line = shapes.find(isLine) as LineShape
-      expect(line.x).toBe(x1)
-      expect(line.y).toBe(y1)
-      expect(line.x2).toBe(x2)
-      expect(line.y2).toBe(y2)
-    } else {
-      // No lines - this is setup, create one
-      const newShapes = [
-        ...state.app.shapes,
-        {
-          id: `line-${state.app.shapes.length}`,
-          type: 'line' as const,
-          x: x1,
-          y: y1,
-          x2,
-          y2,
-          stroke: SHAPE_STROKE,
-        },
-      ]
-      await setupWithState(page, {
-        initialState: { shapes: newShapes as typeof state.app.shapes },
-      })
-    }
+    const newShapes = [
+      ...state.app.shapes,
+      {
+        id: `line-${state.app.shapes.length}`,
+        type: 'line' as const,
+        x: x1,
+        y: y1,
+        x2,
+        y2,
+        stroke: SHAPE_STROKE,
+      },
+    ]
+    await setupWithState(page, {
+      initialState: { shapes: newShapes as typeof state.app.shapes },
+    })
   }
 )
 
@@ -109,30 +75,27 @@ Then('no preview line is visible', async ({ page }) => {
 
 Then('the line has visible stroke', async ({ page }) => {
   const state = await getState(page)
-  const shapes = state.app.shapes as unknown[]
-  const line = shapes.find(isLine)
+  const line = state.app.shapes.find(isLineShape)
   expect(line).toBeDefined()
 })
 
 Then('the line has no fill', async ({ page }) => {
   const state = await getState(page)
-  const shapes = state.app.shapes as unknown[]
-  const line = shapes.find(isLine)
+  const line = state.app.shapes.find(isLineShape)
   expect(line).toBeDefined()
   // Lines don't have fill by design
 })
 
 Then('{int} lines exist on the canvas', async ({ page }, count: number) => {
   const state = await getState(page)
-  const shapes = state.app.shapes as unknown[]
-  const lines = shapes.filter(isLine)
+  const lines = state.app.shapes.filter(isLineShape)
   expect(lines.length).toBe(count)
 })
 
 Given('the line is selected', async ({ page }) => {
   const state = await getState(page)
   const { shapes } = state.app
-  const line = (shapes as unknown[]).find(isLine)
+  const line = shapes.find(isLineShape)
   if (!line) throw new Error('No line found')
   await setupWithState(page, {
     initialState: { shapes, selectedIds: [line.id] },

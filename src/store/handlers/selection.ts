@@ -5,41 +5,30 @@ import type {
   LineShape,
   MarqueeState,
 } from '../state'
-import { pointInRect, pointNearLine, isLineShape } from '../../utils'
-import { LINE_HIT_TOLERANCE } from '../../constants'
+import { pointHitsShape, isLineShape } from '../../utils'
 
-function rectsIntersect(
-  a: { x: number; y: number; width: number; height: number },
-  b: RectShape
+function rectContainsRect(
+  outer: { x: number; y: number; width: number; height: number },
+  inner: RectShape
 ): boolean {
   return (
-    a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.y + a.height > b.y
+    inner.x >= outer.x &&
+    inner.y >= outer.y &&
+    inner.x + inner.width <= outer.x + outer.width &&
+    inner.y + inner.height <= outer.y + outer.height
   )
 }
 
-function lineIntersectsRect(
-  line: LineShape,
-  rect: { x: number; y: number; width: number; height: number }
+function rectContainsLine(
+  rect: { x: number; y: number; width: number; height: number },
+  line: LineShape
 ): boolean {
   const inRect = (px: number, py: number) =>
     px >= rect.x &&
     px <= rect.x + rect.width &&
     py >= rect.y &&
     py <= rect.y + rect.height
-  if (inRect(line.x, line.y) || inRect(line.x2, line.y2)) return true
-  const lx1 = Math.min(line.x, line.x2)
-  const ly1 = Math.min(line.y, line.y2)
-  const lx2 = Math.max(line.x, line.x2)
-  const ly2 = Math.max(line.y, line.y2)
-  return !(
-    lx2 < rect.x ||
-    lx1 > rect.x + rect.width ||
-    ly2 < rect.y ||
-    ly1 > rect.y + rect.height
-  )
+  return inRect(line.x, line.y) && inRect(line.x2, line.y2)
 }
 
 function getMarqueeBounds(marquee: NonNullable<MarqueeState>) {
@@ -61,12 +50,7 @@ export function handleSelectionClicked(
   y: number,
   shiftKey: boolean
 ): AppState {
-  const clickedShape = state.shapes.find((s) => {
-    if (isLineShape(s)) {
-      return pointNearLine(x, y, s.x, s.y, s.x2, s.y2, LINE_HIT_TOLERANCE)
-    }
-    return pointInRect(x, y, s)
-  })
+  const clickedShape = state.shapes.find((s) => pointHitsShape(x, y, s))
   if (!clickedShape) {
     return { ...state, selectedIds: [] }
   }
@@ -103,16 +87,25 @@ export function handleMarqueeMoved(
   return { ...state, marquee: { ...state.marquee, currentX: x, currentY: y } }
 }
 
-export function handleMarqueeEnded(state: AppState): AppState {
+export function handleMarqueeEnded(
+  state: AppState,
+  shiftKey: boolean
+): AppState {
   if (!state.marquee) return state
   const bounds = getMarqueeBounds(state.marquee)
-  const intersectingIds = state.shapes
+  const containedIds = state.shapes
     .filter((s) => {
       if (isLineShape(s)) {
-        return lineIntersectsRect(s, bounds)
+        return rectContainsLine(bounds, s)
       }
-      return rectsIntersect(bounds, s as RectShape)
+      return rectContainsRect(bounds, s as RectShape)
     })
     .map((s) => s.id)
-  return { ...state, selectedIds: intersectingIds, marquee: null }
+  const newSelectedIds = shiftKey
+    ? [
+        ...state.selectedIds,
+        ...containedIds.filter((id) => !state.selectedIds.includes(id)),
+      ]
+    : containedIds
+  return { ...state, selectedIds: newSelectedIds, marquee: null }
 }

@@ -47,9 +47,9 @@ export function useGlobalDrag(
       }
     }
 
-    const onGlobalMouseUp = () => {
+    const onGlobalMouseUp = (e: MouseEvent) => {
       if (drawing) dispatch(AppActions['drawing/ended']())
-      if (marquee) dispatch(AppActions['marquee/ended']())
+      if (marquee) dispatch(AppActions['marquee/ended'](e.shiftKey))
       if (move) dispatch(AppActions['move/ended']())
       if (resize) dispatch(AppActions['resize/ended']())
       if (lineEndpointDrag) dispatch(AppActions['lineEndpoint/ended']())

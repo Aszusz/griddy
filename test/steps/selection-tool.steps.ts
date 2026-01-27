@@ -144,3 +144,20 @@ Then('the selected shape has a selection border', async ({ page }) => {
   expect(state.app.selectedIds.length).toBeGreaterThan(0)
   // Visual verification - selection border rendered on canvas
 })
+
+When(
+  'I shift-drag a marquee from \\({int}, {int}) to \\({int}, {int})',
+  async ({ page }, x1: number, y1: number, x2: number, y2: number) => {
+    const canvas = page.getByTestId(drawTestIds.canvas)
+    const box = await canvas.boundingBox()
+    if (!box) throw new Error('Canvas not found')
+    const start = modelToBrowser(x1, y1, box)
+    const end = modelToBrowser(x2, y2, box)
+    await page.keyboard.down('Shift')
+    await page.mouse.move(start.x, start.y)
+    await page.mouse.down()
+    await page.mouse.move(end.x, end.y)
+    await page.mouse.up()
+    await page.keyboard.up('Shift')
+  }
+)

@@ -16,7 +16,7 @@ export const AppActions = discUnion(
     }),
     'marquee/started': (x: number, y: number) => ({ x, y }),
     'marquee/moved': (x: number, y: number) => ({ x, y }),
-    'marquee/ended': () => ({}),
+    'marquee/ended': (shiftKey: boolean) => ({ shiftKey }),
     'shape/positionChanged': (
       id: string,
       axis: 'x' | 'y',
