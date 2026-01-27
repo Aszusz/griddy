@@ -75,6 +75,8 @@ export type MoveState = {
     x2?: number
     y2?: number
   }[]
+  originalShapes: Shape[] // Snapshot for undo
+  originalSelectedIds: string[]
 } | null
 
 export type PanState = {
@@ -88,6 +90,14 @@ export type ClipboardState = {
   shapes: Shape[]
   pasteCount: number
 } | null
+
+// Undoable state: shapes and selection only
+export type UndoableState = {
+  shapes: Shape[]
+  selectedIds: string[]
+}
+
+export const MAX_HISTORY_SIZE = 50
 
 export type AppState = {
   activeTool: Tool
@@ -105,6 +115,8 @@ export type AppState = {
   pan: PanState
   spacebarHeld: boolean
   toolBeforeSpacebar: Tool | null
+  past: UndoableState[]
+  future: UndoableState[]
 }
 
 export const initialState: AppState = {
@@ -129,4 +141,6 @@ export const initialState: AppState = {
   pan: null,
   spacebarHeld: false,
   toolBeforeSpacebar: null,
+  past: [],
+  future: [],
 }

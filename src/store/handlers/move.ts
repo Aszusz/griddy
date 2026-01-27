@@ -1,5 +1,6 @@
 import type { AppState } from '../state'
 import { snapToGrid, isLineShape } from '../../utils'
+import { pushHistoryEntry } from './history'
 
 export function handleMoveStarted(
   state: AppState,
@@ -15,7 +16,16 @@ export function handleMoveStarted(
       }
       return { id: s.id, x: s.x, y: s.y }
     })
-  return { ...state, move: { startX: x, startY: y, originalPositions } }
+  return {
+    ...state,
+    move: {
+      startX: x,
+      startY: y,
+      originalPositions,
+      originalShapes: state.shapes,
+      originalSelectedIds: state.selectedIds,
+    },
+  }
 }
 
 export function handleMoveMoved(
@@ -51,4 +61,31 @@ export function handleMoveMoved(
       }
     }),
   }
+}
+
+export function handleMoveEnded(state: AppState): AppState {
+  if (!state.move) return state
+
+  // Check if shapes actually moved
+  const shapesChanged = state.move.originalPositions.some((orig) => {
+    const current = state.shapes.find((s) => s.id === orig.id)
+    if (!current) return true
+    if (current.x !== orig.x || current.y !== orig.y) return true
+    if (orig.x2 !== undefined && orig.y2 !== undefined) {
+      const line = current as { x2: number; y2: number }
+      if (line.x2 !== orig.x2 || line.y2 !== orig.y2) return true
+    }
+    return false
+  })
+
+  if (!shapesChanged) {
+    return { ...state, move: null }
+  }
+
+  // Push original state to history, then clear move
+  const withHistory = pushHistoryEntry(state, {
+    shapes: state.move.originalShapes,
+    selectedIds: state.move.originalSelectedIds,
+  })
+  return { ...withHistory, move: null }
 }

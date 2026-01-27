@@ -59,6 +59,8 @@ export const AppActions = discUnion(
     'pan/reset': () => ({}),
     'spacebar/pressed': () => ({}),
     'spacebar/released': () => ({}),
+    'history/undo': () => ({}),
+    'history/redo': () => ({}),
   },
   'type'
 )

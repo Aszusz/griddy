@@ -44,6 +44,20 @@ export function useKeyboardShortcuts() {
         return
       }
 
+      // Undo (Cmd/Ctrl+Z)
+      if (isMod && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        dispatch(AppActions['history/undo']())
+        return
+      }
+
+      // Redo (Cmd/Ctrl+Shift+Z)
+      if (isMod && e.key === 'z' && e.shiftKey) {
+        e.preventDefault()
+        dispatch(AppActions['history/redo']())
+        return
+      }
+
       // Spacebar pan mode
       if (e.key === ' ' && !e.repeat) {
         e.preventDefault()

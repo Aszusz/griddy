@@ -17,7 +17,7 @@ export {
   handleLineEndpointStarted,
   handleLineEndpointMoved,
 } from './resize'
-export { handleMoveStarted, handleMoveMoved } from './move'
+export { handleMoveStarted, handleMoveMoved, handleMoveEnded } from './move'
 export {
   handleClipboardCopy,
   handleClipboardCut,
@@ -31,3 +31,9 @@ export {
   handleSpacebarReleased,
 } from './pan'
 export { handleViewportResized } from './viewport'
+export {
+  handleUndo,
+  handleRedo,
+  pushHistory,
+  pushHistoryEntry,
+} from './history'
