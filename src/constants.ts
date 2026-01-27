@@ -33,6 +33,7 @@ export const LINE_HIT_TOLERANCE = 5
 export const MIN_ZOOM = 0.25
 export const MAX_ZOOM = 8
 export const ZOOM_STEP = 1.1
+export const ZOOM_PRESETS = [0.25, 0.5, 0.75, 1, 1.5, 2, 4, 8] as const
 
 import type { HandlePosition } from './store/state'
 

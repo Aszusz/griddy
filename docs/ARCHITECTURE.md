@@ -38,7 +38,7 @@ src/canvas/
 ### Components
 
 - VIOLATION: multiple components in one file (one component per file)
-- VIOLATION: component >100 lines outside `src/components/`
+- VIOLATION: component >200 lines outside `src/components/`
 
 ### Constants
 

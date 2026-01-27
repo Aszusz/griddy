@@ -15,8 +15,6 @@ import {
   selectPanX,
   selectPanY,
   selectZoom,
-  selectMouseX,
-  selectMouseY,
 } from '../store/selectors'
 import { AppActions } from '../store/actions'
 import { useAppDispatch } from '../hooks'
@@ -44,8 +42,6 @@ export function Canvas() {
   const panX = useAppSelector(selectPanX)
   const panY = useAppSelector(selectPanY)
   const zoom = useAppSelector(selectZoom)
-  const mouseX = useAppSelector(selectMouseX)
-  const mouseY = useAppSelector(selectMouseY)
 
   const { containerRef, canvasSize } = useCanvasSize()
   const originX = canvasSize.width / 2 + panX
@@ -141,16 +137,6 @@ export function Canvas() {
         originY={originY}
         zoom={zoom}
       />
-      <div
-        className="animate-in fade-in absolute bottom-4 left-4 flex items-center gap-3 font-mono text-[10px] tracking-wider text-zinc-600 duration-500"
-        style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}
-      >
-        <span data-testid="status-bar-coordinates">
-          {mouseX !== null && mouseY !== null ? `${mouseX}, ${mouseY}` : '—, —'}
-        </span>
-        <span className="text-zinc-700">•</span>
-        <span data-testid="status-bar-zoom">{Math.round(zoom * 100)}%</span>
-      </div>
     </div>
   )
 }

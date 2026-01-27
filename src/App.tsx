@@ -1,6 +1,7 @@
 import { Canvas } from './components/Canvas'
 import { Toolbox } from './components/Toolbox'
 import { Inspector } from './components/Inspector'
+import { StatusBar } from './components/StatusBar'
 import { useKeyboardShortcuts } from './hooks'
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
       <Canvas />
       <Toolbox />
       <Inspector />
+      <StatusBar />
     </div>
   )
 }
