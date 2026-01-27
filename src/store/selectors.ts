@@ -19,6 +19,8 @@ export const selectPanY = (state: RootState) => state.app.panY
 export const selectZoom = (state: RootState) => state.app.zoom
 export const selectMouseX = (state: RootState) => state.app.mouseX
 export const selectMouseY = (state: RootState) => state.app.mouseY
+export const selectCanUndo = (state: RootState) => state.app.past.length > 0
+export const selectCanRedo = (state: RootState) => state.app.future.length > 0
 
 function computePreviewRect(drawing: DrawingState, activeTool: Tool) {
   if (!drawing) return null

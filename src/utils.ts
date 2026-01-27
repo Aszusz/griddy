@@ -1,5 +1,11 @@
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 import { GRID_SIZE, LINE_HIT_TOLERANCE } from './constants'
 import type { Shape, LineShape } from './store/state'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 export function isLineShape(s: Shape): s is LineShape {
   return s.type === 'line'
