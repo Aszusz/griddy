@@ -17,11 +17,37 @@ import {
   CROSSHAIR_COLOR,
   CROSSHAIR_SIZE,
   CROSSHAIR_CENTER_RADIUS,
+  ARROWHEAD_SIZE,
+  ARROWHEAD_ANGLE,
 } from '../constants'
 
 type Rect = { x: number; y: number; width: number; height: number }
 type PreviewRect = Rect & { isEllipse: boolean }
 type PreviewLine = { x: number; y: number; x2: number; y2: number }
+
+function drawArrowhead(
+  ctx: CanvasRenderingContext2D,
+  tipX: number,
+  tipY: number,
+  fromX: number,
+  fromY: number
+): void {
+  const angle = Math.atan2(tipY - fromY, tipX - fromX)
+  const leftAngle = angle + Math.PI - ARROWHEAD_ANGLE
+  const rightAngle = angle + Math.PI + ARROWHEAD_ANGLE
+
+  ctx.beginPath()
+  ctx.moveTo(
+    tipX + ARROWHEAD_SIZE * Math.cos(leftAngle),
+    tipY + ARROWHEAD_SIZE * Math.sin(leftAngle)
+  )
+  ctx.lineTo(tipX, tipY)
+  ctx.lineTo(
+    tipX + ARROWHEAD_SIZE * Math.cos(rightAngle),
+    tipY + ARROWHEAD_SIZE * Math.sin(rightAngle)
+  )
+  ctx.stroke()
+}
 
 function fillAndStrokeEllipse(ctx: CanvasRenderingContext2D, rect: Rect): void {
   const cx = rect.x + rect.width / 2
@@ -72,6 +98,12 @@ export function drawShapes(
       ctx.moveTo(shape.x, shape.y)
       ctx.lineTo(shape.x2, shape.y2)
       ctx.stroke()
+      if (shape.arrowStart) {
+        drawArrowhead(ctx, shape.x, shape.y, shape.x2, shape.y2)
+      }
+      if (shape.arrowEnd) {
+        drawArrowhead(ctx, shape.x2, shape.y2, shape.x, shape.y)
+      }
     } else {
       ctx.fillStyle = shape.fill
       if (shape.type === 'ellipse') {

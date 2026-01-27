@@ -2,10 +2,11 @@ import { InspectorSection } from './InspectorSection'
 import { InspectorField } from './InspectorField'
 import { InspectorPanel } from './InspectorPanel'
 import { ColorField } from './ColorField'
+import { ArrowheadControl } from './ArrowheadControl'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { selectSelectedShapes } from '../store/selectors'
 import { AppActions } from '../store/actions'
-import type { RectShape } from '../store/state'
+import type { RectShape, LineShape } from '../store/state'
 import { isLineShape } from '../utils'
 
 export function Inspector() {
@@ -35,9 +36,24 @@ export function Inspector() {
 
   // Line inspector (simplified - only position and stroke)
   if (isLineShape(shape)) {
+    const line = shape as LineShape
     return (
       <InspectorPanel title="Line">
-        <InspectorSection title="Stroke" delay={50} last>
+        <InspectorSection title="Arrowheads" delay={50}>
+          <ArrowheadControl
+            arrowStart={!!line.arrowStart}
+            arrowEnd={!!line.arrowEnd}
+            startTestId="inspector-arrow-start-toggle"
+            endTestId="inspector-arrow-end-toggle"
+            onToggleStart={(v) =>
+              dispatch(AppActions['line/arrowToggled'](line.id, 'start', v))
+            }
+            onToggleEnd={(v) =>
+              dispatch(AppActions['line/arrowToggled'](line.id, 'end', v))
+            }
+          />
+        </InspectorSection>
+        <InspectorSection title="Stroke" delay={75} last>
           <ColorField
             value={shape.stroke}
             testId="inspector-stroke"

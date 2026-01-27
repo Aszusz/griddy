@@ -30,6 +30,14 @@ export const PASTE_OFFSET = GRID_SIZE
 
 export const LINE_HIT_TOLERANCE = 5
 
+export const ARROWHEAD_SIZE = 12
+export const ARROWHEAD_ANGLE = Math.PI / 6 // 30 degrees
+
+// Inspector ArrowheadControl colors (active reuses SELECTION_BORDER_COLOR)
+export const ARROWHEAD_INACTIVE_COLOR = '#52525b'
+export const ARROWHEAD_HITBOX_ACTIVE = 'rgba(34,211,238,0.15)'
+export const ARROWHEAD_HITBOX_INACTIVE = 'rgba(63,63,70,0.3)'
+
 export const MIN_ZOOM = 0.25
 export const MAX_ZOOM = 8
 export const ZOOM_STEP = 1.1

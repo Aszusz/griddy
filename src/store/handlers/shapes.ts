@@ -47,3 +47,18 @@ export function handleShapeColorChanged(
     ),
   }
 }
+
+export function handleLineArrowToggled(
+  state: AppState,
+  id: string,
+  end: 'start' | 'end',
+  value: boolean
+): AppState {
+  const prop = end === 'start' ? 'arrowStart' : 'arrowEnd'
+  return {
+    ...state,
+    shapes: state.shapes.map((s) =>
+      s.id === id ? { ...s, [prop]: value || undefined } : s
+    ),
+  }
+}

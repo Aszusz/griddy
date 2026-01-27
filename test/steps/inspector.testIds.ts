@@ -14,4 +14,6 @@ export const testIds = {
   heightInput: 'inspector-height-input',
   fillInput: 'inspector-fill-input',
   strokeInput: 'inspector-stroke-input',
+  arrowStartToggle: 'inspector-arrow-start-toggle',
+  arrowEndToggle: 'inspector-arrow-end-toggle',
 }

@@ -27,7 +27,7 @@ export function handleDrawingMoved(
 export function handleDrawingEnded(state: AppState): AppState {
   if (!state.drawing) return state
 
-  if (state.activeTool === 'line') {
+  if (state.activeTool === 'line' || state.activeTool === 'arrow') {
     const x = snapToGrid(state.drawing.startX)
     const y = snapToGrid(state.drawing.startY)
     const x2 = snapToGrid(state.drawing.currentX)
@@ -43,6 +43,7 @@ export function handleDrawingEnded(state: AppState): AppState {
       x2,
       y2,
       stroke: SHAPE_STROKE,
+      arrowEnd: state.activeTool === 'arrow' ? true : undefined,
     }
     return { ...state, shapes: [...state.shapes, newLine], drawing: null }
   }

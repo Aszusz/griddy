@@ -1,6 +1,6 @@
 import { GRID_SIZE } from '../constants'
 
-export type Tool = 'select' | 'rectangle' | 'ellipse' | 'line' | 'pan'
+export type Tool = 'select' | 'rectangle' | 'ellipse' | 'line' | 'arrow' | 'pan'
 
 export type ShapeType = 'rectangle' | 'ellipse' | 'line'
 
@@ -23,6 +23,8 @@ export type LineShape = {
   x2: number
   y2: number
   stroke: string
+  arrowStart?: boolean
+  arrowEnd?: boolean
 }
 
 export type Shape = RectShape | LineShape

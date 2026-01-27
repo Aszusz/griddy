@@ -36,6 +36,11 @@ export function useKeyboardShortcuts() {
         dispatch(AppActions['tool/selected']('line'))
         return
       }
+      if (e.key === 'a' || e.key === 'A') {
+        e.preventDefault()
+        dispatch(AppActions['tool/selected']('arrow'))
+        return
+      }
 
       // Reset view (Cmd/Ctrl+0)
       if (isMod && e.key === '0') {

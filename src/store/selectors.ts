@@ -22,7 +22,7 @@ export const selectMouseY = (state: RootState) => state.app.mouseY
 
 function computePreviewRect(drawing: DrawingState, activeTool: Tool) {
   if (!drawing) return null
-  if (activeTool === 'line') return null
+  if (activeTool === 'line' || activeTool === 'arrow') return null
   return {
     x: snapToGrid(Math.min(drawing.startX, drawing.currentX)),
     y: snapToGrid(Math.min(drawing.startY, drawing.currentY)),
@@ -41,7 +41,8 @@ export const selectPreviewRect = (state: RootState) =>
 
 export const selectPreviewLine = (state: RootState) => {
   const drawing = state.app.drawing
-  if (!drawing || state.app.activeTool !== 'line') return null
+  const tool = state.app.activeTool
+  if (!drawing || (tool !== 'line' && tool !== 'arrow')) return null
   return {
     x: snapToGrid(drawing.startX),
     y: snapToGrid(drawing.startY),

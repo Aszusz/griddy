@@ -32,6 +32,11 @@ export const AppActions = discUnion(
       prop: 'fill' | 'stroke',
       color: string
     ) => ({ id, prop, color }),
+    'line/arrowToggled': (
+      id: string,
+      end: 'start' | 'end',
+      value: boolean
+    ) => ({ id, end, value }),
     'resize/started': (handle: HandlePosition, x: number, y: number) => ({
       handle,
       x,

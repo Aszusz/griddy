@@ -154,3 +154,33 @@ Feature: Inspector Panel
     When I copy Inspector W value and paste into Inspector H
     Then the Inspector shows H as 80
     And the ellipse has size (80, 80)
+
+  # Line Arrowhead Toggles
+  Scenario: Line shows arrowhead toggles in Inspector
+    Given I open the app
+    And a line exists from (100, 100) to (200, 200)
+    And the line is selected
+    Then the Inspector shows start arrowhead toggle
+    And the Inspector shows end arrowhead toggle
+    And the start arrowhead toggle is off
+    And the end arrowhead toggle is off
+
+  Scenario Outline: Toggle arrowhead on
+    Given I open the app
+    And a line exists from (100, 100) to (200, 200)
+    And the line is selected
+    When I toggle the <end> arrowhead on
+    Then the line has an arrowhead at the <end>
+
+    Examples:
+      | end   |
+      | start |
+      | end   |
+
+  Scenario: Toggle arrowhead off
+    Given I open the app
+    And I select the Arrow tool
+    And I draw a line from (100, 100) to (200, 200)
+    And the line is selected
+    When I toggle the end arrowhead off
+    Then the line has no arrowhead at the end

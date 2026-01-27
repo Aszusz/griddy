@@ -3,6 +3,7 @@ import { createBdd } from 'playwright-bdd'
 import { testIds } from './inspector.testIds'
 import { getState } from './harness'
 import type { RectShape } from '../../src/store/state'
+import { isLineShape } from '../../src/utils'
 
 const { When, Then } = createBdd()
 
@@ -192,3 +193,66 @@ Then('the rectangle still exists', async ({ page }) => {
   const state = await getState(page)
   expect(state.app.shapes.length).toBe(1)
 })
+
+// Arrowhead toggles
+
+Then('the Inspector shows start arrowhead toggle', async ({ page }) => {
+  await expect(page.getByTestId(testIds.arrowStartToggle)).toBeVisible()
+})
+
+Then('the Inspector shows end arrowhead toggle', async ({ page }) => {
+  await expect(page.getByTestId(testIds.arrowEndToggle)).toBeVisible()
+})
+
+Then('the start arrowhead toggle is off', async ({ page }) => {
+  await expect(page.getByTestId(testIds.arrowStartToggle)).toHaveAttribute(
+    'data-checked',
+    'false'
+  )
+})
+
+Then('the end arrowhead toggle is off', async ({ page }) => {
+  await expect(page.getByTestId(testIds.arrowEndToggle)).toHaveAttribute(
+    'data-checked',
+    'false'
+  )
+})
+
+When(
+  /^I toggle the (start|end) arrowhead (?:on|off)$/,
+  async ({ page }, position: string) => {
+    const toggle =
+      position === 'start'
+        ? page.getByTestId(testIds.arrowStartToggle)
+        : page.getByTestId(testIds.arrowEndToggle)
+    await toggle.click()
+  }
+)
+
+Then(
+  /^the line has an arrowhead at the (start|end)$/,
+  async ({ page }, position: string) => {
+    const state = await getState(page)
+    const line = state.app.shapes.find(isLineShape)
+    expect(line).toBeDefined()
+    if (position === 'start') {
+      expect(line?.arrowStart).toBe(true)
+    } else {
+      expect(line?.arrowEnd).toBe(true)
+    }
+  }
+)
+
+Then(
+  /^the line has no arrowhead at the (start|end)$/,
+  async ({ page }, position: string) => {
+    const state = await getState(page)
+    const line = state.app.shapes.find(isLineShape)
+    expect(line).toBeDefined()
+    if (position === 'start') {
+      expect(line?.arrowStart).toBeFalsy()
+    } else {
+      expect(line?.arrowEnd).toBeFalsy()
+    }
+  }
+)

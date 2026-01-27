@@ -53,7 +53,8 @@ export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
     if (
       activeTool === 'rectangle' ||
       activeTool === 'ellipse' ||
-      activeTool === 'line'
+      activeTool === 'line' ||
+      activeTool === 'arrow'
     ) {
       dispatch(AppActions['drawing/started'](x, y))
     } else if (activeTool === 'select') {

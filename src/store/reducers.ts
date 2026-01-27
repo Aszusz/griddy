@@ -59,6 +59,8 @@ export function reducer(
         handlers.handleShapeSizeChanged(stateForAction, id, dim, rawValue),
       'shape/colorChanged': ({ id, prop, color }) =>
         handlers.handleShapeColorChanged(stateForAction, id, prop, color),
+      'line/arrowToggled': ({ id, end, value }) =>
+        handlers.handleLineArrowToggled(stateForAction, id, end, value),
       'resize/started': ({ handle, x, y }) =>
         handlers.handleResizeStarted(stateForAction, handle, x, y),
       'resize/moved': ({ x, y }) =>

@@ -10,6 +10,7 @@ export {
   handleShapePositionChanged,
   handleShapeSizeChanged,
   handleShapeColorChanged,
+  handleLineArrowToggled,
 } from './shapes'
 export {
   handleResizeStarted,
