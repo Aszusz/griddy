@@ -20,6 +20,7 @@ For each failing test:
 - No abstractions, no future-proofing
 - Do not stop coding until all tests pass
 - No refactoring in this phase
+- NEVER modify feature files or test scenarios. If a test seems wrong, stop and flag it for the user
 
 ## Phase 3: Verify Green
 
