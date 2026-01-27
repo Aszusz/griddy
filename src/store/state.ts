@@ -117,6 +117,8 @@ export type AppState = {
   toolBeforeSpacebar: Tool | null
   past: UndoableState[]
   future: UndoableState[]
+  mouseX: number | null
+  mouseY: number | null
 }
 
 export const initialState: AppState = {
@@ -143,4 +145,6 @@ export const initialState: AppState = {
   toolBeforeSpacebar: null,
   past: [],
   future: [],
+  mouseX: null,
+  mouseY: null,
 }

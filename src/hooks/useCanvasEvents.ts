@@ -74,12 +74,15 @@ export function useCanvasEvents(originX: number, originY: number) {
   }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const coords = getCoords(e)
+    dispatch(AppActions['mouse/moved'](coords.x, coords.y))
+
     if (pan) {
       const { x, y } = getScreenCoords(e)
       dispatch(AppActions['pan/moved'](x, y))
       return
     }
-    const { x, y } = getCoords(e)
+    const { x, y } = coords
     if (drawing) {
       dispatch(AppActions['drawing/moved'](x, y))
     } else if (marquee) {
@@ -110,6 +113,10 @@ export function useCanvasEvents(originX: number, originY: number) {
     else if (move) dispatch(AppActions['move/ended']())
   }
 
+  const handleMouseLeave = () => {
+    dispatch(AppActions['mouse/left']())
+  }
+
   // Compute cursor based on tool and state
   let cursor = hoverCursor
   if (activeTool === 'pan') {
@@ -121,6 +128,7 @@ export function useCanvasEvents(originX: number, originY: number) {
       onMouseDown: handleMouseDown,
       onMouseMove: handleMouseMove,
       onMouseUp: handleMouseUp,
+      onMouseLeave: handleMouseLeave,
     },
     hoverCursor: cursor,
   }

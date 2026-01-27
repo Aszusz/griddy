@@ -61,6 +61,8 @@ export const AppActions = discUnion(
     'spacebar/released': () => ({}),
     'history/undo': () => ({}),
     'history/redo': () => ({}),
+    'mouse/moved': (x: number, y: number) => ({ x, y }),
+    'mouse/left': () => ({}),
   },
   'type'
 )

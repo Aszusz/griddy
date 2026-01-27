@@ -14,6 +14,8 @@ import {
   selectPreviewLine,
   selectPanX,
   selectPanY,
+  selectMouseX,
+  selectMouseY,
 } from '../store/selectors'
 import { isLineShape } from '../utils'
 import {
@@ -37,6 +39,8 @@ export function Canvas() {
   const previewLine = useAppSelector(selectPreviewLine)
   const panX = useAppSelector(selectPanX)
   const panY = useAppSelector(selectPanY)
+  const mouseX = useAppSelector(selectMouseX)
+  const mouseY = useAppSelector(selectMouseY)
 
   const { containerRef, canvasSize } = useCanvasSize()
   const originX = canvasSize.width / 2 + panX
@@ -121,7 +125,9 @@ export function Canvas() {
         className="animate-in fade-in absolute bottom-4 left-4 flex items-center gap-3 font-mono text-[10px] tracking-wider text-zinc-600 duration-500"
         style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}
       >
-        <span>0, 0</span>
+        <span data-testid="status-bar-coordinates">
+          {mouseX !== null && mouseY !== null ? `${mouseX}, ${mouseY}` : '—, —'}
+        </span>
         <span className="text-zinc-700">•</span>
         <span>100%</span>
       </div>

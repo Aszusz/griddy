@@ -16,6 +16,8 @@ export const selectMove = (state: RootState) => state.app.move
 export const selectPan = (state: RootState) => state.app.pan
 export const selectPanX = (state: RootState) => state.app.panX
 export const selectPanY = (state: RootState) => state.app.panY
+export const selectMouseX = (state: RootState) => state.app.mouseX
+export const selectMouseY = (state: RootState) => state.app.mouseY
 
 function computePreviewRect(drawing: DrawingState, activeTool: Tool) {
   if (!drawing) return null

@@ -91,6 +91,12 @@ export function reducer(
         handlers.handleSpacebarReleased(stateForAction),
       'history/undo': () => handlers.handleUndo(stateForAction),
       'history/redo': () => handlers.handleRedo(stateForAction),
+      'mouse/moved': ({ x, y }) => ({
+        ...stateForAction,
+        mouseX: Math.round(x),
+        mouseY: Math.round(y),
+      }),
+      'mouse/left': () => ({ ...stateForAction, mouseX: null, mouseY: null }),
     },
     () => stateForAction
   )
