@@ -93,27 +93,69 @@ export function drawGrid(
   }
 }
 
+function breakWord(
+  ctx: CanvasRenderingContext2D,
+  word: string,
+  maxWidth: number
+): string[] {
+  const parts: string[] = []
+  let current = ''
+  for (const char of word) {
+    const test = current + char
+    if (ctx.measureText(test).width > maxWidth && current) {
+      parts.push(current)
+      current = char
+    } else {
+      current = test
+    }
+  }
+  if (current) parts.push(current)
+  return parts
+}
+
 function wrapText(
   ctx: CanvasRenderingContext2D,
   text: string,
   maxWidth: number
 ): string[] {
-  const words = text.split(' ')
   const lines: string[] = []
-  let currentLine = ''
+  const paragraphs = text.split('\n')
 
-  for (const word of words) {
-    const testLine = currentLine ? `${currentLine} ${word}` : word
-    const metrics = ctx.measureText(testLine)
-    if (metrics.width > maxWidth && currentLine) {
-      lines.push(currentLine)
-      currentLine = word
-    } else {
-      currentLine = testLine
+  for (const paragraph of paragraphs) {
+    if (paragraph === '') {
+      lines.push('')
+      continue
     }
-  }
-  if (currentLine) {
-    lines.push(currentLine)
+
+    const words = paragraph.split(' ')
+    let currentLine = ''
+
+    for (const word of words) {
+      // Break word if it's too long by itself
+      if (ctx.measureText(word).width > maxWidth) {
+        if (currentLine) {
+          lines.push(currentLine)
+          currentLine = ''
+        }
+        const broken = breakWord(ctx, word, maxWidth)
+        for (let i = 0; i < broken.length - 1; i++) {
+          lines.push(broken[i])
+        }
+        currentLine = broken[broken.length - 1] || ''
+        continue
+      }
+
+      const testLine = currentLine ? `${currentLine} ${word}` : word
+      if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+        lines.push(currentLine)
+        currentLine = word
+      } else {
+        currentLine = testLine
+      }
+    }
+    if (currentLine) {
+      lines.push(currentLine)
+    }
   }
   return lines
 }
