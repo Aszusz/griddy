@@ -8,6 +8,8 @@ import {
   TEXT_LINE_HEIGHT,
   TEXT_PADDING,
   SELECTION_BORDER_COLOR,
+  SELECTION_BORDER_OFFSET,
+  SELECTION_BORDER_WIDTH,
 } from '../constants'
 
 type Props = {
@@ -55,17 +57,18 @@ export function TextEditor({ shape, originX, originY, zoom }: Props) {
       onBlur={handleBlur}
       style={{
         position: 'absolute',
-        left: screenX,
-        top: screenY,
-        width: screenWidth,
-        height: screenHeight,
-        padding: `${TEXT_PADDING}px`,
+        left: screenX - SELECTION_BORDER_OFFSET - 1,
+        top: screenY - SELECTION_BORDER_OFFSET - 1,
+        width: screenWidth + SELECTION_BORDER_WIDTH + 2,
+        height: screenHeight + SELECTION_BORDER_WIDTH + 2,
+        boxSizing: 'border-box',
+        padding: TEXT_PADDING * zoom,
         fontSize: `${TEXT_FONT_SIZE * zoom}px`,
         fontFamily: FONT_MAP[shape.fontFamily],
         textAlign: shape.align,
         color: shape.fill,
         background: 'transparent',
-        border: `2px solid ${SELECTION_BORDER_COLOR}`,
+        border: `${SELECTION_BORDER_WIDTH}px solid ${SELECTION_BORDER_COLOR}`,
         outline: 'none',
         resize: 'none',
         overflow: 'hidden',

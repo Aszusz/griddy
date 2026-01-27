@@ -87,9 +87,13 @@ export function Canvas() {
     ? shapes.find((s) => s.id === editingTextId && isTextShape(s))
     : undefined
   // Lines show point handles instead of selection border
+  // Editing text shows HTML textarea with its own border
   const selectionBoundsShapes = useMemo(
-    () => (singleSelectedLine ? [] : selectedShapes),
-    [singleSelectedLine, selectedShapes]
+    () =>
+      singleSelectedLine
+        ? []
+        : selectedShapes.filter((s) => s.id !== editingTextId),
+    [singleSelectedLine, selectedShapes, editingTextId]
   )
 
   useEffect(() => {

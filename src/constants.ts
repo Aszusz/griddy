@@ -6,7 +6,7 @@ export const CANVAS_BG = '#0a0a0b'
 
 export const SHAPE_FILL = '#3b82f6'
 export const SHAPE_STROKE = '#60a5fa'
-export const TEXT_FILL = '#000000'
+export const TEXT_FILL = '#ffffff'
 export const PREVIEW_FILL = '#3b82f680'
 export const PREVIEW_STROKE = '#60a5fa80'
 
@@ -53,7 +53,7 @@ export const FONT_MAP = {
 export const TEXT_FONT_SIZE = 16
 export const TEXT_LINE_HEIGHT = 20
 export const TEXT_PADDING = 4
-export const TEXT_PREVIEW_FILL = 'rgba(0, 0, 0, 0.1)'
+export const TEXT_PREVIEW_FILL = 'rgba(255, 255, 255, 0.1)'
 export const TEXT_DASH_PATTERN = [4, 4] as const
 
 import type { HandlePosition } from './store/state'
