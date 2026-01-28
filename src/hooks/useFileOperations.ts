@@ -78,8 +78,8 @@ export function useFileOperations() {
     setErrorMessage(null)
   }, [])
 
-  // Check URL hash on mount for shared links
-  useEffect(() => {
+  // Process URL hash for shared links
+  const processHash = useCallback(() => {
     const hash = window.location.hash.slice(1)
     if (!hash) return
 
@@ -92,13 +92,26 @@ export function useFileOperations() {
       if (!Array.isArray(data.shapes)) {
         throw new Error('Invalid file format')
       }
-      setPendingShapes(data.shapes)
-      setShowConfirm(true)
+      // Load immediately if canvas empty, otherwise confirm
+      if (shapes.length === 0) {
+        dispatch(AppActions['file/load'](data.shapes))
+        window.history.replaceState(null, '', window.location.pathname)
+      } else {
+        setPendingShapes(data.shapes)
+        setShowConfirm(true)
+      }
     } catch {
       setErrorMessage('Invalid shared link')
       window.history.replaceState(null, '', window.location.pathname)
     }
-  }, [])
+  }, [dispatch, shapes.length])
+
+  // Check hash on mount and listen for hash changes
+  useEffect(() => {
+    processHash()
+    window.addEventListener('hashchange', processHash)
+    return () => window.removeEventListener('hashchange', processHash)
+  }, [processHash])
 
   const handleCopyLink = useCallback(async () => {
     if (shapes.length === 0) {

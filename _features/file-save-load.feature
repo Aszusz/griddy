@@ -123,15 +123,19 @@ Feature: File Save and Load
     When I copy a shareable link
     Then I see an error message
 
-  Scenario: Confirming shared link loads shapes
+  Scenario: Shared link loads immediately when canvas is empty
     Given I open the app with a shared link containing an ellipse
+    Then 1 ellipses exist on the canvas
+    And the URL has no hash
+
+  Scenario: Pasting shared link with existing content shows confirm
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    When I paste a shared link containing an ellipse
+    Then I see a confirmation dialog
     When I confirm the load
     Then 1 ellipses exist on the canvas
-
-  Scenario: Shared link clears URL hash after load
-    Given I open the app with a shared link containing an ellipse
-    When I confirm the load
-    Then the URL has no hash
+    And 0 rectangles exist on the canvas
 
   Scenario: Corrupted shared link shows error
     Given I open the app with a corrupted shared link

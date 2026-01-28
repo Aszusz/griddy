@@ -173,26 +173,41 @@ Then('a URL with hash is copied to clipboard', async () => {
   expect(copiedUrl).toMatch(/#.+/)
 })
 
+function getSharedEllipseHash() {
+  const shapes = [
+    {
+      id: 'shared-ellipse',
+      type: 'ellipse',
+      x: 200,
+      y: 200,
+      width: 100,
+      height: 100,
+      fill: SHAPE_FILL,
+      stroke: SHAPE_STROKE,
+    },
+  ]
+  const data = JSON.stringify({ shapes })
+  return LZString.compressToEncodedURIComponent(data)
+}
+
 Given(
   'I open the app with a shared link containing an ellipse',
   async ({ page }) => {
-    const shapes = [
-      {
-        id: 'shared-ellipse',
-        type: 'ellipse',
-        x: 200,
-        y: 200,
-        width: 100,
-        height: 100,
-        fill: SHAPE_FILL,
-        stroke: SHAPE_STROKE,
-      },
-    ]
-    const data = JSON.stringify({ shapes })
-    const hash = LZString.compressToEncodedURIComponent(data)
-    await setupWithUrl(page, `/#${hash}`, testIds.confirmDialog)
+    const hash = getSharedEllipseHash()
+    // Canvas is empty, so link loads immediately (no confirm dialog)
+    await setupWithUrl(page, `/#${hash}`, 'canvas')
   }
 )
+
+When('I paste a shared link containing an ellipse', async ({ page }) => {
+  const hash = getSharedEllipseHash()
+  // Simulate pasting a link by changing the hash (triggers hashchange event)
+  await page.evaluate((h) => {
+    window.location.hash = h
+  }, hash)
+  // Wait for confirm dialog since canvas has content
+  await page.getByTestId(testIds.confirmDialog).waitFor({ state: 'visible' })
+})
 
 Then('the URL has no hash', async ({ page }) => {
   const url = page.url()
