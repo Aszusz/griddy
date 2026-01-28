@@ -18,18 +18,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run format` - Auto-format code with Prettier
 - `npm run lint` - Run ESLint checks
 - `npm run typecheck` - TypeScript type checking
+- `npm run check` - Run format, lint, typecheck (no tests)
 - `npm run all` - Run format, lint, typecheck, and test sequentially
 
 **Testing:**
 
-- `npm test` - Run BDD tests with Playwright
+- `npm test` - Run all BDD tests
+- `npm run test:feature <pattern>` - Run tests matching pattern (e.g. "Cart", "selection")
 - `npm run test:ui` - Run tests in Playwright UI mode
 
 See [TESTING.md](docs/TESTING.md) for testing patterns and architecture.
 
 ## Verification
 
-**Always run `npm run all` after making changes** - runs format, lint, typecheck, and tests.
+Run `npm run check` (format, lint, typecheck) after changes. Run `npm run test:feature <name>` for related tests only.
 
 ## Architecture
 

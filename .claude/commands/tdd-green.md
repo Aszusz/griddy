@@ -24,7 +24,7 @@ For each failing test:
 
 ## Phase 3: Verify Green
 
-Run format/lint/tests. All tests should pass.
+Run format/lint/typecheck. Run tests for current feature only (`npm run test:feature <name>`).
 
 If not green, fix and repeat. Don't refactor yet.
 

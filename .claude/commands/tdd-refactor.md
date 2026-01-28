@@ -26,7 +26,7 @@ Review implementation files (`src/`) and test files (`test/`) for:
 For each issue found:
 
 1. Fix the issue
-2. Run verification command from CLAUDE.md
+2. Run `npm run check` and `npm run test:feature <name>` for affected features
 3. If tests break, revert and reconsider approach
 
 **Rules:**
@@ -41,6 +41,6 @@ For each issue found:
 
 Repeat Phase 2-3 until no issues remain.
 
-Run final verification from CLAUDE.md. Must pass.
+Run `npm run check` and test affected features. Must pass.
 
 Output: changes made, files refactored, what was removed.

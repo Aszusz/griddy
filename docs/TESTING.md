@@ -14,9 +14,13 @@ This project uses **Playwright-BDD** for E2E testing with Gherkin syntax.
 ## Commands
 
 ```bash
-npm run test      # Run all BDD tests
-npm run test:ui   # Run tests in Playwright UI mode
+npm run test                        # Run all BDD tests
+npm run test:feature "Cart"         # Run tests matching "Cart"
+npm run test:feature "selection"    # Partial match works
+npm run test:ui                     # Run tests in Playwright UI mode
 ```
+
+**Scoped testing:** During development, run only related tests with `test:feature`. Save full regression (`npm test`) for final verification.
 
 Tests run against the Vite dev server at `http://localhost:5173` (auto-started unless in CI).
 
