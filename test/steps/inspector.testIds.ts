@@ -30,4 +30,9 @@ export const testIds = {
   vAlignTop: 'inspector-valign-top',
   vAlignMiddle: 'inspector-valign-middle',
   vAlignBottom: 'inspector-valign-bottom',
+  // Color palette
+  fillSwatch: 'inspector-fill-swatch',
+  strokeSwatch: 'inspector-stroke-swatch',
+  colorPalette: 'inspector-color-palette',
+  paletteColor: (color: string) => `inspector-palette-${color}`,
 }

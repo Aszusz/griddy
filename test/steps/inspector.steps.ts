@@ -2,7 +2,7 @@ import { expect } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
 import { testIds } from './inspector.testIds'
 import { getState } from './harness'
-import type { RectShape } from '../../src/store/state'
+import type { RectShape, TextShape } from '../../src/store/state'
 import { isLineShape } from '../../src/utils'
 
 const { When, Then } = createBdd()
@@ -402,5 +402,41 @@ Then(
       | RectShape
       | undefined
     expect(rect?.textVAlign).toBe(alignment.toLowerCase())
+  }
+)
+
+// Color palette steps
+
+When('I click the fill color swatch', async ({ page }) => {
+  await page.getByTestId(testIds.fillSwatch).click()
+})
+
+When('I click the stroke color swatch', async ({ page }) => {
+  await page.getByTestId(testIds.strokeSwatch).click()
+})
+
+When(
+  'I select the {word} color from the palette',
+  async ({ page }, color: string) => {
+    await page.getByTestId(testIds.paletteColor(color)).click()
+  }
+)
+
+Then('the line has stroke color {string}', async ({ page }, color: string) => {
+  const state = await getState(page)
+  const line = state.app.shapes.find(isLineShape)
+  expect(line).toBeDefined()
+  expect(line?.stroke).toBe(color)
+})
+
+Then(
+  'the text box has fill color {string}',
+  async ({ page }, color: string) => {
+    const state = await getState(page)
+    const textShape = state.app.shapes.find((s) => s.type === 'text') as
+      | TextShape
+      | undefined
+    expect(textShape).toBeDefined()
+    expect(textShape?.fill).toBe(color)
   }
 )

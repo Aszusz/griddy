@@ -58,7 +58,9 @@ export function Inspector() {
             value={shape.stroke}
             testId="inspector-stroke"
             inputTestId="inspector-stroke-input"
+            swatchTestId="inspector-stroke-swatch"
             previewBorder
+            paletteType="stroke"
             onCommit={(v) =>
               dispatch(AppActions['shape/colorChanged'](shape.id, 'stroke', v))
             }
@@ -192,6 +194,7 @@ export function Inspector() {
             value={textShape.fill}
             testId="inspector-fill"
             inputTestId="inspector-fill-input"
+            swatchTestId="inspector-fill-swatch"
             onCommit={(v) =>
               dispatch(
                 AppActions['shape/colorChanged'](textShape.id, 'fill', v)
@@ -364,6 +367,7 @@ export function Inspector() {
           value={rectShape.fill}
           testId="inspector-fill"
           inputTestId="inspector-fill-input"
+          swatchTestId="inspector-fill-swatch"
           onCommit={(v) =>
             dispatch(AppActions['shape/colorChanged'](rectShape.id, 'fill', v))
           }
@@ -376,7 +380,9 @@ export function Inspector() {
           value={rectShape.stroke}
           testId="inspector-stroke"
           inputTestId="inspector-stroke-input"
+          swatchTestId="inspector-stroke-swatch"
           previewBorder
+          paletteType="stroke"
           onCommit={(v) =>
             dispatch(
               AppActions['shape/colorChanged'](rectShape.id, 'stroke', v)

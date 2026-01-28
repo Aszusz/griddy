@@ -241,6 +241,39 @@ Feature: Inspector Panel
       | Center    |
       | Right     |
 
+  # Color Palette Picker
+  Scenario: Selecting palette color applies fill
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    And the rectangle is selected
+    When I click the fill color swatch
+    And I select the red color from the palette
+    Then the rectangle has fill color "#fecaca"
+
+  Scenario: Selecting palette color applies stroke
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    And the rectangle is selected
+    When I click the stroke color swatch
+    And I select the green color from the palette
+    Then the rectangle has stroke color "#15803d"
+
+  Scenario: Color palette works for line stroke
+    Given I open the app
+    And a line exists from (100, 100) to (200, 200)
+    And the line is selected
+    When I click the stroke color swatch
+    And I select the orange color from the palette
+    Then the line has stroke color "#c2410c"
+
+  Scenario: Color palette works for text fill
+    Given I open the app
+    And a text box exists at (100, 100) with size (160, 60) containing "Hello"
+    And the text box is selected
+    When I click the fill color swatch
+    And I select the zinc color from the palette
+    Then the text box has fill color "#a1a1aa"
+
   # Shape Text Alignment
   Scenario: Rectangle with text shows alignment controls
     Given I open the app
