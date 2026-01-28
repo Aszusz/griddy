@@ -84,6 +84,7 @@ export function reducer(
       'clipboard/cut': () => handlers.handleClipboardCut(stateForAction),
       'clipboard/paste': () => handlers.handleClipboardPaste(stateForAction),
       'selection/delete': () => handlers.handleSelectionDelete(stateForAction),
+      'selection/clear': () => handlers.handleSelectionClear(stateForAction),
       'pan/started': ({ x, y }) =>
         handlers.handlePanStarted(stateForAction, x, y),
       'pan/moved': ({ x, y }) => handlers.handlePanMoved(stateForAction, x, y),

@@ -140,3 +140,26 @@ Feature: Keyboard Shortcuts
     And I copy the selection
     And I paste
     Then a rectangle exists at position (140, 140)
+
+  # ESC key navigation
+  Scenario: ESC switches from drawing tool to Select tool
+    Given I open the app
+    And I select the Rectangle tool
+    When I press Escape
+    Then the Selection tool shows as active
+
+  Scenario: ESC deselects shapes when Select tool active
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    And the rectangle is selected
+    When I press Escape
+    Then no shapes are selected
+
+  Scenario: ESC prioritizes text edit exit over tool switch
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    When I double-click at (150, 150)
+    And I type "Label"
+    And I press Escape
+    Then the rectangle is not in text edit mode
+    And the Selection tool shows as active

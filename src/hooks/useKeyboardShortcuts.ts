@@ -1,7 +1,11 @@
 import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from './index'
 import { AppActions } from '../store/actions'
-import { selectActiveTool } from '../store/selectors'
+import {
+  selectActiveTool,
+  selectSelectedIds,
+  selectEditingTextId,
+} from '../store/selectors'
 
 function isInputFocused(): boolean {
   const active = document.activeElement
@@ -13,6 +17,8 @@ function isInputFocused(): boolean {
 export function useKeyboardShortcuts() {
   const dispatch = useAppDispatch()
   const activeTool = useAppSelector(selectActiveTool)
+  const selectedIds = useAppSelector(selectSelectedIds)
+  const editingTextId = useAppSelector(selectEditingTextId)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -89,6 +95,20 @@ export function useKeyboardShortcuts() {
         return
       }
 
+      // ESC: text edit exit handled by components, then tool→select, then deselect
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        if (editingTextId) return
+        if (activeTool !== 'select') {
+          dispatch(AppActions['tool/selected']('select'))
+          return
+        }
+        if (selectedIds.length > 0) {
+          dispatch(AppActions['selection/clear']())
+        }
+        return
+      }
+
       // Select tool shortcuts
       if (activeTool !== 'select') return
 
@@ -122,5 +142,5 @@ export function useKeyboardShortcuts() {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [dispatch, activeTool])
+  }, [dispatch, activeTool, selectedIds, editingTextId])
 }

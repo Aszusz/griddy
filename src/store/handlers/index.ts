@@ -3,6 +3,7 @@ export {
   handleToolSelected,
   handleSelectionClicked,
   handleSelectionDelete,
+  handleSelectionClear,
   handleMarqueeMoved,
   handleMarqueeEnded,
 } from './selection'

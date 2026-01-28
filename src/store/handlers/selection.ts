@@ -78,6 +78,11 @@ export function handleSelectionDelete(state: AppState): AppState {
   }
 }
 
+export function handleSelectionClear(state: AppState): AppState {
+  if (state.selectedIds.length === 0) return state
+  return { ...state, selectedIds: [] }
+}
+
 export function handleMarqueeMoved(
   state: AppState,
   x: number,
