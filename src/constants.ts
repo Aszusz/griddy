@@ -59,6 +59,8 @@ export const TEXT_DASH_PATTERN = [4, 4] as const
 export const EXPORT_PNG_PADDING = 20
 export const EXPORT_PNG_BG = '#ffffff'
 
+export const LOCALSTORAGE_KEY = 'griddy-canvas'
+
 import type { HandlePosition } from './store/state'
 
 type ShapeBounds = { x: number; y: number; width: number; height: number }

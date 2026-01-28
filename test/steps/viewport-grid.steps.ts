@@ -10,12 +10,14 @@ Then('grid dots fill the entire viewport', async ({ page }) => {
   if (!viewportSize) throw new Error('No viewport size')
 
   const canvas = page.getByTestId(canvasTestIds.canvas)
-  const box = await canvas.boundingBox()
-  if (!box) throw new Error('Canvas not found')
 
-  // Canvas should fill viewport
-  expect(box.width).toBe(viewportSize.width)
-  expect(box.height).toBe(viewportSize.height)
+  // Wait for canvas to resize (ResizeObserver is async)
+  await expect
+    .poll(async () => {
+      const box = await canvas.boundingBox()
+      return box ? { width: box.width, height: box.height } : null
+    })
+    .toEqual({ width: viewportSize.width, height: viewportSize.height })
 })
 
 When('the viewport is resized', async ({ page }) => {

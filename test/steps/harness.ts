@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import type { StoreConfig, RootState } from '../../src/store'
+import { LOCALSTORAGE_KEY } from '../../src/constants'
 
 const DEFAULT_READY_ELEMENT = 'canvas'
 
@@ -18,6 +19,8 @@ export async function setupWithState(
 ) {
   await page.goto('/')
   await waitForHarness(page)
+  // Clear localStorage to avoid interference from previous tests
+  await page.evaluate((key) => localStorage.removeItem(key), LOCALSTORAGE_KEY)
   await page.evaluate((c) => {
     window.__TEST_HARNESS__?.configure(c)
     window.__TEST_HARNESS__?.ready()
@@ -34,6 +37,8 @@ export async function setupDefault(
 ) {
   await page.goto('/')
   await waitForHarness(page)
+  // Clear localStorage to avoid interference from previous tests
+  await page.evaluate((key) => localStorage.removeItem(key), LOCALSTORAGE_KEY)
   await page.evaluate(() => {
     window.__TEST_HARNESS__?.ready()
   })
@@ -44,6 +49,7 @@ export async function setupDefault(
 
 // Navigate to any URL (including with hash), wait for harness, call ready
 // Optionally wait for a specific element to be visible before returning
+// NOTE: This does NOT clear localStorage - use for tests that need localStorage
 export async function setupWithUrl(
   page: Page,
   url: string,
@@ -51,6 +57,23 @@ export async function setupWithUrl(
 ) {
   await page.goto(url)
   await waitForHarness(page)
+  await page.evaluate(() => {
+    window.__TEST_HARNESS__?.ready()
+  })
+  if (waitForTestId) {
+    await page.getByTestId(waitForTestId).waitFor({ state: 'visible' })
+  }
+}
+
+// For tests that need localStorage to persist (e.g., reload tests)
+// Does NOT clear localStorage before ready()
+export async function setupPreservingLocalStorage(
+  page: Page,
+  waitForTestId = DEFAULT_READY_ELEMENT
+) {
+  await page.goto('/')
+  await waitForHarness(page)
+  // Intentionally NOT clearing localStorage
   await page.evaluate(() => {
     window.__TEST_HARNESS__?.ready()
   })

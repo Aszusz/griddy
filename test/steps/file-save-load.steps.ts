@@ -1,11 +1,19 @@
-import { expect, type Download } from '@playwright/test'
+import { expect, type Download, type Page } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
 import LZString from 'lz-string'
-import { testIds } from './file-save-load.testIds'
+import { testIds, LOCALSTORAGE_KEY } from './file-save-load.testIds'
 import { SHAPE_FILL, SHAPE_STROKE } from '../../src/constants'
-import { getState, setupWithUrl } from './harness'
+import {
+  getState,
+  setupWithUrl,
+  setupDefault,
+  setupPreservingLocalStorage,
+} from './harness'
 
 const { Given, When, Then } = createBdd()
+
+// Store for multi-tab tests
+let secondTab: Page | null = null
 
 // Store download for assertions
 let lastDownload: Download | null = null
@@ -126,6 +134,7 @@ When('I open the main menu', async ({ page }) => {
 
 Then('I see {string} menu item', async ({ page }, label: string) => {
   const testIdMap: Record<string, string> = {
+    New: testIds.newMenuItem,
     Save: testIds.saveMenuItem,
     Open: testIds.openMenuItem,
     'Export PNG': testIds.exportPngMenuItem,
@@ -221,4 +230,100 @@ Given('I open the app with a corrupted shared link', async ({ page }) => {
 Then('{int} shapes exist on the canvas', async ({ page }, count: number) => {
   const state = await getState(page)
   expect(state.app.shapes.length).toBe(count)
+})
+
+// localStorage steps
+Given('localStorage is empty', async ({ page }) => {
+  await page.goto('/')
+  await page.evaluate((key) => localStorage.removeItem(key), LOCALSTORAGE_KEY)
+})
+
+Given(
+  'localStorage contains a rectangle at \\({int}, {int})',
+  async ({ page }, x: number, y: number) => {
+    const shapes = [
+      {
+        id: 'ls-rect',
+        type: 'rectangle',
+        x,
+        y,
+        width: 100,
+        height: 100,
+        fill: SHAPE_FILL,
+        stroke: SHAPE_STROKE,
+      },
+    ]
+    const data = JSON.stringify({ shapes })
+    await page.goto('/')
+    await page.evaluate(([key, val]) => localStorage.setItem(key, val), [
+      LOCALSTORAGE_KEY,
+      data,
+    ] as const)
+  }
+)
+
+// For tests that need to open the app with localStorage preserved
+When('I start the app', async ({ page }) => {
+  await setupPreservingLocalStorage(page)
+})
+
+Given('localStorage contains corrupted data', async ({ page }) => {
+  await page.goto('/')
+  await page.evaluate(([key, val]) => localStorage.setItem(key, val), [
+    LOCALSTORAGE_KEY,
+    '{corrupted json!!!',
+  ] as const)
+})
+
+// New menu item steps
+When('I click New', async ({ page }) => {
+  await page.getByTestId(testIds.mainMenuTrigger).click({ force: true })
+  await page.getByTestId(testIds.newMenuItem).click()
+})
+
+When('I confirm the action', async ({ page }) => {
+  await page.getByTestId(testIds.confirmButton).click()
+})
+
+When('I cancel the action', async ({ page }) => {
+  await page.getByTestId(testIds.cancelButton).click()
+})
+
+Then('I do not see a confirmation dialog', async ({ page }) => {
+  await expect(page.getByTestId(testIds.confirmDialog)).not.toBeVisible()
+})
+
+// Reload steps - preserve localStorage to test persistence
+When('I reload the app', async ({ page }) => {
+  await setupPreservingLocalStorage(page)
+})
+
+// Multi-tab steps
+Given('I open the app in two tabs', async ({ page, context }) => {
+  await setupDefault(page)
+  secondTab = await context.newPage()
+  await setupDefault(secondTab)
+})
+
+Given('I create a rectangle in the first tab', async ({ page }) => {
+  // Select rectangle tool first
+  await page.getByTestId('toolbox-rectangle').click({ force: true })
+  // Draw a rectangle via drag
+  const canvas = page.getByTestId('canvas')
+  const box = await canvas.boundingBox()
+  if (!box) throw new Error('Canvas not found')
+  await page.mouse.move(box.x + 100, box.y + 100)
+  await page.mouse.down()
+  await page.mouse.move(box.x + 200, box.y + 200)
+  await page.mouse.up()
+})
+
+Then('the second tab shows the rectangle', async () => {
+  expect(secondTab).not.toBeNull()
+  // Trigger storage event check by focusing the tab
+  await secondTab!.bringToFront()
+  // Wait a bit for storage event to propagate
+  await secondTab!.waitForTimeout(500)
+  const state = await getState(secondTab!)
+  expect(state.app.shapes.length).toBe(1)
 })

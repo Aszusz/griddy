@@ -1,4 +1,13 @@
-import { Menu, Undo2, Redo2, Save, FolderOpen, Image, Link } from 'lucide-react'
+import {
+  Menu,
+  Undo2,
+  Redo2,
+  Save,
+  FolderOpen,
+  Image,
+  Link,
+  FilePlus,
+} from 'lucide-react'
 import { useAppDispatch, useAppSelector, useFileOperations } from '../hooks'
 import { AppActions } from '../store/actions'
 import { selectCanUndo, selectCanRedo } from '../store/selectors'
@@ -27,6 +36,7 @@ export function MainMenu() {
     clearError,
     handleExportPng,
     handleCopyLink,
+    handleNew,
   } = useFileOperations()
 
   return (
@@ -79,6 +89,15 @@ export function MainMenu() {
           </DropdownMenuItem>
 
           <DropdownMenuSeparator className="my-1.5 bg-white/5" />
+
+          <DropdownMenuItem
+            onClick={handleNew}
+            data-testid="menu-item-new"
+            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+          >
+            <FilePlus className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <span className="flex-1 text-[13px]">New</span>
+          </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={handleSave}
