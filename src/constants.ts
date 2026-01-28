@@ -10,7 +10,6 @@ export const TEXT_FILL = '#ffffff'
 export const PREVIEW_FILL = '#3b82f680'
 export const PREVIEW_STROKE = '#60a5fa80'
 
-export const GRID_DOT_COLOR = 'rgba(255, 255, 255, 0.25)'
 export const GRID_DOT_RADIUS = 1
 export const CROSSHAIR_COLOR = 'rgba(34, 211, 238, 0.25)'
 export const CROSSHAIR_SIZE = 17
@@ -60,6 +59,7 @@ export const EXPORT_PNG_PADDING = 20
 export const EXPORT_PNG_BG = '#ffffff'
 
 export const LOCALSTORAGE_KEY = 'griddy-canvas'
+export const THEME_LOCALSTORAGE_KEY = 'griddy-theme'
 
 import type { HandlePosition } from './store/state'
 

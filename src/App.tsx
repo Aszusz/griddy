@@ -9,7 +9,7 @@ function App() {
   useKeyboardShortcuts()
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-black">
+    <div className="bg-background fixed inset-0 overflow-hidden">
       <Canvas />
       <MainMenu />
       <Toolbox />

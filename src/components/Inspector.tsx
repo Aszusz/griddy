@@ -23,7 +23,7 @@ export function Inspector() {
         <div className="px-4 py-3">
           <span
             data-testid="inspector-multi-select-label"
-            className="font-mono text-xs text-zinc-400"
+            className="text-muted-foreground font-mono text-xs"
           >
             {selectedShapes.length} shapes selected
           </span>
@@ -142,7 +142,7 @@ export function Inspector() {
                 )
               )
             }
-            className="w-full rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white"
+            className="border-border bg-input text-foreground w-full rounded border px-2 py-1 text-sm"
           >
             <option value="Serif">Serif</option>
             <option value="Sans">Sans</option>
@@ -158,7 +158,7 @@ export function Inspector() {
               onClick={() =>
                 dispatch(AppActions['text/alignChanged'](textShape.id, 'left'))
               }
-              className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+              className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
             >
               Left
             </button>
@@ -170,7 +170,7 @@ export function Inspector() {
                   AppActions['text/alignChanged'](textShape.id, 'center')
                 )
               }
-              className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+              className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
             >
               Center
             </button>
@@ -180,7 +180,7 @@ export function Inspector() {
               onClick={() =>
                 dispatch(AppActions['text/alignChanged'](textShape.id, 'right'))
               }
-              className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+              className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
             >
               Right
             </button>
@@ -278,7 +278,7 @@ export function Inspector() {
                     AppActions['shape/textHAlignChanged'](rectShape.id, 'left')
                   )
                 }
-                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
               >
                 Left
               </button>
@@ -293,7 +293,7 @@ export function Inspector() {
                     )
                   )
                 }
-                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
               >
                 Center
               </button>
@@ -305,7 +305,7 @@ export function Inspector() {
                     AppActions['shape/textHAlignChanged'](rectShape.id, 'right')
                   )
                 }
-                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
               >
                 Right
               </button>
@@ -319,7 +319,7 @@ export function Inspector() {
                     AppActions['shape/textVAlignChanged'](rectShape.id, 'top')
                   )
                 }
-                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
               >
                 Top
               </button>
@@ -334,7 +334,7 @@ export function Inspector() {
                     )
                   )
                 }
-                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
               >
                 Middle
               </button>
@@ -349,7 +349,7 @@ export function Inspector() {
                     )
                   )
                 }
-                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
               >
                 Bottom
               </button>

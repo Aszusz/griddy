@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
-import { CANVAS_BG } from '../constants'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   useAppSelector,
   useCanvasSize,
@@ -53,6 +52,23 @@ export function Canvas() {
   const { containerRef, canvasSize } = useCanvasSize()
   const originX = canvasSize.width / 2 + panX
   const originY = canvasSize.height / 2 + panY
+
+  const [gridDotColor, setGridDotColor] = useState<string>('')
+  useEffect(() => {
+    const update = () => {
+      const color = getComputedStyle(document.documentElement)
+        .getPropertyValue('--grid-dot-color')
+        .trim()
+      setGridDotColor(color)
+    }
+    update()
+    const observer = new MutationObserver(update)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+    return () => observer.disconnect()
+  }, [])
 
   const { handlers, hoverCursor } = useCanvasEvents(originX, originY, zoom)
   useGlobalDrag(canvasRef, originX, originY, zoom)
@@ -109,7 +125,15 @@ export function Canvas() {
     ctx.translate(originX, originY)
     ctx.scale(zoom, zoom)
 
-    drawGrid(ctx, originX, originY, canvasSize.width, canvasSize.height, zoom)
+    drawGrid(
+      ctx,
+      originX,
+      originY,
+      canvasSize.width,
+      canvasSize.height,
+      zoom,
+      gridDotColor
+    )
     drawShapes(ctx, shapes, editingTextId)
     drawSelectionBounds(ctx, selectionBoundsShapes, zoom)
     drawPreview(ctx, previewRect)
@@ -131,14 +155,14 @@ export function Canvas() {
     selectionBoundsShapes,
     marquee,
     editingTextId,
+    gridDotColor,
   ])
 
   return (
     <div
       ref={containerRef}
       data-testid="canvas-container"
-      className="animate-in fade-in absolute inset-0 duration-700"
-      style={{ backgroundColor: CANVAS_BG }}
+      className="animate-in fade-in bg-canvas absolute inset-0 duration-700"
     >
       <canvas
         ref={canvasRef}

@@ -42,7 +42,7 @@ export function ColorField({
   return (
     <div className="flex items-center gap-2">
       {previewBorder ? (
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-transparent">
+        <div className="border-border flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent">
           <div
             className="h-4 w-4 rounded border-2"
             style={{ borderColor: value }}
@@ -50,7 +50,7 @@ export function ColorField({
         </div>
       ) : (
         <div
-          className="h-7 w-7 rounded-lg border border-white/10 shadow-inner"
+          className="border-border h-7 w-7 rounded-lg border shadow-inner"
           style={{ backgroundColor: value }}
         />
       )}
@@ -68,7 +68,7 @@ export function ColorField({
           onChange={(e) => setLocalValue(e.target.value)}
           onBlur={handleCommit}
           onKeyDown={handleKeyDown}
-          className="flex h-7 w-full items-center rounded-lg border border-white/6 bg-white/3 px-2 font-mono text-xs text-zinc-400 outline-none focus:border-cyan-500/50"
+          className="border-border bg-accent text-muted-foreground flex h-7 w-full items-center rounded-lg border px-2 font-mono text-xs outline-none focus:border-cyan-500/50"
         />
       </div>
     </div>

@@ -7,8 +7,18 @@ import {
   Image,
   Link,
   FilePlus,
+  Sun,
+  Moon,
+  Monitor,
+  Check,
 } from 'lucide-react'
-import { useAppDispatch, useAppSelector, useFileOperations } from '../hooks'
+import {
+  useAppDispatch,
+  useAppSelector,
+  useFileOperations,
+  useTheme,
+} from '../hooks'
+import type { Theme } from '../hooks'
 import { AppActions } from '../store/actions'
 import { selectCanUndo, selectCanRedo } from '../store/selectors'
 import {
@@ -18,12 +28,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from './ui/dropdown-menu'
+
+const themeOptions: { value: Theme; label: string; icon: typeof Sun }[] = [
+  { value: 'light', label: 'Light', icon: Sun },
+  { value: 'dark', label: 'Dark', icon: Moon },
+  { value: 'system', label: 'System', icon: Monitor },
+]
 
 export function MainMenu() {
   const dispatch = useAppDispatch()
   const canUndo = useAppSelector(selectCanUndo)
   const canRedo = useAppSelector(selectCanRedo)
+  const { theme, setTheme } = useTheme()
   const {
     fileInputRef,
     showConfirm,
@@ -55,25 +75,25 @@ export function MainMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
-            className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/8 bg-zinc-900/95 shadow-xl shadow-black/40 backdrop-blur-xl transition-all duration-200 hover:border-white/12 hover:bg-zinc-800/95 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50"
+            className="group border-border bg-card hover:bg-accent relative flex h-10 w-10 items-center justify-center rounded-xl border shadow-xl shadow-black/40 backdrop-blur-xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50"
             data-testid="main-menu-trigger"
           >
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/[0.03] to-transparent" />
-            <Menu className="relative size-[18px] text-zinc-400 transition-colors duration-200 group-hover:text-zinc-200" />
+            <div className="absolute inset-0 hidden rounded-xl bg-gradient-to-b from-white/[0.03] to-transparent dark:block" />
+            <Menu className="text-muted-foreground group-hover:text-foreground relative size-[18px] transition-colors duration-200" />
           </button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
           align="start"
           sideOffset={8}
-          className="min-w-[180px] border-white/8 bg-zinc-900/98 shadow-2xl shadow-black/50 backdrop-blur-2xl"
+          className="border-border bg-popover min-w-[180px] shadow-2xl shadow-black/50 backdrop-blur-2xl"
         >
           <DropdownMenuItem
             onClick={() => dispatch(AppActions['history/undo']())}
             disabled={!canUndo}
-            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[disabled]:text-zinc-600 data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+            className="group text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground gap-3 rounded-lg px-3 py-2 transition-colors"
           >
-            <Undo2 className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <Undo2 className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
             <span className="flex-1 text-[13px]">Undo</span>
             <DropdownMenuShortcut>⌘Z</DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -81,59 +101,87 @@ export function MainMenu() {
           <DropdownMenuItem
             onClick={() => dispatch(AppActions['history/redo']())}
             disabled={!canRedo}
-            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[disabled]:text-zinc-600 data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+            className="group text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground gap-3 rounded-lg px-3 py-2 transition-colors"
           >
-            <Redo2 className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <Redo2 className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
             <span className="flex-1 text-[13px]">Redo</span>
             <DropdownMenuShortcut>⇧⌘Z</DropdownMenuShortcut>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator className="my-1.5 bg-white/5" />
+          <DropdownMenuSeparator className="bg-border my-1.5" />
 
           <DropdownMenuItem
             onClick={handleNew}
             data-testid="menu-item-new"
-            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+            className="group text-popover-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground gap-3 rounded-lg px-3 py-2 transition-colors"
           >
-            <FilePlus className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <FilePlus className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
             <span className="flex-1 text-[13px]">New</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={handleSave}
             data-testid="menu-item-save"
-            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+            className="group text-popover-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground gap-3 rounded-lg px-3 py-2 transition-colors"
           >
-            <Save className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <Save className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
             <span className="flex-1 text-[13px]">Save</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={handleOpenClick}
             data-testid="menu-item-open"
-            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+            className="group text-popover-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground gap-3 rounded-lg px-3 py-2 transition-colors"
           >
-            <FolderOpen className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <FolderOpen className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
             <span className="flex-1 text-[13px]">Open</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={handleExportPng}
             data-testid="menu-item-export-png"
-            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+            className="group text-popover-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground gap-3 rounded-lg px-3 py-2 transition-colors"
           >
-            <Image className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <Image className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
             <span className="flex-1 text-[13px]">Export PNG</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={handleCopyLink}
             data-testid="menu-item-copy-link"
-            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+            className="group text-popover-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground gap-3 rounded-lg px-3 py-2 transition-colors"
           >
-            <Link className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <Link className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
             <span className="flex-1 text-[13px]">Copy Link</span>
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator className="bg-border my-1.5" />
+
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger
+              data-testid="menu-item-theme"
+              className="group text-popover-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground gap-3 rounded-lg px-3 py-2 transition-colors"
+            >
+              <Sun className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
+              <span className="flex-1 text-[13px]">Theme</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="border-border bg-popover min-w-[140px] shadow-2xl shadow-black/50 backdrop-blur-2xl">
+              {themeOptions.map((opt) => (
+                <DropdownMenuItem
+                  key={opt.value}
+                  onClick={() => setTheme(opt.value)}
+                  data-testid={`menu-item-theme-${opt.value}`}
+                  className="group text-popover-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground gap-3 rounded-lg px-3 py-2 transition-colors"
+                >
+                  <opt.icon className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
+                  <span className="flex-1 text-[13px]">{opt.label}</span>
+                  {theme === opt.value && (
+                    <Check className="size-4 text-cyan-400" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -142,15 +190,15 @@ export function MainMenu() {
           data-testid="confirm-load-dialog"
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
         >
-          <div className="rounded-xl border border-white/10 bg-zinc-900 p-6 shadow-2xl">
-            <p className="mb-4 text-zinc-300">
+          <div className="border-border bg-card rounded-xl border p-6 shadow-2xl">
+            <p className="text-foreground mb-4">
               Loading will replace current canvas. Continue?
             </p>
             <div className="flex justify-end gap-2">
               <button
                 data-testid="cancel-load-button"
                 onClick={handleCancel}
-                className="rounded-lg px-4 py-2 text-zinc-400 hover:bg-white/5"
+                className="text-muted-foreground hover:bg-accent rounded-lg px-4 py-2"
               >
                 Cancel
               </button>

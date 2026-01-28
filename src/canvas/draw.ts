@@ -3,7 +3,6 @@ import { isLineShape, isTextShape, isRectShape, getShapeBounds } from '../utils'
 import {
   TWO_PI,
   GRID_SIZE,
-  GRID_DOT_COLOR,
   GRID_DOT_RADIUS,
   SHAPE_STROKE_WIDTH,
   PREVIEW_FILL,
@@ -71,9 +70,10 @@ export function drawGrid(
   originY: number,
   canvasWidth: number,
   canvasHeight: number,
-  zoom = 1
+  zoom: number,
+  dotColor: string
 ): void {
-  ctx.fillStyle = GRID_DOT_COLOR
+  ctx.fillStyle = dotColor
   // Convert screen bounds to world coordinates
   const worldLeft = -originX / zoom
   const worldTop = -originY / zoom

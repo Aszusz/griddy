@@ -106,11 +106,11 @@ export function Toolbox() {
       <div className="group relative">
         <div className="absolute -inset-1 rounded-2xl bg-linear-to-b from-cyan-500/20 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
 
-        <div className="relative flex flex-col gap-1 rounded-2xl border border-white/8 bg-zinc-900/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
+        <div className="border-border bg-card relative flex flex-col gap-1 rounded-2xl border p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
           {toolItems.map((item, index) => (
             <div key={item.label} className="flex flex-col gap-1">
               {item.isFirstInGroup && item.groupIndex > 0 && (
-                <div className="mx-2 my-0.5 h-px bg-white/4" />
+                <div className="bg-border mx-2 my-0.5 h-px" />
               )}
               <ToolButton
                 {...item}

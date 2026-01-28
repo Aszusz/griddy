@@ -33,7 +33,9 @@ export function InspectorField({
 
   return (
     <div className="flex items-center gap-1.5">
-      <span className="w-4 font-mono text-[10px] text-zinc-600">{label}</span>
+      <span className="text-muted-foreground w-4 font-mono text-[10px]">
+        {label}
+      </span>
       <span data-testid={testId} className="hidden">
         {value}
       </span>
@@ -44,7 +46,7 @@ export function InspectorField({
         onChange={(e) => setLocalValue(e.target.value)}
         onBlur={handleCommit}
         onKeyDown={handleKeyDown}
-        className="flex h-7 w-full items-center rounded-lg border border-white/6 bg-white/3 px-2 font-mono text-xs text-zinc-300 outline-none focus:border-cyan-500/50"
+        className="border-border bg-accent text-popover-foreground flex h-7 w-full items-center rounded-lg border px-2 font-mono text-xs outline-none focus:border-cyan-500/50"
       />
     </div>
   )

@@ -44,11 +44,11 @@ export function ZoomControl() {
       className="animate-in fade-in fixed right-4 bottom-4 z-40"
       style={{ animationDelay: '650ms', animationFillMode: 'backwards' }}
     >
-      <div className="flex items-center gap-1 rounded-lg border border-white/4 bg-zinc-900/80 p-1 shadow-lg shadow-black/20 backdrop-blur-md">
+      <div className="border-border bg-card flex items-center gap-1 rounded-lg border p-1 shadow-lg shadow-black/20 backdrop-blur-md">
         <button
           onClick={handleZoomOut}
           disabled={zoom <= MIN_ZOOM}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-colors hover:bg-white/5 hover:text-zinc-300 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-zinc-500"
+          className="text-muted-foreground hover:bg-accent hover:text-foreground disabled:hover:text-muted-foreground flex h-7 w-7 items-center justify-center rounded-md transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
           title="Zoom out (⌘−)"
         >
           <Minus className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -59,11 +59,11 @@ export function ZoomControl() {
             ref={buttonRef}
             onClick={() => setShowMenu(!showMenu)}
             data-testid="status-bar-zoom"
-            className="flex h-7 min-w-[60px] items-center justify-center gap-1 rounded-md px-2 font-mono text-[11px] text-zinc-400 tabular-nums transition-colors hover:bg-white/5 hover:text-zinc-200"
+            className="text-muted-foreground hover:bg-accent hover:text-foreground flex h-7 min-w-[60px] items-center justify-center gap-1 rounded-md px-2 font-mono text-[11px] tabular-nums transition-colors"
           >
             <span>{zoomPercent}%</span>
             <ChevronDown
-              className={`h-3 w-3 text-zinc-600 transition-transform duration-200 ${showMenu ? 'rotate-180' : ''}`}
+              className={`text-muted-foreground h-3 w-3 transition-transform duration-200 ${showMenu ? 'rotate-180' : ''}`}
               strokeWidth={1.5}
             />
           </button>
@@ -80,7 +80,7 @@ export function ZoomControl() {
         <button
           onClick={handleZoomIn}
           disabled={zoom >= MAX_ZOOM}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-colors hover:bg-white/5 hover:text-zinc-300 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-zinc-500"
+          className="text-muted-foreground hover:bg-accent hover:text-foreground disabled:hover:text-muted-foreground flex h-7 w-7 items-center justify-center rounded-md transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
           title="Zoom in (⌘+)"
         >
           <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
