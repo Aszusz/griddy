@@ -1,6 +1,8 @@
 import type { Page } from '@playwright/test'
 import type { StoreConfig, RootState } from '../../src/store'
 
+const DEFAULT_READY_ELEMENT = 'canvas'
+
 // Wait for test harness to be available
 async function waitForHarness(page: Page) {
   await page.waitForFunction(() => window.__TEST_HARNESS__ !== undefined, {
@@ -9,22 +11,35 @@ async function waitForHarness(page: Page) {
 }
 
 // Navigate and configure in one step - app waits until ready() is called
-export async function setupWithState(page: Page, config: StoreConfig) {
+export async function setupWithState(
+  page: Page,
+  config: StoreConfig,
+  waitForTestId = DEFAULT_READY_ELEMENT
+) {
   await page.goto('/')
   await waitForHarness(page)
   await page.evaluate((c) => {
     window.__TEST_HARNESS__?.configure(c)
     window.__TEST_HARNESS__?.ready()
   }, config)
+  if (waitForTestId) {
+    await page.getByTestId(waitForTestId).waitFor({ state: 'visible' })
+  }
 }
 
 // For tests that don't need custom state
-export async function setupDefault(page: Page) {
+export async function setupDefault(
+  page: Page,
+  waitForTestId = DEFAULT_READY_ELEMENT
+) {
   await page.goto('/')
   await waitForHarness(page)
   await page.evaluate(() => {
     window.__TEST_HARNESS__?.ready()
   })
+  if (waitForTestId) {
+    await page.getByTestId(waitForTestId).waitFor({ state: 'visible' })
+  }
 }
 
 // Navigate to any URL (including with hash), wait for harness, call ready
