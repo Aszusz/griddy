@@ -1,5 +1,5 @@
 import type { Shape, MarqueeState } from '../store/state'
-import { isLineShape, isTextShape, getShapeBounds } from '../utils'
+import { isLineShape, isTextShape, isRectShape, getShapeBounds } from '../utils'
 import {
   TWO_PI,
   GRID_SIZE,
@@ -204,7 +204,7 @@ export function drawShapes(
       if (shape.arrowEnd) {
         drawArrowhead(ctx, shape.x2, shape.y2, shape.x, shape.y)
       }
-    } else {
+    } else if (isRectShape(shape)) {
       ctx.strokeStyle = shape.stroke
       ctx.lineWidth = SHAPE_STROKE_WIDTH
       ctx.fillStyle = shape.fill
@@ -213,6 +213,43 @@ export function drawShapes(
       } else {
         ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
         ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
+      }
+      // Draw embedded text if present and not being edited
+      if (shape.text && shape.id !== editingTextId) {
+        ctx.save()
+        ctx.beginPath()
+        ctx.rect(shape.x, shape.y, shape.width, shape.height)
+        ctx.clip()
+        ctx.fillStyle = shape.stroke
+        ctx.font = `${TEXT_FONT_SIZE}px system-ui, sans-serif`
+        const hAlign = shape.textAlign ?? 'center'
+        const vAlign = shape.textVAlign ?? 'middle'
+        ctx.textAlign = hAlign
+        ctx.textBaseline = 'top'
+        const lines = wrapText(ctx, shape.text, shape.width - TEXT_PADDING * 2)
+        const totalTextHeight = lines.length * TEXT_LINE_HEIGHT
+        const xOffset =
+          hAlign === 'center'
+            ? shape.width / 2
+            : hAlign === 'right'
+              ? shape.width - TEXT_PADDING
+              : TEXT_PADDING
+        let yOffset: number
+        if (vAlign === 'top') {
+          yOffset = TEXT_PADDING
+        } else if (vAlign === 'bottom') {
+          yOffset = shape.height - totalTextHeight - TEXT_PADDING
+        } else {
+          yOffset = (shape.height - totalTextHeight) / 2
+        }
+        lines.forEach((line, i) => {
+          ctx.fillText(
+            line,
+            shape.x + xOffset,
+            shape.y + yOffset + i * TEXT_LINE_HEIGHT
+          )
+        })
+        ctx.restore()
       }
     }
   })

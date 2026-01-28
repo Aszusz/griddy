@@ -205,6 +205,7 @@ export function Inspector() {
 
   const rectShape = shape as RectShape
   const title = rectShape.type === 'ellipse' ? 'Ellipse' : 'Rectangle'
+  const hasText = !!rectShape.text
 
   return (
     <InspectorPanel title={title}>
@@ -264,8 +265,101 @@ export function Inspector() {
         </div>
       </InspectorSection>
 
+      {/* Text Alignment - only shown when shape has text */}
+      {hasText && (
+        <InspectorSection title="Text Alignment" delay={100}>
+          <div className="space-y-2">
+            <div data-testid="inspector-halign-buttons" className="flex gap-1">
+              <button
+                data-testid="inspector-halign-left"
+                data-active={rectShape.textAlign === 'left'}
+                onClick={() =>
+                  dispatch(
+                    AppActions['shape/textHAlignChanged'](rectShape.id, 'left')
+                  )
+                }
+                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+              >
+                Left
+              </button>
+              <button
+                data-testid="inspector-halign-center"
+                data-active={rectShape.textAlign === 'center'}
+                onClick={() =>
+                  dispatch(
+                    AppActions['shape/textHAlignChanged'](
+                      rectShape.id,
+                      'center'
+                    )
+                  )
+                }
+                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+              >
+                Center
+              </button>
+              <button
+                data-testid="inspector-halign-right"
+                data-active={rectShape.textAlign === 'right'}
+                onClick={() =>
+                  dispatch(
+                    AppActions['shape/textHAlignChanged'](rectShape.id, 'right')
+                  )
+                }
+                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+              >
+                Right
+              </button>
+            </div>
+            <div data-testid="inspector-valign-buttons" className="flex gap-1">
+              <button
+                data-testid="inspector-valign-top"
+                data-active={rectShape.textVAlign === 'top'}
+                onClick={() =>
+                  dispatch(
+                    AppActions['shape/textVAlignChanged'](rectShape.id, 'top')
+                  )
+                }
+                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+              >
+                Top
+              </button>
+              <button
+                data-testid="inspector-valign-middle"
+                data-active={rectShape.textVAlign === 'middle'}
+                onClick={() =>
+                  dispatch(
+                    AppActions['shape/textVAlignChanged'](
+                      rectShape.id,
+                      'middle'
+                    )
+                  )
+                }
+                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+              >
+                Middle
+              </button>
+              <button
+                data-testid="inspector-valign-bottom"
+                data-active={rectShape.textVAlign === 'bottom'}
+                onClick={() =>
+                  dispatch(
+                    AppActions['shape/textVAlignChanged'](
+                      rectShape.id,
+                      'bottom'
+                    )
+                  )
+                }
+                className="flex-1 rounded border border-white/10 bg-zinc-800 px-2 py-1 text-sm text-white data-[active=true]:bg-cyan-600"
+              >
+                Bottom
+              </button>
+            </div>
+          </div>
+        </InspectorSection>
+      )}
+
       {/* Fill Section */}
-      <InspectorSection title="Fill" delay={100}>
+      <InspectorSection title="Fill" delay={hasText ? 125 : 100}>
         <ColorField
           value={rectShape.fill}
           testId="inspector-fill"
@@ -277,7 +371,7 @@ export function Inspector() {
       </InspectorSection>
 
       {/* Stroke Section */}
-      <InspectorSection title="Stroke" delay={125} last>
+      <InspectorSection title="Stroke" delay={hasText ? 150 : 125} last>
         <ColorField
           value={rectShape.stroke}
           testId="inspector-stroke"

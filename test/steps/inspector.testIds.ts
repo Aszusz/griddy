@@ -21,4 +21,13 @@ export const testIds = {
   alignmentLeft: 'inspector-alignment-left',
   alignmentCenter: 'inspector-alignment-center',
   alignmentRight: 'inspector-alignment-right',
+  // Shape text alignment
+  hAlignButtons: 'inspector-halign-buttons',
+  hAlignLeft: 'inspector-halign-left',
+  hAlignCenter: 'inspector-halign-center',
+  hAlignRight: 'inspector-halign-right',
+  vAlignButtons: 'inspector-valign-buttons',
+  vAlignTop: 'inspector-valign-top',
+  vAlignMiddle: 'inspector-valign-middle',
+  vAlignBottom: 'inspector-valign-bottom',
 }

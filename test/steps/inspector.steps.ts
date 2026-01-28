@@ -332,3 +332,75 @@ Then(
     expect((textShape as { align: string }).align).toBe(alignment.toLowerCase())
   }
 )
+
+// Shape text alignment
+
+Then('the Inspector shows horizontal alignment buttons', async ({ page }) => {
+  await expect(page.getByTestId(testIds.hAlignButtons)).toBeVisible()
+})
+
+Then('the Inspector shows vertical alignment buttons', async ({ page }) => {
+  await expect(page.getByTestId(testIds.vAlignButtons)).toBeVisible()
+})
+
+Then(
+  'the Inspector does not show horizontal alignment buttons',
+  async ({ page }) => {
+    await expect(page.getByTestId(testIds.hAlignButtons)).toBeHidden()
+  }
+)
+
+Then(
+  'the Inspector does not show vertical alignment buttons',
+  async ({ page }) => {
+    await expect(page.getByTestId(testIds.vAlignButtons)).toBeHidden()
+  }
+)
+
+When(
+  'I set Inspector horizontal alignment to {string}',
+  async ({ page }, alignment: string) => {
+    const testId =
+      alignment === 'Left'
+        ? testIds.hAlignLeft
+        : alignment === 'Center'
+          ? testIds.hAlignCenter
+          : testIds.hAlignRight
+    await page.getByTestId(testId).click()
+  }
+)
+
+When(
+  'I set Inspector vertical alignment to {string}',
+  async ({ page }, alignment: string) => {
+    const testId =
+      alignment === 'Top'
+        ? testIds.vAlignTop
+        : alignment === 'Middle'
+          ? testIds.vAlignMiddle
+          : testIds.vAlignBottom
+    await page.getByTestId(testId).click()
+  }
+)
+
+Then(
+  'the rectangle text is aligned {string} horizontally',
+  async ({ page }, alignment: string) => {
+    const state = await getState(page)
+    const rect = state.app.shapes.find((s) => s.type === 'rectangle') as
+      | RectShape
+      | undefined
+    expect(rect?.textAlign).toBe(alignment.toLowerCase())
+  }
+)
+
+Then(
+  'the rectangle text is aligned {string} vertically',
+  async ({ page }, alignment: string) => {
+    const state = await getState(page)
+    const rect = state.app.shapes.find((s) => s.type === 'rectangle') as
+      | RectShape
+      | undefined
+    expect(rect?.textVAlign).toBe(alignment.toLowerCase())
+  }
+)

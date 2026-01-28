@@ -12,7 +12,7 @@ import {
   selectPan,
   selectEditingTextId,
 } from '../store/selectors'
-import { pointHitsShape, isTextShape } from '../utils'
+import { pointHitsShape, isTextShape, isRectShape } from '../utils'
 
 export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
   const dispatch = useAppDispatch()
@@ -130,7 +130,10 @@ export function useCanvasEvents(originX: number, originY: number, zoom = 1) {
   const handleDoubleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const { x, y } = getCoords(e)
     const clickedShape = shapes.find((s) => pointHitsShape(x, y, s))
-    if (clickedShape && isTextShape(clickedShape)) {
+    if (
+      clickedShape &&
+      (isTextShape(clickedShape) || isRectShape(clickedShape))
+    ) {
       dispatch(AppActions['text/startEdit'](clickedShape.id))
     }
   }

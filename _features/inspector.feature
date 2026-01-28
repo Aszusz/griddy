@@ -240,3 +240,44 @@ Feature: Inspector Panel
       | Left      |
       | Center    |
       | Right     |
+
+  # Shape Text Alignment
+  Scenario: Rectangle with text shows alignment controls
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100) with text "Label"
+    When I click at (150, 150)
+    Then the Inspector shows horizontal alignment buttons
+    And the Inspector shows vertical alignment buttons
+
+  Scenario: Rectangle without text hides alignment controls
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    When I click at (150, 150)
+    Then the Inspector does not show horizontal alignment buttons
+    And the Inspector does not show vertical alignment buttons
+
+  Scenario Outline: Change rectangle text horizontal alignment
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100) with text "Label"
+    And the rectangle is selected
+    When I set Inspector horizontal alignment to "<alignment>"
+    Then the rectangle text is aligned "<alignment>" horizontally
+
+    Examples:
+      | alignment |
+      | Left      |
+      | Center    |
+      | Right     |
+
+  Scenario Outline: Change rectangle text vertical alignment
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100) with text "Label"
+    And the rectangle is selected
+    When I set Inspector vertical alignment to "<alignment>"
+    Then the rectangle text is aligned "<alignment>" vertically
+
+    Examples:
+      | alignment |
+      | Top       |
+      | Middle    |
+      | Bottom    |

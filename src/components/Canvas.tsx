@@ -20,7 +20,7 @@ import {
 } from '../store/selectors'
 import { AppActions } from '../store/actions'
 import { useAppDispatch } from '../hooks'
-import { isLineShape, isTextShape } from '../utils'
+import { isLineShape, isTextShape, isRectShape } from '../utils'
 import {
   drawGrid,
   drawShapes,
@@ -32,6 +32,7 @@ import {
   drawCrosshair,
 } from '../canvas/draw'
 import { TextEditor } from './TextEditor'
+import { ShapeTextEditor } from './ShapeTextEditor'
 import { ResizeHandles } from './ResizeHandles'
 import { LineEndpointHandles } from './LineEndpointHandles'
 
@@ -85,6 +86,9 @@ export function Canvas() {
       : undefined
   const editingTextShape = editingTextId
     ? shapes.find((s) => s.id === editingTextId && isTextShape(s))
+    : undefined
+  const editingRectShape = editingTextId
+    ? shapes.find((s) => s.id === editingTextId && isRectShape(s))
     : undefined
   // Lines show point handles instead of selection border
   // Editing text shows HTML textarea with its own border
@@ -162,6 +166,14 @@ export function Canvas() {
       {editingTextShape && isTextShape(editingTextShape) && (
         <TextEditor
           shape={editingTextShape}
+          originX={originX}
+          originY={originY}
+          zoom={zoom}
+        />
+      )}
+      {editingRectShape && isRectShape(editingRectShape) && (
+        <ShapeTextEditor
+          shape={editingRectShape}
           originX={originX}
           originY={originY}
           zoom={zoom}

@@ -20,6 +20,9 @@ export type RectShape = {
   height: number
   fill: string
   stroke: string
+  text?: string
+  textAlign?: 'left' | 'center' | 'right'
+  textVAlign?: 'top' | 'middle' | 'bottom'
 }
 
 export type LineShape = {

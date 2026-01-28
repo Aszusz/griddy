@@ -102,7 +102,9 @@ When('I confirm the load', async ({ page }) => {
 })
 
 When('I cancel the load', async ({ page }) => {
-  await page.getByTestId(testIds.cancelButton).click()
+  const btn = page.getByTestId(testIds.cancelButton)
+  await btn.waitFor({ state: 'visible' })
+  await btn.click()
 })
 
 Then('I see a confirmation dialog', async ({ page }) => {

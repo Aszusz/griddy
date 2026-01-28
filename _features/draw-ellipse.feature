@@ -73,3 +73,10 @@ Feature: Draw Ellipse
     And the ellipse is selected
     When I drag the bottom-right handle by (40, 60)
     Then the ellipse has size (140, 160)
+
+  # Embedded text
+  Scenario: Double-click ellipse enters text edit mode
+    Given I open the app
+    And an ellipse exists at (100, 100) with size (100, 100)
+    When I double-click at (150, 150)
+    Then the ellipse is in text edit mode

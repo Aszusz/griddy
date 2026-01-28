@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { GRID_SIZE, LINE_HIT_TOLERANCE } from './constants'
-import type { Shape, LineShape, TextShape } from './store/state'
+import type { Shape, LineShape, TextShape, RectShape } from './store/state'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -13,6 +13,10 @@ export function isLineShape(s: Shape): s is LineShape {
 
 export function isTextShape(s: Shape): s is TextShape {
   return s.type === 'text'
+}
+
+export function isRectShape(s: Shape): s is RectShape {
+  return s.type === 'rectangle' || s.type === 'ellipse'
 }
 
 export function pointHitsShape(x: number, y: number, s: Shape): boolean {

@@ -90,6 +90,14 @@ export const AppActions = discUnion(
       id,
       align,
     }),
+    'shape/textHAlignChanged': (
+      id: string,
+      textAlign: 'left' | 'center' | 'right'
+    ) => ({ id, textAlign }),
+    'shape/textVAlignChanged': (
+      id: string,
+      textVAlign: 'top' | 'middle' | 'bottom'
+    ) => ({ id, textVAlign }),
     'file/load': (shapes: Shape[]) => ({ shapes }),
   },
   'type'

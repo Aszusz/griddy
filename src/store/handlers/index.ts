@@ -50,5 +50,7 @@ export {
   handleTextUpdateContent,
   handleTextFontChanged,
   handleTextAlignChanged,
+  handleShapeTextHAlignChanged,
+  handleShapeTextVAlignChanged,
 } from './text'
 export { handleFileLoad } from './file'

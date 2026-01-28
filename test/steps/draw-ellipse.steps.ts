@@ -136,3 +136,12 @@ Then(
     expect(ellipse?.height).toBe(height)
   }
 )
+
+// Embedded text steps
+
+Then('the ellipse is in text edit mode', async ({ page }) => {
+  const state = await getState(page)
+  const ellipse = state.app.shapes.find((s) => s.type === 'ellipse')
+  expect(ellipse).toBeDefined()
+  expect(state.app.editingTextId).toBe(ellipse?.id)
+})
