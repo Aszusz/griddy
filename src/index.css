@@ -113,3 +113,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0);
+  }
+  to {
+    opacity: 0.6;
+    transform: translateX(-50%) scaleX(1);
+  }
+}

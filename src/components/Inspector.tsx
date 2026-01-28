@@ -3,6 +3,8 @@ import { InspectorField } from './InspectorField'
 import { InspectorPanel } from './InspectorPanel'
 import { ColorField } from './ColorField'
 import { ArrowheadControl } from './ArrowheadControl'
+import { TextAlignmentControl } from './TextAlignmentControl'
+import { VerticalAlignmentControl } from './VerticalAlignmentControl'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { selectSelectedShapes } from '../store/selectors'
 import { AppActions } from '../store/actions'
@@ -153,40 +155,12 @@ export function Inspector() {
         </InspectorSection>
 
         <InspectorSection title="Alignment" delay={125}>
-          <div data-testid="inspector-alignment-buttons" className="flex gap-1">
-            <button
-              data-testid="inspector-alignment-left"
-              data-active={textShape.align === 'left'}
-              onClick={() =>
-                dispatch(AppActions['text/alignChanged'](textShape.id, 'left'))
-              }
-              className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
-            >
-              Left
-            </button>
-            <button
-              data-testid="inspector-alignment-center"
-              data-active={textShape.align === 'center'}
-              onClick={() =>
-                dispatch(
-                  AppActions['text/alignChanged'](textShape.id, 'center')
-                )
-              }
-              className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
-            >
-              Center
-            </button>
-            <button
-              data-testid="inspector-alignment-right"
-              data-active={textShape.align === 'right'}
-              onClick={() =>
-                dispatch(AppActions['text/alignChanged'](textShape.id, 'right'))
-              }
-              className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
-            >
-              Right
-            </button>
-          </div>
+          <TextAlignmentControl
+            value={textShape.align}
+            onChange={(align) =>
+              dispatch(AppActions['text/alignChanged'](textShape.id, align))
+            }
+          />
         </InspectorSection>
 
         <InspectorSection title="Fill" delay={150} last>
@@ -271,92 +245,24 @@ export function Inspector() {
       {/* Text Alignment - only shown when shape has text */}
       {hasText && (
         <InspectorSection title="Text Alignment" delay={100}>
-          <div className="space-y-2">
-            <div data-testid="inspector-halign-buttons" className="flex gap-1">
-              <button
-                data-testid="inspector-halign-left"
-                data-active={rectShape.textAlign === 'left'}
-                onClick={() =>
-                  dispatch(
-                    AppActions['shape/textHAlignChanged'](rectShape.id, 'left')
-                  )
-                }
-                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
-              >
-                Left
-              </button>
-              <button
-                data-testid="inspector-halign-center"
-                data-active={rectShape.textAlign === 'center'}
-                onClick={() =>
-                  dispatch(
-                    AppActions['shape/textHAlignChanged'](
-                      rectShape.id,
-                      'center'
-                    )
-                  )
-                }
-                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
-              >
-                Center
-              </button>
-              <button
-                data-testid="inspector-halign-right"
-                data-active={rectShape.textAlign === 'right'}
-                onClick={() =>
-                  dispatch(
-                    AppActions['shape/textHAlignChanged'](rectShape.id, 'right')
-                  )
-                }
-                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
-              >
-                Right
-              </button>
-            </div>
-            <div data-testid="inspector-valign-buttons" className="flex gap-1">
-              <button
-                data-testid="inspector-valign-top"
-                data-active={rectShape.textVAlign === 'top'}
-                onClick={() =>
-                  dispatch(
-                    AppActions['shape/textVAlignChanged'](rectShape.id, 'top')
-                  )
-                }
-                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
-              >
-                Top
-              </button>
-              <button
-                data-testid="inspector-valign-middle"
-                data-active={rectShape.textVAlign === 'middle'}
-                onClick={() =>
-                  dispatch(
-                    AppActions['shape/textVAlignChanged'](
-                      rectShape.id,
-                      'middle'
-                    )
-                  )
-                }
-                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
-              >
-                Middle
-              </button>
-              <button
-                data-testid="inspector-valign-bottom"
-                data-active={rectShape.textVAlign === 'bottom'}
-                onClick={() =>
-                  dispatch(
-                    AppActions['shape/textVAlignChanged'](
-                      rectShape.id,
-                      'bottom'
-                    )
-                  )
-                }
-                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
-              >
-                Bottom
-              </button>
-            </div>
+          <div className="flex flex-wrap gap-2">
+            <TextAlignmentControl
+              value={rectShape.textAlign ?? 'center'}
+              onChange={(align) =>
+                dispatch(
+                  AppActions['shape/textHAlignChanged'](rectShape.id, align)
+                )
+              }
+              testIdPrefix="inspector-halign"
+            />
+            <VerticalAlignmentControl
+              value={rectShape.textVAlign ?? 'middle'}
+              onChange={(align) =>
+                dispatch(
+                  AppActions['shape/textVAlignChanged'](rectShape.id, align)
+                )
+              }
+            />
           </div>
         </InspectorSection>
       )}
