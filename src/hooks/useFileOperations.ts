@@ -3,6 +3,9 @@ import { useAppDispatch, useAppSelector } from '.'
 import { AppActions } from '../store/actions'
 import { selectShapes } from '../store/selectors'
 import type { Shape } from '../store/state'
+import { drawShapes } from '../canvas/draw'
+import { getShapeBounds } from '../utils'
+import { EXPORT_PNG_PADDING, EXPORT_PNG_BG } from '../constants'
 
 export function useFileOperations() {
   const dispatch = useAppDispatch()
@@ -70,6 +73,51 @@ export function useFileOperations() {
     setErrorMessage(null)
   }, [])
 
+  const handleExportPng = useCallback(() => {
+    if (shapes.length === 0) {
+      setErrorMessage('Canvas is empty')
+      return
+    }
+
+    // Calculate bounding box of all shapes
+    const bounds = shapes.map(getShapeBounds)
+    const minX = Math.min(...bounds.map((b) => b.minX))
+    const minY = Math.min(...bounds.map((b) => b.minY))
+    const maxX = Math.max(...bounds.map((b) => b.maxX))
+    const maxY = Math.max(...bounds.map((b) => b.maxY))
+
+    const width = maxX - minX + EXPORT_PNG_PADDING * 2
+    const height = maxY - minY + EXPORT_PNG_PADDING * 2
+
+    // Create offscreen canvas
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    // White background
+    ctx.fillStyle = EXPORT_PNG_BG
+    ctx.fillRect(0, 0, width, height)
+
+    // Translate to account for shape offset + padding
+    ctx.translate(-minX + EXPORT_PNG_PADDING, -minY + EXPORT_PNG_PADDING)
+
+    // Draw shapes
+    drawShapes(ctx, shapes)
+
+    // Download
+    canvas.toBlob((blob) => {
+      if (!blob) return
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'canvas.png'
+      a.click()
+      URL.revokeObjectURL(url)
+    }, 'image/png')
+  }, [shapes])
+
   return {
     fileInputRef,
     showConfirm,
@@ -80,5 +128,6 @@ export function useFileOperations() {
     handleConfirm,
     handleCancel,
     clearError,
+    handleExportPng,
   }
 }

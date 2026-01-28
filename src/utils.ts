@@ -89,3 +89,22 @@ export function pointNearLine(
   const distance = Math.sqrt((px - closestX) ** 2 + (py - closestY) ** 2)
   return distance <= tolerance
 }
+
+export type ShapeBounds = {
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+}
+
+export function getShapeBounds(s: Shape): ShapeBounds {
+  if (isLineShape(s)) {
+    return {
+      minX: Math.min(s.x, s.x2),
+      minY: Math.min(s.y, s.y2),
+      maxX: Math.max(s.x, s.x2),
+      maxY: Math.max(s.y, s.y2),
+    }
+  }
+  return { minX: s.x, minY: s.y, maxX: s.x + s.width, maxY: s.y + s.height }
+}

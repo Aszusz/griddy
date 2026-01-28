@@ -1,4 +1,4 @@
-import { Menu, Undo2, Redo2, Save, FolderOpen } from 'lucide-react'
+import { Menu, Undo2, Redo2, Save, FolderOpen, Image } from 'lucide-react'
 import { useAppDispatch, useAppSelector, useFileOperations } from '../hooks'
 import { AppActions } from '../store/actions'
 import { selectCanUndo, selectCanRedo } from '../store/selectors'
@@ -25,6 +25,7 @@ export function MainMenu() {
     handleConfirm,
     handleCancel,
     clearError,
+    handleExportPng,
   } = useFileOperations()
 
   return (
@@ -94,6 +95,15 @@ export function MainMenu() {
           >
             <FolderOpen className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
             <span className="flex-1 text-[13px]">Open</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={handleExportPng}
+            data-testid="menu-item-export-png"
+            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+          >
+            <Image className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <span className="flex-1 text-[13px]">Export PNG</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

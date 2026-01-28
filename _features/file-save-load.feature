@@ -86,3 +86,27 @@ Feature: File Save and Load
     When I open the main menu
     Then I see "Save" menu item
     And I see "Open" menu item
+
+  # Export PNG
+  Scenario: Export PNG is in main menu
+    Given I open the app
+    When I open the main menu
+    Then I see "Export PNG" menu item
+
+  Scenario: Export PNG downloads image
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    When I export the canvas as PNG
+    Then a PNG file is downloaded
+
+  Scenario: Export PNG includes all shapes
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    And an ellipse exists at (500, 500) with size (50, 50)
+    When I export the canvas as PNG
+    Then the exported image contains all shapes
+
+  Scenario: Export PNG with empty canvas shows error
+    Given I open the app
+    When I export the canvas as PNG
+    Then I see an error message

@@ -1,5 +1,5 @@
 import type { Shape, MarqueeState } from '../store/state'
-import { isLineShape, isTextShape } from '../utils'
+import { isLineShape, isTextShape, getShapeBounds } from '../utils'
 import {
   TWO_PI,
   GRID_SIZE,
@@ -216,23 +216,6 @@ export function drawShapes(
       }
     }
   })
-}
-
-function getShapeBounds(s: Shape): {
-  minX: number
-  minY: number
-  maxX: number
-  maxY: number
-} {
-  if (isLineShape(s)) {
-    return {
-      minX: Math.min(s.x, s.x2),
-      minY: Math.min(s.y, s.y2),
-      maxX: Math.max(s.x, s.x2),
-      maxY: Math.max(s.y, s.y2),
-    }
-  }
-  return { minX: s.x, minY: s.y, maxX: s.x + s.width, maxY: s.y + s.height }
 }
 
 export function drawSelectionBounds(

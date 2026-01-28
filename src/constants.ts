@@ -56,6 +56,9 @@ export const TEXT_PADDING = 4
 export const TEXT_PREVIEW_FILL = 'rgba(255, 255, 255, 0.1)'
 export const TEXT_DASH_PATTERN = [4, 4] as const
 
+export const EXPORT_PNG_PADDING = 20
+export const EXPORT_PNG_BG = '#ffffff'
+
 import type { HandlePosition } from './store/state'
 
 type ShapeBounds = { x: number; y: number; width: number; height: number }
