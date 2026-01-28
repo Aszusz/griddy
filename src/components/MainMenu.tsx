@@ -1,4 +1,4 @@
-import { Menu, Undo2, Redo2, Save, FolderOpen, Image } from 'lucide-react'
+import { Menu, Undo2, Redo2, Save, FolderOpen, Image, Link } from 'lucide-react'
 import { useAppDispatch, useAppSelector, useFileOperations } from '../hooks'
 import { AppActions } from '../store/actions'
 import { selectCanUndo, selectCanRedo } from '../store/selectors'
@@ -26,6 +26,7 @@ export function MainMenu() {
     handleCancel,
     clearError,
     handleExportPng,
+    handleCopyLink,
   } = useFileOperations()
 
   return (
@@ -104,6 +105,15 @@ export function MainMenu() {
           >
             <Image className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
             <span className="flex-1 text-[13px]">Export PNG</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={handleCopyLink}
+            data-testid="menu-item-copy-link"
+            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+          >
+            <Link className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <span className="flex-1 text-[13px]">Copy Link</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

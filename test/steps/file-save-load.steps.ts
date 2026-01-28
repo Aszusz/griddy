@@ -1,9 +1,11 @@
 import { expect, type Download } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
+import LZString from 'lz-string'
 import { testIds } from './file-save-load.testIds'
 import { SHAPE_FILL, SHAPE_STROKE } from '../../src/constants'
+import { getState, setupWithUrl } from './harness'
 
-const { When, Then } = createBdd()
+const { Given, When, Then } = createBdd()
 
 // Store download for assertions
 let lastDownload: Download | null = null
@@ -152,4 +154,56 @@ Then('the exported image contains all shapes', async () => {
   // State assertion: verify export included all shapes
   // Actual pixel verification is impractical; trust implementation if file downloads
   expect(lastPngDownload).not.toBeNull()
+})
+
+// Shareable Links
+let copiedUrl: string | null = null
+
+When('I copy a shareable link', async ({ page, context }) => {
+  // Grant clipboard permissions
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.getByTestId(testIds.mainMenuTrigger).click({ force: true })
+  await page.getByTestId(testIds.copyLinkMenuItem).click()
+  // Read from clipboard
+  copiedUrl = await page.evaluate(() => navigator.clipboard.readText())
+})
+
+Then('a URL with hash is copied to clipboard', async () => {
+  expect(copiedUrl).not.toBeNull()
+  expect(copiedUrl).toMatch(/#.+/)
+})
+
+Given(
+  'I open the app with a shared link containing an ellipse',
+  async ({ page }) => {
+    const shapes = [
+      {
+        id: 'shared-ellipse',
+        type: 'ellipse',
+        x: 200,
+        y: 200,
+        width: 100,
+        height: 100,
+        fill: SHAPE_FILL,
+        stroke: SHAPE_STROKE,
+      },
+    ]
+    const data = JSON.stringify({ shapes })
+    const hash = LZString.compressToEncodedURIComponent(data)
+    await setupWithUrl(page, `/#${hash}`, testIds.confirmDialog)
+  }
+)
+
+Then('the URL has no hash', async ({ page }) => {
+  const url = page.url()
+  expect(url).not.toMatch(/#.+/)
+})
+
+Given('I open the app with a corrupted shared link', async ({ page }) => {
+  await setupWithUrl(page, '/#corrupted-invalid-data!!!', testIds.errorMessage)
+})
+
+Then('{int} shapes exist on the canvas', async ({ page }, count: number) => {
+  const state = await getState(page)
+  expect(state.app.shapes.length).toBe(count)
 })

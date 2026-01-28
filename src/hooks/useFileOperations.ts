@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '.'
 import { AppActions } from '../store/actions'
 import { selectShapes } from '../store/selectors'
@@ -6,6 +6,7 @@ import type { Shape } from '../store/state'
 import { drawShapes } from '../canvas/draw'
 import { getShapeBounds } from '../utils'
 import { EXPORT_PNG_PADDING, EXPORT_PNG_BG } from '../constants'
+import LZString from 'lz-string'
 
 export function useFileOperations() {
   const dispatch = useAppDispatch()
@@ -62,6 +63,10 @@ export function useFileOperations() {
     }
     setShowConfirm(false)
     setPendingShapes(null)
+    // Clear URL hash if present
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname)
+    }
   }, [dispatch, pendingShapes])
 
   const handleCancel = useCallback(() => {
@@ -72,6 +77,40 @@ export function useFileOperations() {
   const clearError = useCallback(() => {
     setErrorMessage(null)
   }, [])
+
+  // Check URL hash on mount for shared links
+  useEffect(() => {
+    const hash = window.location.hash.slice(1)
+    if (!hash) return
+
+    try {
+      const decoded = LZString.decompressFromEncodedURIComponent(hash)
+      if (!decoded) {
+        throw new Error('Invalid link data')
+      }
+      const data = JSON.parse(decoded)
+      if (!Array.isArray(data.shapes)) {
+        throw new Error('Invalid file format')
+      }
+      setPendingShapes(data.shapes)
+      setShowConfirm(true)
+    } catch {
+      setErrorMessage('Invalid shared link')
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+  }, [])
+
+  const handleCopyLink = useCallback(async () => {
+    if (shapes.length === 0) {
+      setErrorMessage('Canvas is empty')
+      return
+    }
+
+    const data = JSON.stringify({ shapes })
+    const compressed = LZString.compressToEncodedURIComponent(data)
+    const url = `${window.location.origin}${window.location.pathname}#${compressed}`
+    await navigator.clipboard.writeText(url)
+  }, [shapes])
 
   const handleExportPng = useCallback(() => {
     if (shapes.length === 0) {
@@ -129,5 +168,6 @@ export function useFileOperations() {
     handleCancel,
     clearError,
     handleExportPng,
+    handleCopyLink,
   }
 }

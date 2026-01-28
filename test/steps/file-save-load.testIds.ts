@@ -3,6 +3,7 @@ export const testIds = {
   saveMenuItem: 'menu-item-save',
   openMenuItem: 'menu-item-open',
   exportPngMenuItem: 'menu-item-export-png',
+  copyLinkMenuItem: 'menu-item-copy-link',
   confirmDialog: 'confirm-load-dialog',
   confirmButton: 'confirm-load-button',
   cancelButton: 'cancel-load-button',

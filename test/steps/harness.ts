@@ -27,6 +27,23 @@ export async function setupDefault(page: Page) {
   })
 }
 
+// Navigate to any URL (including with hash), wait for harness, call ready
+// Optionally wait for a specific element to be visible before returning
+export async function setupWithUrl(
+  page: Page,
+  url: string,
+  waitForTestId?: string
+) {
+  await page.goto(url)
+  await waitForHarness(page)
+  await page.evaluate(() => {
+    window.__TEST_HARNESS__?.ready()
+  })
+  if (waitForTestId) {
+    await page.getByTestId(waitForTestId).waitFor({ state: 'visible' })
+  }
+}
+
 export async function getState(page: Page): Promise<RootState> {
   return page.evaluate(() => window.__TEST_HARNESS__!.getState())
 }

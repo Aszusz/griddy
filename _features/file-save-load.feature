@@ -110,3 +110,30 @@ Feature: File Save and Load
     Given I open the app
     When I export the canvas as PNG
     Then I see an error message
+
+  # Shareable Links
+  Scenario: Copy Link copies shareable URL to clipboard
+    Given I open the app
+    And a rectangle exists at (100, 100) with size (100, 100)
+    When I copy a shareable link
+    Then a URL with hash is copied to clipboard
+
+  Scenario: Copy Link with empty canvas shows error
+    Given I open the app
+    When I copy a shareable link
+    Then I see an error message
+
+  Scenario: Confirming shared link loads shapes
+    Given I open the app with a shared link containing an ellipse
+    When I confirm the load
+    Then 1 ellipses exist on the canvas
+
+  Scenario: Shared link clears URL hash after load
+    Given I open the app with a shared link containing an ellipse
+    When I confirm the load
+    Then the URL has no hash
+
+  Scenario: Corrupted shared link shows error
+    Given I open the app with a corrupted shared link
+    Then I see an error message
+    And 0 shapes exist on the canvas
