@@ -114,6 +114,8 @@ export function reducer(
         handlers.handleTextFontChanged(stateForAction, id, fontFamily),
       'text/alignChanged': ({ id, align }) =>
         handlers.handleTextAlignChanged(stateForAction, id, align),
+      'file/load': ({ shapes }) =>
+        handlers.handleFileLoad(stateForAction, shapes),
     },
     () => stateForAction
   )

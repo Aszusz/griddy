@@ -51,3 +51,4 @@ export {
   handleTextFontChanged,
   handleTextAlignChanged,
 } from './text'
+export { handleFileLoad } from './file'

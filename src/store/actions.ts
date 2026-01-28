@@ -1,5 +1,5 @@
 import { discUnion, type DiscUnionOf } from 'disc-union'
-import type { Tool, HandlePosition } from './state'
+import type { Tool, HandlePosition, Shape } from './state'
 
 export const AppActions = discUnion(
   {
@@ -90,6 +90,7 @@ export const AppActions = discUnion(
       id,
       align,
     }),
+    'file/load': (shapes: Shape[]) => ({ shapes }),
   },
   'type'
 )

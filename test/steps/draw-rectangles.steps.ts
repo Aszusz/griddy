@@ -97,7 +97,8 @@ Then(
   '{int} rectangles exist on the canvas',
   async ({ page }, count: number) => {
     const state = await getState(page)
-    expect(state?.app.shapes.length).toBe(count)
+    const rectangles = state?.app.shapes.filter((s) => s.type === 'rectangle')
+    expect(rectangles?.length).toBe(count)
   }
 )
 

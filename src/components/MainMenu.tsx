@@ -1,5 +1,5 @@
-import { Menu, Undo2, Redo2 } from 'lucide-react'
-import { useAppDispatch, useAppSelector } from '../hooks'
+import { Menu, Undo2, Redo2, Save, FolderOpen } from 'lucide-react'
+import { useAppDispatch, useAppSelector, useFileOperations } from '../hooks'
 import { AppActions } from '../store/actions'
 import { selectCanUndo, selectCanRedo } from '../store/selectors'
 import {
@@ -15,12 +15,31 @@ export function MainMenu() {
   const dispatch = useAppDispatch()
   const canUndo = useAppSelector(selectCanUndo)
   const canRedo = useAppSelector(selectCanRedo)
+  const {
+    fileInputRef,
+    showConfirm,
+    errorMessage,
+    handleSave,
+    handleOpenClick,
+    handleFileChange,
+    handleConfirm,
+    handleCancel,
+    clearError,
+  } = useFileOperations()
 
   return (
     <div
       className="animate-in fade-in slide-in-from-top-2 fixed top-4 left-4 z-50 duration-300"
       style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}
     >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
@@ -58,8 +77,70 @@ export function MainMenu() {
           </DropdownMenuItem>
 
           <DropdownMenuSeparator className="my-1.5 bg-white/5" />
+
+          <DropdownMenuItem
+            onClick={handleSave}
+            data-testid="menu-item-save"
+            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+          >
+            <Save className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <span className="flex-1 text-[13px]">Save</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={handleOpenClick}
+            data-testid="menu-item-open"
+            className="group gap-3 rounded-lg px-3 py-2 text-zinc-300 transition-colors data-[highlighted]:bg-white/5 data-[highlighted]:text-zinc-100"
+          >
+            <FolderOpen className="size-[18px] text-zinc-500 transition-colors group-data-[highlighted]:text-zinc-300" />
+            <span className="flex-1 text-[13px]">Open</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {showConfirm && (
+        <div
+          data-testid="confirm-load-dialog"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
+        >
+          <div className="rounded-xl border border-white/10 bg-zinc-900 p-6 shadow-2xl">
+            <p className="mb-4 text-zinc-300">
+              Loading will replace current canvas. Continue?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                data-testid="cancel-load-button"
+                onClick={handleCancel}
+                className="rounded-lg px-4 py-2 text-zinc-400 hover:bg-white/5"
+              >
+                Cancel
+              </button>
+              <button
+                data-testid="confirm-load-button"
+                onClick={handleConfirm}
+                className="rounded-lg bg-cyan-600 px-4 py-2 text-white hover:bg-cyan-500"
+              >
+                Load
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div
+          data-testid="file-error-message"
+          className="fixed top-20 left-4 z-[100] rounded-lg border border-red-500/30 bg-red-900/90 px-4 py-2 text-red-200"
+        >
+          {errorMessage}
+          <button
+            onClick={clearError}
+            className="ml-4 text-red-400 hover:text-red-200"
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   )
 }
