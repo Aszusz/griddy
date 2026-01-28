@@ -46,7 +46,7 @@ export function InspectorField({
         onChange={(e) => setLocalValue(e.target.value)}
         onBlur={handleCommit}
         onKeyDown={handleKeyDown}
-        className="border-border bg-accent text-popover-foreground flex h-7 w-full items-center rounded-lg border px-2 font-mono text-xs outline-none focus:border-cyan-500/50"
+        className="border-border bg-accent text-popover-foreground focus:border-selection/50 flex h-7 w-full items-center rounded-lg border px-2 font-mono text-xs outline-none"
       />
     </div>
   )

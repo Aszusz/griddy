@@ -7,7 +7,6 @@ import {
   TEXT_FONT_SIZE,
   TEXT_LINE_HEIGHT,
   TEXT_PADDING,
-  SELECTION_BORDER_COLOR,
   SELECTION_BORDER_OFFSET,
   SELECTION_BORDER_WIDTH,
 } from '../constants'
@@ -73,7 +72,7 @@ export function TextEditor({ shape, originX, originY, zoom }: Props) {
         color: shape.fill,
         background: 'transparent',
         border: 'none',
-        outline: `${SELECTION_BORDER_WIDTH}px solid ${SELECTION_BORDER_COLOR}`,
+        outline: `${SELECTION_BORDER_WIDTH}px solid var(--selection-color)`,
         outlineOffset: SELECTION_BORDER_OFFSET,
         resize: 'none',
         overflow: 'hidden',

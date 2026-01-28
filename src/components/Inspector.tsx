@@ -158,7 +158,7 @@ export function Inspector() {
               onClick={() =>
                 dispatch(AppActions['text/alignChanged'](textShape.id, 'left'))
               }
-              className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
+              className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
             >
               Left
             </button>
@@ -170,7 +170,7 @@ export function Inspector() {
                   AppActions['text/alignChanged'](textShape.id, 'center')
                 )
               }
-              className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
+              className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
             >
               Center
             </button>
@@ -180,7 +180,7 @@ export function Inspector() {
               onClick={() =>
                 dispatch(AppActions['text/alignChanged'](textShape.id, 'right'))
               }
-              className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
+              className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
             >
               Right
             </button>
@@ -278,7 +278,7 @@ export function Inspector() {
                     AppActions['shape/textHAlignChanged'](rectShape.id, 'left')
                   )
                 }
-                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
               >
                 Left
               </button>
@@ -293,7 +293,7 @@ export function Inspector() {
                     )
                   )
                 }
-                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
               >
                 Center
               </button>
@@ -305,7 +305,7 @@ export function Inspector() {
                     AppActions['shape/textHAlignChanged'](rectShape.id, 'right')
                   )
                 }
-                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
               >
                 Right
               </button>
@@ -319,7 +319,7 @@ export function Inspector() {
                     AppActions['shape/textVAlignChanged'](rectShape.id, 'top')
                   )
                 }
-                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
               >
                 Top
               </button>
@@ -334,7 +334,7 @@ export function Inspector() {
                     )
                   )
                 }
-                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
               >
                 Middle
               </button>
@@ -349,7 +349,7 @@ export function Inspector() {
                     )
                   )
                 }
-                className="border-border bg-input text-foreground flex-1 rounded border px-2 py-1 text-sm data-[active=true]:bg-cyan-600"
+                className="border-border bg-input text-foreground data-[active=true]:bg-selection flex-1 rounded border px-2 py-1 text-sm"
               >
                 Bottom
               </button>

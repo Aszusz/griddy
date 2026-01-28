@@ -104,7 +104,7 @@ export function Toolbox() {
       style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
     >
       <div className="group relative">
-        <div className="absolute -inset-1 rounded-2xl bg-linear-to-b from-cyan-500/20 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="from-selection/20 absolute -inset-1 rounded-2xl bg-linear-to-b to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
 
         <div className="border-border bg-card relative flex flex-col gap-1 rounded-2xl border p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
           {toolItems.map((item, index) => (

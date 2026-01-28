@@ -43,6 +43,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-canvas: var(--canvas);
+  --color-selection: var(--selection-color);
 }
 
 :root {
@@ -69,6 +70,10 @@
   /* Canvas */
   --canvas: #f4f4f5; /* zinc-100 */
   --grid-dot-color: rgba(0, 0, 0, 0.15);
+  --selection-color: #0891b2; /* cyan-600 for light mode */
+  --marquee-fill: rgba(8, 145, 178, 0.1);
+  --inactive-color: #a1a1aa; /* zinc-400 for light mode */
+  --hitbox-inactive: rgba(161, 161, 170, 0.2);
 }
 
 .dark {
@@ -94,6 +99,10 @@
   /* Canvas */
   --canvas: #0a0a0b;
   --grid-dot-color: rgba(255, 255, 255, 0.25);
+  --selection-color: #22d3ee; /* cyan-400 for dark mode */
+  --marquee-fill: rgba(34, 211, 238, 0.1);
+  --inactive-color: #52525b; /* zinc-600 for dark mode */
+  --hitbox-inactive: rgba(63, 63, 70, 0.3);
 }
 
 @layer base {

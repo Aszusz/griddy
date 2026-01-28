@@ -53,13 +53,19 @@ export function Canvas() {
   const originX = canvasSize.width / 2 + panX
   const originY = canvasSize.height / 2 + panY
 
-  const [gridDotColor, setGridDotColor] = useState<string>('')
+  const [themeColors, setThemeColors] = useState({
+    gridDotColor: '',
+    selectionColor: '',
+    marqueeFill: '',
+  })
   useEffect(() => {
     const update = () => {
-      const color = getComputedStyle(document.documentElement)
-        .getPropertyValue('--grid-dot-color')
-        .trim()
-      setGridDotColor(color)
+      const style = getComputedStyle(document.documentElement)
+      setThemeColors({
+        gridDotColor: style.getPropertyValue('--grid-dot-color').trim(),
+        selectionColor: style.getPropertyValue('--selection-color').trim(),
+        marqueeFill: style.getPropertyValue('--marquee-fill').trim(),
+      })
     }
     update()
     const observer = new MutationObserver(update)
@@ -132,14 +138,24 @@ export function Canvas() {
       canvasSize.width,
       canvasSize.height,
       zoom,
-      gridDotColor
+      themeColors.gridDotColor
     )
     drawShapes(ctx, shapes, editingTextId)
-    drawSelectionBounds(ctx, selectionBoundsShapes, zoom)
+    drawSelectionBounds(
+      ctx,
+      selectionBoundsShapes,
+      zoom,
+      themeColors.selectionColor
+    )
     drawPreview(ctx, previewRect)
     drawPreviewLine(ctx, previewLine)
     drawPreviewText(ctx, previewText)
-    drawMarquee(ctx, marquee)
+    drawMarquee(
+      ctx,
+      marquee,
+      themeColors.selectionColor,
+      themeColors.marqueeFill
+    )
     drawCrosshair(ctx)
 
     ctx.restore()
@@ -155,7 +171,7 @@ export function Canvas() {
     selectionBoundsShapes,
     marquee,
     editingTextId,
-    gridDotColor,
+    themeColors,
   ])
 
   return (

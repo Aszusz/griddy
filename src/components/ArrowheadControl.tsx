@@ -1,10 +1,3 @@
-import {
-  SELECTION_BORDER_COLOR,
-  ARROWHEAD_INACTIVE_COLOR,
-  ARROWHEAD_HITBOX_ACTIVE,
-  ARROWHEAD_HITBOX_INACTIVE,
-} from '../constants'
-
 type Props = {
   arrowStart: boolean
   arrowEnd: boolean
@@ -31,7 +24,11 @@ export function ArrowheadControl({
         width="26"
         height="24"
         rx="4"
-        fill={arrowStart ? ARROWHEAD_HITBOX_ACTIVE : ARROWHEAD_HITBOX_INACTIVE}
+        fill={
+          arrowStart
+            ? 'color-mix(in srgb, var(--selection-color) 15%, transparent)'
+            : 'var(--hitbox-inactive)'
+        }
         className="pointer-events-none"
       />
       <rect
@@ -40,7 +37,11 @@ export function ArrowheadControl({
         width="26"
         height="24"
         rx="4"
-        fill={arrowEnd ? ARROWHEAD_HITBOX_ACTIVE : ARROWHEAD_HITBOX_INACTIVE}
+        fill={
+          arrowEnd
+            ? 'color-mix(in srgb, var(--selection-color) 15%, transparent)'
+            : 'var(--hitbox-inactive)'
+        }
         className="pointer-events-none"
       />
       {/* Layer 2: Connecting line */}
@@ -49,7 +50,7 @@ export function ArrowheadControl({
         y1="14"
         x2="136"
         y2="14"
-        stroke={SELECTION_BORDER_COLOR}
+        stroke="var(--selection-color)"
         strokeWidth="2"
         className="pointer-events-none"
       />
@@ -57,7 +58,7 @@ export function ArrowheadControl({
       <polyline
         points="34,7 24,14 34,21"
         fill="none"
-        stroke={arrowStart ? SELECTION_BORDER_COLOR : ARROWHEAD_INACTIVE_COLOR}
+        stroke={arrowStart ? 'var(--selection-color)' : 'var(--inactive-color)'}
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -66,7 +67,7 @@ export function ArrowheadControl({
       <polyline
         points="126,7 136,14 126,21"
         fill="none"
-        stroke={arrowEnd ? SELECTION_BORDER_COLOR : ARROWHEAD_INACTIVE_COLOR}
+        stroke={arrowEnd ? 'var(--selection-color)' : 'var(--inactive-color)'}
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"

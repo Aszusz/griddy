@@ -2,8 +2,6 @@ export const TWO_PI = Math.PI * 2
 
 export const GRID_SIZE = 20
 
-export const CANVAS_BG = '#0a0a0b'
-
 export const SHAPE_FILL = '#3b82f6'
 export const SHAPE_STROKE = '#60a5fa'
 export const TEXT_FILL = '#ffffff'
@@ -17,13 +15,11 @@ export const CROSSHAIR_CENTER_RADIUS = 3
 
 export const SHAPE_STROKE_WIDTH = 2
 
-export const SELECTION_BORDER_COLOR = '#22d3ee'
 export const SELECTION_BORDER_WIDTH = 2
 export const SELECTION_BORDER_OFFSET = 1
 export const SELECTION_HANDLE_SIZE = 8
 export const SELECTION_HANDLE_FILL = '#fff'
 export const SELECTION_HANDLE_STROKE_WIDTH = 1
-export const MARQUEE_FILL = 'rgba(34, 211, 238, 0.1)'
 export const MARQUEE_DASH_PATTERN = [4, 4] as const
 
 export const PASTE_OFFSET = GRID_SIZE
@@ -32,11 +28,6 @@ export const LINE_HIT_TOLERANCE = 5
 
 export const ARROWHEAD_SIZE = 12
 export const ARROWHEAD_ANGLE = Math.PI / 6 // 30 degrees
-
-// Inspector ArrowheadControl colors (active reuses SELECTION_BORDER_COLOR)
-export const ARROWHEAD_INACTIVE_COLOR = '#52525b'
-export const ARROWHEAD_HITBOX_ACTIVE = 'rgba(34,211,238,0.15)'
-export const ARROWHEAD_HITBOX_INACTIVE = 'rgba(63,63,70,0.3)'
 
 export const MIN_ZOOM = 0.25
 export const MAX_ZOOM = 8

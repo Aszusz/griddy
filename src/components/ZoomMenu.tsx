@@ -22,7 +22,7 @@ export const ZoomMenu = forwardRef<HTMLDivElement, ZoomMenuProps>(
               onClick={() => onSelect(preset)}
               className={`flex w-full items-center justify-between rounded-md px-3 py-1.5 font-mono text-[11px] transition-colors ${
                 isActive
-                  ? 'bg-cyan-500/10 text-cyan-400'
+                  ? 'bg-selection/10 text-selection'
                   : 'text-muted-foreground hover:bg-accent hover:text-foreground'
               }`}
             >

@@ -75,7 +75,7 @@ export function MainMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
-            className="group border-border bg-card hover:bg-accent relative flex h-10 w-10 items-center justify-center rounded-xl border shadow-xl shadow-black/40 backdrop-blur-xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50"
+            className="group border-border bg-card hover:bg-accent focus-visible:ring-selection/50 relative flex h-10 w-10 items-center justify-center rounded-xl border shadow-xl shadow-black/40 backdrop-blur-xl transition-all duration-200 focus:outline-none focus-visible:ring-2"
             data-testid="main-menu-trigger"
           >
             <div className="absolute inset-0 hidden rounded-xl bg-gradient-to-b from-white/[0.03] to-transparent dark:block" />
@@ -176,7 +176,7 @@ export function MainMenu() {
                   <opt.icon className="text-muted-foreground group-data-[highlighted]:text-popover-foreground size-[18px] transition-colors" />
                   <span className="flex-1 text-[13px]">{opt.label}</span>
                   {theme === opt.value && (
-                    <Check className="size-4 text-cyan-400" />
+                    <Check className="text-selection size-4" />
                   )}
                 </DropdownMenuItem>
               ))}
@@ -205,7 +205,7 @@ export function MainMenu() {
               <button
                 data-testid="confirm-load-button"
                 onClick={handleConfirm}
-                className="rounded-lg bg-cyan-600 px-4 py-2 text-white hover:bg-cyan-500"
+                className="bg-selection rounded-lg px-4 py-2 text-white hover:brightness-110"
               >
                 Load
               </button>

@@ -7,11 +7,9 @@ import {
   SHAPE_STROKE_WIDTH,
   PREVIEW_FILL,
   PREVIEW_STROKE,
-  SELECTION_BORDER_COLOR,
   SELECTION_BORDER_WIDTH,
   SELECTION_BORDER_OFFSET,
   SELECTION_HANDLE_STROKE_WIDTH,
-  MARQUEE_FILL,
   MARQUEE_DASH_PATTERN,
   CROSSHAIR_COLOR,
   CROSSHAIR_SIZE,
@@ -258,9 +256,10 @@ export function drawShapes(
 export function drawSelectionBounds(
   ctx: CanvasRenderingContext2D,
   selectedShapes: Shape[],
-  zoom = 1
+  zoom = 1,
+  selectionColor = ''
 ): void {
-  if (selectedShapes.length === 0) return
+  if (selectedShapes.length === 0 || !selectionColor) return
   const bounds = selectedShapes.map(getShapeBounds)
   const minX = Math.min(...bounds.map((b) => b.minX))
   const minY = Math.min(...bounds.map((b) => b.minY))
@@ -271,7 +270,7 @@ export function drawSelectionBounds(
   const adjustedBorderWidth = SELECTION_BORDER_WIDTH / zoom
   const adjustedOffset = SELECTION_BORDER_OFFSET / zoom
 
-  ctx.strokeStyle = SELECTION_BORDER_COLOR
+  ctx.strokeStyle = selectionColor
   ctx.lineWidth = adjustedBorderWidth
   ctx.strokeRect(
     minX - adjustedOffset,
@@ -346,15 +345,17 @@ export function drawPreviewText(
 
 export function drawMarquee(
   ctx: CanvasRenderingContext2D,
-  marquee: MarqueeState
+  marquee: MarqueeState,
+  selectionColor = '',
+  marqueeFill = ''
 ): void {
-  if (!marquee) return
+  if (!marquee || !selectionColor || !marqueeFill) return
   const mx = Math.min(marquee.startX, marquee.currentX)
   const my = Math.min(marquee.startY, marquee.currentY)
   const mw = Math.abs(marquee.currentX - marquee.startX)
   const mh = Math.abs(marquee.currentY - marquee.startY)
-  ctx.fillStyle = MARQUEE_FILL
-  ctx.strokeStyle = SELECTION_BORDER_COLOR
+  ctx.fillStyle = marqueeFill
+  ctx.strokeStyle = selectionColor
   ctx.lineWidth = SELECTION_HANDLE_STROKE_WIDTH
   ctx.setLineDash([...MARQUEE_DASH_PATTERN])
   ctx.fillRect(mx, my, mw, mh)

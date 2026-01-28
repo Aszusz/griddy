@@ -6,7 +6,6 @@ import {
   TEXT_FONT_SIZE,
   TEXT_LINE_HEIGHT,
   TEXT_PADDING,
-  SELECTION_BORDER_COLOR,
   SELECTION_BORDER_OFFSET,
   SELECTION_BORDER_WIDTH,
 } from '../constants'
@@ -80,7 +79,7 @@ export function ShapeTextEditor({ shape, originX, originY, zoom }: Props) {
         flexDirection: 'column',
         justifyContent,
         alignItems: 'stretch',
-        outline: `${SELECTION_BORDER_WIDTH}px solid ${SELECTION_BORDER_COLOR}`,
+        outline: `${SELECTION_BORDER_WIDTH}px solid var(--selection-color)`,
         outlineOffset: SELECTION_BORDER_OFFSET,
         boxSizing: 'border-box',
         padding: TEXT_PADDING * zoom,

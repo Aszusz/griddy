@@ -6,7 +6,6 @@ import {
   SELECTION_HANDLE_SIZE,
   SELECTION_HANDLE_FILL,
   SELECTION_HANDLE_STROKE_WIDTH,
-  SELECTION_BORDER_COLOR,
 } from '../constants'
 
 type Props = {
@@ -58,7 +57,7 @@ export function LineEndpointHandles({
             width: SELECTION_HANDLE_SIZE,
             height: SELECTION_HANDLE_SIZE,
             backgroundColor: SELECTION_HANDLE_FILL,
-            border: `${SELECTION_HANDLE_STROKE_WIDTH}px solid ${SELECTION_BORDER_COLOR}`,
+            border: `${SELECTION_HANDLE_STROKE_WIDTH}px solid var(--selection-color)`,
             borderRadius: '50%',
             cursor: 'crosshair',
             boxSizing: 'border-box',

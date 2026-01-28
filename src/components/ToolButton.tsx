@@ -20,7 +20,7 @@ export function ToolButton({
       data-testid={testId}
       data-active={isActive}
       onClick={onClick}
-      className={`animate-in fade-in group/btn hover:bg-accent relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 hover:text-cyan-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/50 ${isActive ? 'bg-accent text-cyan-400' : 'text-muted-foreground'}`}
+      className={`animate-in fade-in group/btn hover:bg-accent hover:text-selection focus-visible:ring-selection/50 relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 focus:outline-none focus-visible:ring-1 ${isActive ? 'bg-accent text-selection' : 'text-muted-foreground'}`}
       style={{
         animationDelay: `${delay}ms`,
         animationFillMode: 'backwards',
